@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
@@ -30,7 +30,7 @@ export default function RegisterView() {
     studentcategory: '',
     admissioncategory: '',
     cetmarks: '',
-    scholarship: '',
+    scholarship: '0',
     feestructure: '',
   };
 
@@ -39,14 +39,43 @@ export default function RegisterView() {
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
+  const categoryOptions = [
+    'General_OPEN',
+    'EBC_SEBC_EWS',
+    'OBC',
+    'VJNT_NT_SBC_NT1_NT2_NT3',
+    'SC_ST',
+    'Inst_mgmt',
+  ];
+
+  const generatePRN = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/api/student/lastStudent/');
+      if (response.data.status === 'success') {
+        const newSN = String(Number(response.data.data.slice(-3)) + 1).padStart(3, '0');
+        const currentYear = new Date().getFullYear();
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          PRN: `BPT${String(currentYear) + String(newSN)}`,
+        }));
+      }
+    } catch (error) {
+      console.error('Something went wrong!!');
+    }
+  };
+
+  useEffect(() => {
+    generatePRN();
+  }, []);
+
   const validateForm = () => {
     let valid = true;
     const errors = { ...formErrors };
 
-    if (!formData.PRN.match(/^[0-9]+$/)) {
-      errors.PRN = 'PRN should only contain numbers';
-      valid = false;
-    }
+    // if (!formData.PRN.length !== 10) {
+    //   errors.PRN = 'PRN should be a 10-digit long';
+    //   valid = false;
+    // }
 
     if (!formData.name) {
       errors.name = 'Name is required';
@@ -143,6 +172,7 @@ export default function RegisterView() {
 
         if (response.data.status === 'success') {
           setSuccessMessage('Successfully Signed Up!');
+          generatePRN();
           setTimeout(() => {
             setSuccessMessage('');
           }, 2000);
@@ -185,6 +215,7 @@ export default function RegisterView() {
                 onChange={handleChange}
                 error={!!formErrors.PRN}
                 helperText={formErrors.PRN}
+                disabled
               />
             </Grid>
             <Grid item xs={6}>
@@ -197,6 +228,7 @@ export default function RegisterView() {
                 onChange={handleChange}
                 error={!!formErrors.name}
                 helperText={formErrors.name}
+                required
               />
             </Grid>
             <Grid item xs={6}>
@@ -208,6 +240,7 @@ export default function RegisterView() {
                   onChange={handleChange}
                   label="Gender"
                   error={!!formErrors.gender}
+                  required
                 >
                   <MenuItem value="male">Male</MenuItem>
                   <MenuItem value="female">Female</MenuItem>
@@ -229,6 +262,7 @@ export default function RegisterView() {
                 onChange={handleChange}
                 error={!!formErrors.dob}
                 helperText={formErrors.dob}
+                required
               />
             </Grid>
             <Grid item xs={6}>
@@ -241,6 +275,7 @@ export default function RegisterView() {
                 onChange={handleChange}
                 error={!!formErrors.phone}
                 helperText={formErrors.phone}
+                required
               />
             </Grid>
             <Grid item xs={6}>
@@ -253,6 +288,7 @@ export default function RegisterView() {
                 onChange={handleChange}
                 error={!!formErrors.parentphone}
                 helperText={formErrors.parentphone}
+                required
               />
             </Grid>
             <Grid item xs={6}>
@@ -265,6 +301,7 @@ export default function RegisterView() {
                 onChange={handleChange}
                 error={!!formErrors.email}
                 helperText={formErrors.email}
+                required
               />
             </Grid>
             <Grid item xs={6}>
@@ -277,6 +314,7 @@ export default function RegisterView() {
                 onChange={handleChange}
                 error={!!formErrors.course}
                 helperText={formErrors.course}
+                required
               />
             </Grid>
             <Grid item xs={6}>
@@ -289,6 +327,7 @@ export default function RegisterView() {
                 onChange={handleChange}
                 error={!!formErrors.admissionyear}
                 helperText={formErrors.admissionyear}
+                required
               />
             </Grid>
             <Grid item xs={6}>
@@ -305,6 +344,7 @@ export default function RegisterView() {
                 onChange={handleChange}
                 error={!!formErrors.dateofadmission}
                 helperText={formErrors.dateofadmission}
+                required
               />
             </Grid>
             <Grid item xs={6}>
@@ -317,6 +357,7 @@ export default function RegisterView() {
                 onChange={handleChange}
                 error={!!formErrors.domicilestate}
                 helperText={formErrors.domicilestate}
+                required
               />
             </Grid>
             <Grid item xs={6}>
@@ -329,19 +370,27 @@ export default function RegisterView() {
                 onChange={handleChange}
                 error={!!formErrors.studentcategory}
                 helperText={formErrors.studentcategory}
+                required
               />
             </Grid>
             <Grid item xs={6}>
-              <TextField
-                name="admissioncategory"
-                label="Admission Category"
-                variant="outlined"
-                fullWidth
-                value={formData.admissioncategory}
-                onChange={handleChange}
-                error={!!formErrors.admissioncategory}
-                helperText={formErrors.admissioncategory}
-              />
+              <FormControl fullWidth variant="outlined">
+                <InputLabel>Admission Category</InputLabel>
+                <Select
+                  name="admissioncategory"
+                  value={formData.admissioncategory}
+                  onChange={handleChange}
+                  label="Admission Category"
+                  error={!!formErrors.admissioncategory}
+                  required
+                >
+                  {categoryOptions.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Grid>
             <Grid item xs={6}>
               <TextField
@@ -354,6 +403,7 @@ export default function RegisterView() {
                 onChange={handleChange}
                 error={!!formErrors.cetmarks}
                 helperText={formErrors.cetmarks}
+                required
               />
             </Grid>
             <Grid item xs={6}>
@@ -364,6 +414,7 @@ export default function RegisterView() {
                   value={formData.scholarship}
                   onChange={handleChange}
                   label="Scholarship"
+                  required
                 >
                   <MenuItem value="1">Yes</MenuItem>
                   <MenuItem value="0">No</MenuItem>
@@ -371,16 +422,23 @@ export default function RegisterView() {
               </FormControl>
             </Grid>
             <Grid item xs={6}>
-              <TextField
-                name="feestructure"
-                label="Fee Structure"
-                variant="outlined"
-                fullWidth
-                value={formData.feestructure}
-                onChange={handleChange}
-                error={!!formErrors.feestructure}
-                helperText={formErrors.feestructure}
-              />
+              <FormControl fullWidth variant="outlined">
+                <InputLabel>Fee Structure</InputLabel>
+                <Select
+                  name="feestructure"
+                  value={formData.feestructure}
+                  onChange={handleChange}
+                  label="Fee Structure"
+                  error={!!formErrors.feestructure}
+                  required
+                >
+                  {categoryOptions.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Grid>
             <Grid item xs={12}>
               <TextField
@@ -394,6 +452,7 @@ export default function RegisterView() {
                 onChange={handleChange}
                 error={!!formErrors.address}
                 helperText={formErrors.address}
+                required
               />
             </Grid>
           </Grid>

@@ -24,6 +24,25 @@ exports.getStudent = catchAsync(async (req, res) => {
   });
 });
 
+exports.getLastStudent = catchAsync(async (req, res) => {
+  const latestStudent = await Student.findOne({
+    order: [['PRN', 'DESC']],
+    attributes: ['PRN'], // Only fetch the PRN field
+  });
+
+  let latestPRN = 'BPT2023000';
+
+  if (latestStudent && latestStudent.PRN) {
+    // If a record is found, update latestPRN
+    latestPRN = latestStudent.PRN;
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: latestPRN,
+  });
+});
+
 exports.createStudent = catchAsync(async (req, res) => {
   const student = await Student.create(req.body);
   res.status(201).json({

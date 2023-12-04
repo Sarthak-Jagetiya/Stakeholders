@@ -3,7 +3,7 @@ module.exports = (sequelize, DataTypes) => {
     'Student',
     {
       PRN: {
-        type: DataTypes.STRING(10),
+        type: DataTypes.STRING(14),
         allowNull: false,
         primaryKey: true,
       },
@@ -74,7 +74,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       tableName: 'students',
-      timestamps: false, // Set this to false if you don't want timestamps fields
+      timestamps: false,
     }
   );
 

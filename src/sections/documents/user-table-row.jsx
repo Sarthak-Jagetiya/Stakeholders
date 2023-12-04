@@ -17,12 +17,17 @@ import Iconify from 'src/components/iconify';
 
 export default function UserTableRow({
   selected,
-  name,
+  PRN,
   avatarUrl,
-  company,
-  role,
-  isVerified,
-  status,
+  aadhar,
+  nationality,
+  domicile,
+  ssc,
+  hsc,
+  medicalfitness,
+  photo,
+  verified,
+  verifiedby,
   handleClick,
 }) {
   const [open, setOpen] = useState(null);
@@ -35,6 +40,11 @@ export default function UserTableRow({
     setOpen(null);
   };
 
+  const handleEdit = () => {
+    handleCloseMenu();
+    window.location.href = `/document?prn=${PRN}`;
+  };
+
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
@@ -44,21 +54,29 @@ export default function UserTableRow({
 
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
-            <Avatar alt={name} src={avatarUrl} />
+            <Avatar alt={PRN} src={avatarUrl} />
             <Typography variant="subtitle2" noWrap>
-              {name}
+              {PRN}
             </Typography>
           </Stack>
         </TableCell>
 
-        <TableCell>{company}</TableCell>
+        <TableCell align="center">{aadhar}</TableCell>
+        <TableCell align="center">{nationality}</TableCell>
+        <TableCell align="center">{domicile}</TableCell>
+        <TableCell align="center">{ssc}</TableCell>
+        <TableCell align="center">{hsc}</TableCell>
+        <TableCell align="center">{medicalfitness}</TableCell>
+        <TableCell align="center">{photo}</TableCell>
+        <TableCell align="center">
+          <Label color={(verified === 'Yes' && 'success') || 'error'}>{verified}</Label>
+        </TableCell>
 
-        <TableCell>{role}</TableCell>
-
-        <TableCell align="center">{isVerified ? 'Yes' : 'No'}</TableCell>
-
-        <TableCell>
-          <Label color={(status === 'banned' && 'error') || 'success'}>{status}</Label>
+        <TableCell
+          align="center"
+          style={{ textDecoration: 'underline', textDecorationThickness: 'thick' }}
+        >
+          {verifiedby}
         </TableCell>
 
         <TableCell align="right">
@@ -78,7 +96,7 @@ export default function UserTableRow({
           sx: { width: 140 },
         }}
       >
-        <MenuItem onClick={handleCloseMenu}>
+        <MenuItem onClick={handleEdit}>
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           Edit
         </MenuItem>
@@ -93,12 +111,17 @@ export default function UserTableRow({
 }
 
 UserTableRow.propTypes = {
+  PRN: PropTypes.any,
   avatarUrl: PropTypes.any,
-  company: PropTypes.any,
+  aadhar: PropTypes.any,
+  nationality: PropTypes.any,
+  domicile: PropTypes.any,
+  ssc: PropTypes.any,
+  hsc: PropTypes.any,
+  medicalfitness: PropTypes.any,
+  photo: PropTypes.any,
+  verified: PropTypes.any,
+  verifiedby: PropTypes.any,
   handleClick: PropTypes.func,
-  isVerified: PropTypes.any,
-  name: PropTypes.any,
-  role: PropTypes.any,
   selected: PropTypes.any,
-  status: PropTypes.string,
 };

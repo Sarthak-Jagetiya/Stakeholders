@@ -17,12 +17,17 @@ import Iconify from 'src/components/iconify';
 
 export default function UserTableRow({
   selected,
-  name,
+  PRN,
   avatarUrl,
-  company,
-  role,
-  isVerified,
-  status,
+  scholarship,
+  tuitionfees,
+  eligibilityregistration,
+  universityfees,
+  library,
+  other,
+  cautionmoney,
+  signature,
+  total,
   handleClick,
 }) {
   const [open, setOpen] = useState(null);
@@ -35,6 +40,11 @@ export default function UserTableRow({
     setOpen(null);
   };
 
+  const handleEdit = () => {
+    handleCloseMenu();
+    window.location.href = `/transaction?prn=${PRN}`;
+  };
+
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
@@ -44,21 +54,23 @@ export default function UserTableRow({
 
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
-            <Avatar alt={name} src={avatarUrl} />
+            <Avatar alt={PRN} src={avatarUrl} />
             <Typography variant="subtitle2" noWrap>
-              {name}
+              {PRN}
             </Typography>
           </Stack>
         </TableCell>
 
-        <TableCell>{company}</TableCell>
-
-        <TableCell>{role}</TableCell>
-
-        <TableCell align="center">{isVerified ? 'Yes' : 'No'}</TableCell>
-
-        <TableCell>
-          <Label color={(status === 'banned' && 'error') || 'success'}>{status}</Label>
+        <TableCell align="center">{scholarship}</TableCell>
+        <TableCell align="center">{tuitionfees}</TableCell>
+        <TableCell align="center">{eligibilityregistration}</TableCell>
+        <TableCell align="center">{universityfees}</TableCell>
+        <TableCell align="center">{library}</TableCell>
+        <TableCell align="center">{other}</TableCell>
+        <TableCell align="center">{cautionmoney}</TableCell>
+        <TableCell align="center">{signature}</TableCell>
+        <TableCell align="center">
+          <Label color="success">{total}</Label>
         </TableCell>
 
         <TableCell align="right">
@@ -78,7 +90,7 @@ export default function UserTableRow({
           sx: { width: 140 },
         }}
       >
-        <MenuItem onClick={handleCloseMenu}>
+        <MenuItem onClick={handleEdit}>
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           Edit
         </MenuItem>
@@ -93,12 +105,18 @@ export default function UserTableRow({
 }
 
 UserTableRow.propTypes = {
+  // Adjust the prop types based on your transactions data structure
+  PRN: PropTypes.any,
   avatarUrl: PropTypes.any,
-  company: PropTypes.any,
+  scholarship: PropTypes.any,
+  tuitionfees: PropTypes.any,
+  eligibilityregistration: PropTypes.any,
+  universityfees: PropTypes.any,
+  library: PropTypes.any,
+  other: PropTypes.any,
+  cautionmoney: PropTypes.any,
+  signature: PropTypes.any,
+  total: PropTypes.any,
   handleClick: PropTypes.func,
-  isVerified: PropTypes.any,
-  name: PropTypes.any,
-  role: PropTypes.any,
   selected: PropTypes.any,
-  status: PropTypes.string,
 };

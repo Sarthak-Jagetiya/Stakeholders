@@ -1,5 +1,6 @@
 import axios from 'axios';
-import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
@@ -10,6 +11,10 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
 export default function TransactionForm() {
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const prnParam = searchParams.get('prn');
+
   const initialFormData = {
     PRN: '',
     scholarship: 0,
@@ -28,6 +33,24 @@ export default function TransactionForm() {
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    // Fetch existing data if PRN is present
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3000/api/transaction/${prnParam}`);
+        const existingData = response.data.data;
+        console.log(existingData.data);
+        setFormData(existingData.data);
+      } catch (error) {
+        console.error('Error fetching existing data:', error.message);
+      }
+    };
+
+    if (prnParam) {
+      fetchData();
+    }
+  }, [prnParam]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -56,17 +79,27 @@ export default function TransactionForm() {
     setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:3000/api/transaction/', formData);
+      // Determine whether to use POST or PUT based on the presence of PRN
+      const apiEndpoint = prnParam
+        ? `http://localhost:3000/api/transaction/${prnParam}`
+        : 'http://localhost:3000/api/transaction';
+
+      const response = await axios[prnParam ? 'patch' : 'post'](apiEndpoint, formData);
 
       if (response.data.status === 'success') {
         setErrorMessage('');
-        setSuccessMessage('Transaction details submitted successfully!');
+        setSuccessMessage(
+          `Transaction details ${prnParam ? 'updated' : 'submitted'} successfully!`
+        );
         setTimeout(() => {
           setSuccessMessage('');
-          setFormData(initialFormData);
-        }, 2000);
+          if (prnParam) window.location.href = '/transactions';
+          else setFormData(initialFormData);
+        }, 1000);
       } else {
-        setErrorMessage(`Transaction submission failed: ${response.data.message}`);
+        setErrorMessage(
+          `Transaction ${prnParam ? 'update' : 'submission'} failed: ${response.data.message}`
+        );
       }
     } catch (error) {
       if (error.response && error.response.status === 400) {
@@ -74,12 +107,19 @@ export default function TransactionForm() {
         setErrorMessage('Student with the provided PRN does not exist.');
       } else {
         console.error(error);
-        setErrorMessage('An error occurred during transaction submission.');
+        setErrorMessage(
+          `An error occurred during transaction ${prnParam ? 'update' : 'submission'}.`
+        );
       }
     } finally {
       setLoading(false);
     }
   };
+
+  let buttonText = 'Submit Transaction';
+  if (prnParam) {
+    buttonText = 'Update Transaction';
+  }
 
   return (
     <Container>
@@ -103,6 +143,8 @@ export default function TransactionForm() {
                 onChange={handleChange}
                 error={!!formErrors.PRN}
                 helperText={formErrors.PRN}
+                disabled={!!prnParam}
+                required
               />
             </Grid>
 
@@ -118,6 +160,7 @@ export default function TransactionForm() {
                 onChange={handleChange}
                 error={!!formErrors.scholarship}
                 helperText={formErrors.scholarship}
+                required
               />
             </Grid>
 
@@ -133,6 +176,7 @@ export default function TransactionForm() {
                 onChange={handleChange}
                 error={!!formErrors.tuitionfees}
                 helperText={formErrors.tuitionfees}
+                required
               />
             </Grid>
 
@@ -148,6 +192,7 @@ export default function TransactionForm() {
                 onChange={handleChange}
                 error={!!formErrors.eligibilityregistration}
                 helperText={formErrors.eligibilityregistration}
+                required
               />
             </Grid>
 
@@ -163,6 +208,7 @@ export default function TransactionForm() {
                 onChange={handleChange}
                 error={!!formErrors.universityfees}
                 helperText={formErrors.universityfees}
+                required
               />
             </Grid>
 
@@ -178,6 +224,7 @@ export default function TransactionForm() {
                 onChange={handleChange}
                 error={!!formErrors.library}
                 helperText={formErrors.library}
+                required
               />
             </Grid>
 
@@ -193,6 +240,7 @@ export default function TransactionForm() {
                 onChange={handleChange}
                 error={!!formErrors.collegeexam}
                 helperText={formErrors.collegeexam}
+                required
               />
             </Grid>
 
@@ -208,6 +256,7 @@ export default function TransactionForm() {
                 onChange={handleChange}
                 error={!!formErrors.other}
                 helperText={formErrors.other}
+                required
               />
             </Grid>
 
@@ -223,6 +272,7 @@ export default function TransactionForm() {
                 onChange={handleChange}
                 error={!!formErrors.cautionmoney}
                 helperText={formErrors.cautionmoney}
+                required
               />
             </Grid>
 
@@ -237,6 +287,7 @@ export default function TransactionForm() {
                 onChange={handleChange}
                 error={!!formErrors.signature}
                 helperText={formErrors.signature}
+                required
               />
             </Grid>
           </Grid>
@@ -248,7 +299,7 @@ export default function TransactionForm() {
             style={{ marginTop: '20px' }}
             disabled={loading}
           >
-            {loading ? 'Submitting...' : 'Submit Transaction'}
+            {loading ? 'Submitting...' : buttonText}
           </Button>
 
           {successMessage && (

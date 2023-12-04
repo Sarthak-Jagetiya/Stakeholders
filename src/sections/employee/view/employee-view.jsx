@@ -20,7 +20,7 @@ const EmployeeForm = () => {
     gender: '',
     phone: '',
     email: '',
-    adhar: '',
+    aadhar: '',
     designation: '',
     emergencycontact: '',
     college: '',
@@ -39,14 +39,71 @@ const EmployeeForm = () => {
     }));
   };
 
+  const trimZeros = (value) => value.replace(/^0+/, '');
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePhoneNumber = (phoneNumber) => {
+    const phoneRegex = /^\d{10}$/;
+    return phoneRegex.test(phoneNumber);
+  };
+
+  const validateAadharNumber = (aadhar) => {
+    const aadharRegex = /^\d{12}$/;
+    return aadharRegex.test(aadhar);
+  };
+
+  const validateEmergencyContact = (emergencyContact) => {
+    const emergencyContactRegex = /^\d{10}$/;
+    return emergencyContactRegex.test(emergencyContact);
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     // Input Validation
     const errors = {};
     Object.keys(formData).forEach((key) => {
-      if (!formData[key]) {
+      let value = formData[key];
+
+      // Trim trailing spaces and zeros
+      if (typeof value === 'string') {
+        value = trimZeros(value.trim());
+        setFormData((prevData) => ({ ...prevData, [key]: value }));
+      }
+
+      if (!value) {
         errors[key] = `${key.charAt(0).toUpperCase() + key.slice(1)} is required`;
+      } else {
+        // Additional validations for specific fields
+        switch (key) {
+          case 'email':
+            if (!validateEmail(value)) {
+              errors[key] = 'Invalid email address';
+            }
+            break;
+          case 'phone':
+            if (!validatePhoneNumber(value)) {
+              errors[key] = 'Invalid phone number';
+            }
+            break;
+          case 'aadhar':
+            if (!validateAadharNumber(value)) {
+              errors[key] = 'Invalid Aadhar number';
+            }
+            break;
+          case 'emergencycontact':
+            if (!validateEmergencyContact(value)) {
+              errors[key] = 'Invalid emergency contact number';
+            }
+            break;
+          // Add more validations for other fields if needed
+          default:
+            break;
+        }
       }
     });
     setFormErrors(errors);
@@ -104,6 +161,7 @@ const EmployeeForm = () => {
                 onChange={(e) => handleInputChange('eid', e.target.value)}
                 error={!!formErrors.eid}
                 helperText={formErrors.eid}
+                required
               />
             </Grid>
             <Grid item xs={6}>
@@ -114,6 +172,7 @@ const EmployeeForm = () => {
                 onChange={(e) => handleInputChange('name', e.target.value)}
                 error={!!formErrors.name}
                 helperText={formErrors.name}
+                required
               />
             </Grid>
             <Grid item xs={6}>
@@ -125,6 +184,7 @@ const EmployeeForm = () => {
                   onChange={(e) => handleInputChange('gender', e.target.value)}
                   label="Gender"
                   error={!!formErrors.gender}
+                  required
                 >
                   <MenuItem value="male">Male</MenuItem>
                   <MenuItem value="female">Female</MenuItem>
@@ -140,6 +200,7 @@ const EmployeeForm = () => {
                 onChange={(e) => handleInputChange('phone', e.target.value)}
                 error={!!formErrors.phone}
                 helperText={formErrors.phone}
+                required
               />
             </Grid>
             <Grid item xs={6}>
@@ -150,16 +211,18 @@ const EmployeeForm = () => {
                 onChange={(e) => handleInputChange('email', e.target.value)}
                 error={!!formErrors.email}
                 helperText={formErrors.email}
+                required
               />
             </Grid>
             <Grid item xs={6}>
               <TextField
                 label="Aadhar"
                 fullWidth
-                value={formData.adhar}
-                onChange={(e) => handleInputChange('adhar', e.target.value)}
-                error={!!formErrors.adhar}
-                helperText={formErrors.adhar}
+                value={formData.aadhar}
+                onChange={(e) => handleInputChange('aadhar', e.target.value)}
+                error={!!formErrors.aadhar}
+                helperText={formErrors.aadhar}
+                required
               />
             </Grid>
             <Grid item xs={6}>
@@ -170,6 +233,7 @@ const EmployeeForm = () => {
                 onChange={(e) => handleInputChange('designation', e.target.value)}
                 error={!!formErrors.designation}
                 helperText={formErrors.designation}
+                required
               />
             </Grid>
             <Grid item xs={6}>
@@ -180,6 +244,7 @@ const EmployeeForm = () => {
                 onChange={(e) => handleInputChange('emergencycontact', e.target.value)}
                 error={!!formErrors.emergencycontact}
                 helperText={formErrors.emergencycontact}
+                required
               />
             </Grid>
             <Grid item xs={6}>
@@ -190,6 +255,7 @@ const EmployeeForm = () => {
                 onChange={(e) => handleInputChange('college', e.target.value)}
                 error={!!formErrors.college}
                 helperText={formErrors.college}
+                required
               />
             </Grid>
           </Grid>

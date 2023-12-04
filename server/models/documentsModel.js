@@ -9,31 +9,24 @@ module.exports = (sequelize, DataTypes) => {
       },
       aadhar: {
         type: DataTypes.BLOB('medium'),
-        allowNull: false,
       },
       nationality: {
         type: DataTypes.BLOB('medium'),
-        allowNull: false,
       },
       domicile: {
         type: DataTypes.BLOB('medium'),
-        allowNull: false,
       },
       ssc: {
         type: DataTypes.BLOB('medium'),
-        allowNull: false,
       },
       hsc: {
         type: DataTypes.BLOB('medium'),
-        allowNull: false,
       },
       medicalfitness: {
         type: DataTypes.BLOB('medium'),
-        allowNull: false,
       },
       photo: {
         type: DataTypes.BLOB('medium'),
-        allowNull: false,
       },
       verified: {
         type: DataTypes.BOOLEAN,

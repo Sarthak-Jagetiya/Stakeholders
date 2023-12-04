@@ -2,9 +2,7 @@ const { sequelize, Transaction, Student } = require('./../models');
 const catchAsync = require('./../utils/catchAsync');
 
 exports.getAllTransaction = catchAsync(async (req, res) => {
-  const transaction = await Transaction.findAll({
-    order: [['PRN', 'ASC']],
-  });
+  const transaction = await Transaction.findAll();
   res.status(200).json({
     status: 'success',
     results: transaction.length,
@@ -47,5 +45,18 @@ exports.deleteTransaction = catchAsync(async (req, res) => {
   res.status(204).json({
     status: 'success',
     data: null,
+  });
+});
+
+exports.updateTransaction = catchAsync(async (req, res) => {
+  const doc = await Transaction.update(req.body, {
+    where: { PRN: req.params.id },
+  });
+  const transaction = await Transaction.findOne({
+    where: { PRN: req.params.id },
+  });
+  res.status(200).json({
+    status: 'success',
+    data: transaction,
   });
 });

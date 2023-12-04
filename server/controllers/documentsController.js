@@ -12,6 +12,18 @@ exports.getAllDocuments = catchAsync(async (req, res) => {
   });
 });
 
+exports.getDocument = catchAsync(async (req, res) => {
+  const doc = await Document.findOne({
+    where: { PRN: req.params.id },
+  });
+  res.status(200).json({
+    status: 'success',
+    data: {
+      data: doc,
+    },
+  });
+});
+
 exports.createDocument = catchAsync(async (req, res) => {
   const student = await Student.findOne({ where: { PRN: req.body.PRN } });
   if (!student) {
@@ -42,4 +54,27 @@ exports.createDocument = catchAsync(async (req, res) => {
       message: 'Failed to create the document',
     });
   }
+});
+
+exports.deleteDocument = catchAsync(async (req, res) => {
+  const doc = Document.destroy({
+    where: { PRN: req.params.id },
+  });
+  res.status(204).json({
+    status: 'success',
+    data: null,
+  });
+});
+
+exports.updateDocument = catchAsync(async (req, res) => {
+  const doc1 = await Document.update(req.body, {
+    where: { PRN: req.params.id },
+  });
+  const doc = await Document.findOne({
+    where: { PRN: req.params.id },
+  });
+  res.status(200).json({
+    status: 'success',
+    data: doc,
+  });
 });

@@ -1,5 +1,6 @@
 import axios from 'axios';
-import React, { useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import React, { useRef, useState, useEffect } from 'react';
 
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
@@ -12,6 +13,10 @@ import Typography from '@mui/material/Typography';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
 const DocumentForm = () => {
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const prnParam = searchParams.get('prn');
+
   const initialFormData = {
     PRN: '',
     aadhar: null,
@@ -22,13 +27,14 @@ const DocumentForm = () => {
     medicalfitness: null,
     photo: null,
     verified: 0,
-    verifiedby: ' ',
+    verifiedby: '',
   };
 
   const [formData, setFormData] = useState(initialFormData);
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [formErrors, setFormErrors] = useState({});
 
   const aadharRef = useRef();
   const nationalityRef = useRef();
@@ -37,6 +43,24 @@ const DocumentForm = () => {
   const hscRef = useRef();
   const medicalFitnessRef = useRef();
   const photoRef = useRef();
+
+  useEffect(() => {
+    // Fetch existing data if PRN is present
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3000/api/document/${prnParam}`);
+        const existingData = response.data.data;
+        // console.log(existingData.data);
+        setFormData(existingData.data);
+      } catch (error) {
+        console.error('Error fetching existing data:', error.message);
+      }
+    };
+
+    if (prnParam) {
+      fetchData();
+    }
+  }, [prnParam]);
 
   const handleFileChange = (event, fileType) => {
     const file = event.target.files[0];
@@ -54,49 +78,81 @@ const DocumentForm = () => {
     }));
   };
 
+  const handleVerifiedChange = () => {
+    setFormData((prevData) => ({
+      ...prevData,
+      verified: !prevData.verified,
+      verifiedby: prevData.verified ? '' : prevData.verifiedby,
+    }));
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    // Input Validation
+    const errors = {};
+    Object.keys(formData).forEach((key) => {
+      if (!formData[key] && key === 'prn') {
+        errors[key] = `${key.charAt(0).toUpperCase() + key.slice(1)} is required`;
+      }
+    });
+    setFormErrors(errors);
+
+    if (Object.keys(errors).length > 0) {
+      return;
+    }
 
     setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:3000/api/document/', formData);
+      // Determine whether to use POST or PUT based on the presence of PRN
+      const apiEndpoint = prnParam
+        ? `http://localhost:3000/api/document/${prnParam}`
+        : 'http://localhost:3000/api/document';
+
+      const response = await axios[prnParam ? 'patch' : 'post'](apiEndpoint, formData);
 
       if (response.data.status === 'success') {
         setErrorMessage('');
-        setSuccessMessage('Documents uploaded successfully!');
+        setSuccessMessage(`Document details ${prnParam ? 'updated' : 'submitted'} successfully!`);
         setTimeout(() => {
           setSuccessMessage('');
-          setFormData(initialFormData);
+          if (prnParam) window.location.href = '/documents';
+          else {
+            setFormData(initialFormData);
 
-          // Clear file inputs
-          aadharRef.current.value = '';
-          nationalityRef.current.value = '';
-          domicileRef.current.value = '';
-          sscRef.current.value = '';
-          hscRef.current.value = '';
-          medicalFitnessRef.current.value = '';
-          photoRef.current.value = '';
-        }, 2000);
+            // Clear file inputs
+            aadharRef.current.value = '';
+            nationalityRef.current.value = '';
+            domicileRef.current.value = '';
+            sscRef.current.value = '';
+            hscRef.current.value = '';
+            medicalFitnessRef.current.value = '';
+            photoRef.current.value = '';
+          }
+        }, 1000);
       } else {
-        setErrorMessage(`Document upload failed: ${response.data.message}`);
+        setErrorMessage(
+          `Document ${prnParam ? 'update' : 'submission'} failed: ${response.data.message}`
+        );
       }
     } catch (error) {
-      if (error.response) {
-        if (error.response && error.response.status === 399) {
-          setErrorMessage('Student entry with the provided PRN already exists.');
-        } else if (error.response && error.response.status === 400) {
-          setErrorMessage('Student with the provided PRN does not exist.');
-        } else {
-          setErrorMessage('An error occurred during document upload');
-        }
+      if (error.response && error.response.status === 399) {
+        setErrorMessage('Student entry with the provided PRN already exists.');
+      } else if (error.response && error.response.status === 400) {
+        setErrorMessage('Student with the provided PRN does not exist.');
       } else {
-        setErrorMessage('Network error: Unable to connect to the server.');
+        setErrorMessage(`An error occurred during document ${prnParam ? 'update' : 'submission'}.`);
       }
     } finally {
       setLoading(false);
     }
   };
+
+  let buttonText = 'Submit Documents';
+  if (prnParam) {
+    buttonText = 'Update Documents';
+  }
 
   return (
     <Container>
@@ -118,99 +174,108 @@ const DocumentForm = () => {
                 fullWidth
                 value={formData.PRN}
                 onChange={handleInputChange}
+                error={!!formErrors.PRN}
                 required
+                disabled={!!prnParam}
               />
             </Grid>
 
             {/* Aadhar */}
             <Grid item xs={6}>
-              <Typography variant="subtitle1">Aadhar</Typography>
-              <input
+              <TextField
+                fullWidth
+                variant="outlined"
                 type="file"
-                accept=".pdf, .jpg, .jpeg, .png"
+                label="Aadhar"
                 onChange={(e) => handleFileChange(e, 'aadhar')}
-                required
-                ref={aadharRef}
+                error={!!formErrors.aadhar}
+                required={!prnParam}
+                InputLabelProps={{ shrink: true }}
               />
             </Grid>
 
-            {/* Nationality */}
+            {/* Nationality Certificate */}
             <Grid item xs={6}>
-              <Typography variant="subtitle1">Nationality Certificate</Typography>
-              <input
+              <TextField
+                fullWidth
+                variant="outlined"
                 type="file"
-                accept=".pdf, .jpg, .jpeg, .png"
+                label="Nationality Certificate"
                 onChange={(e) => handleFileChange(e, 'nationality')}
-                required
-                ref={nationalityRef}
+                error={!!formErrors.nationality}
+                InputLabelProps={{ shrink: true }}
               />
             </Grid>
 
+            {/* Domicile Certificate */}
             <Grid item xs={6}>
-              <Typography variant="subtitle1">Domicile Certificate</Typography>
-              <input
+              <TextField
+                fullWidth
+                variant="outlined"
                 type="file"
-                accept=".pdf, .jpg, .jpeg, .png"
+                label="Domicile Certificate"
                 onChange={(e) => handleFileChange(e, 'domicile')}
-                required
-                ref={domicileRef}
+                error={!!formErrors.domicile}
+                InputLabelProps={{ shrink: true }}
               />
             </Grid>
 
+            {/* SSC Certificate */}
             <Grid item xs={6}>
-              <Typography variant="subtitle1">SSC Certificate</Typography>
-              <input
+              <TextField
+                fullWidth
+                variant="outlined"
                 type="file"
-                accept=".pdf, .jpg, .jpeg, .png"
+                label="SSC Certificate"
                 onChange={(e) => handleFileChange(e, 'ssc')}
-                required
-                ref={sscRef}
+                error={!!formErrors.ssc}
+                InputLabelProps={{ shrink: true }}
               />
             </Grid>
 
+            {/* HSC Certificate */}
             <Grid item xs={6}>
-              <Typography variant="subtitle1">HSC Certificate</Typography>
-              <input
+              <TextField
+                fullWidth
+                variant="outlined"
                 type="file"
-                accept=".pdf, .jpg, .jpeg, .png"
+                label="HSC Certificate"
                 onChange={(e) => handleFileChange(e, 'hsc')}
-                required
-                ref={hscRef}
+                error={!!formErrors.hsc}
+                InputLabelProps={{ shrink: true }}
               />
             </Grid>
 
+            {/* Medical Fitness Certificate */}
             <Grid item xs={6}>
-              <Typography variant="subtitle1">Medical Fitness Certificate</Typography>
-              <input
+              <TextField
+                fullWidth
+                variant="outlined"
                 type="file"
-                accept=".pdf, .jpg, .jpeg, .png"
+                label="Medical Fitness Certificate"
                 onChange={(e) => handleFileChange(e, 'medicalfitness')}
-                required
-                ref={medicalFitnessRef}
+                error={!!formErrors.medicalfitness}
+                InputLabelProps={{ shrink: true }}
               />
             </Grid>
 
+            {/* Photo */}
             <Grid item xs={6}>
-              <Typography variant="subtitle1">Photo</Typography>
-              <input
+              <TextField
+                fullWidth
+                variant="outlined"
                 type="file"
-                accept=".pdf, .jpg, .jpeg, .png"
+                label="Photo"
                 onChange={(e) => handleFileChange(e, 'photo')}
-                required
-                ref={photoRef}
+                error={!!formErrors.photo}
+                InputLabelProps={{ shrink: true }}
               />
             </Grid>
+
             {/* Verified */}
             <Grid item xs={6}>
               <FormControlLabel
-                control={
-                  <Switch
-                    checked={formData.verified}
-                    onChange={() =>
-                      setFormData((prevData) => ({ ...prevData, verified: !prevData.verified }))
-                    }
-                  />
-                }
+                control={<Switch checked={formData.verified} onChange={handleVerifiedChange} />}
                 label="Verified"
               />
             </Grid>
@@ -225,6 +290,7 @@ const DocumentForm = () => {
                 value={formData.verifiedby}
                 onChange={handleInputChange}
                 required
+                disabled={!formData.verified}
               />
             </Grid>
           </Grid>
@@ -237,7 +303,7 @@ const DocumentForm = () => {
             style={{ marginTop: '20px' }}
             disabled={loading}
           >
-            {loading ? 'Uploading...' : 'Upload Documents'}
+            {loading ? 'Uploading...' : buttonText}
           </Button>
 
           {/* Display Success or Error Messages */}
