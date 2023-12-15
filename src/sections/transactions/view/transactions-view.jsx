@@ -7,18 +7,20 @@ import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputAdornment from '@mui/material/InputAdornment';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
+import { emptyRows } from '../utils';
 import TableNoData from '../table-no-data';
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
 import TableEmptyRows from '../table-empty-rows';
-import UserTableToolbar from '../user-table-toolbar';
-import { emptyRows, applyFilter, getComparator } from '../utils';
+// import UserTableToolbar from '../user-table-toolbar';
 
 // ----------------------------------------------------------------------
 
@@ -26,8 +28,8 @@ export default function TransactionsView() {
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
-  const [orderBy, setOrderBy] = useState('PRN'); // Assuming 'PRN' is the default ordering column
-  const [filterName, setFilterName] = useState('');
+  const [orderBy, setOrderBy] = useState('PRN');
+  const [filterPRN, setFilterPRN] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [transactions, setTransactions] = useState([]);
 
@@ -72,10 +74,10 @@ export default function TransactionsView() {
     setPage(0);
   };
 
-  const handleFilterByName = (event) => {
+  const handleFilterByPRN = (event) => {
     const { value } = event.target;
     setPage(0);
-    setFilterName(value);
+    setFilterPRN(value);
   };
 
   const handleNewUserClick = () => {
@@ -97,12 +99,15 @@ export default function TransactionsView() {
     fetchData();
   }, []);
 
-  const dataFiltered = applyFilter({
-    inputData: transactions,
-    comparator: getComparator(order, orderBy),
-    filterName,
-  });
+  // Apply filter to data
+  const dataFiltered = transactions
+    .filter((row) => row.PRN.toLowerCase().includes(filterPRN.toLowerCase()))
+    .sort((a, b) => {
+      const isAsc = order === 'asc';
+      return (isAsc ? a[orderBy] > b[orderBy] : a[orderBy] < b[orderBy]) ? 1 : -1;
+    });
 
+  // Check if there are no results
   const notFound = dataFiltered.length === 0;
 
   return (
@@ -121,10 +126,20 @@ export default function TransactionsView() {
       </Stack>
 
       <Card>
-        <UserTableToolbar
-          numSelected={selected.length}
-          filterName={filterName}
-          onFilterName={handleFilterByName}
+        {/* UserTableToolbar component */}
+        <OutlinedInput
+          value={filterPRN}
+          onChange={handleFilterByPRN}
+          sx={{ margin: 2.7 }}
+          placeholder="Search PRN..."
+          startAdornment={
+            <InputAdornment position="start">
+              <Iconify
+                icon="eva:search-fill"
+                sx={{ color: 'text.disabled', width: 20, height: 20 }}
+              />
+            </InputAdornment>
+          }
         />
 
         <Scrollbar>
@@ -146,8 +161,8 @@ export default function TransactionsView() {
                   { id: 'library', label: 'Library' },
                   { id: 'other', label: 'Other' },
                   { id: 'cautionmoney', label: 'CautionMoney' },
-                  { id: 'signature', label: 'Signature' },
                   { id: 'total', label: 'Total(₹)' },
+                  { id: 'signature', label: 'Signature' },
                   { id: '' },
                 ]}
               />
@@ -168,7 +183,6 @@ export default function TransactionsView() {
                       library={row.library}
                       other={row.other}
                       cautionmoney={row.cautionmoney}
-                      signature={row.signature}
                       total={
                         row.scholarship +
                         row.tuitionfees +
@@ -178,6 +192,7 @@ export default function TransactionsView() {
                         row.other +
                         row.cautionmoney
                       }
+                      signature={row.signature}
                       selected={selected.indexOf(row.PRN) !== -1}
                       handleClick={(event) => handleClick(event, row.PRN)}
                     />
@@ -188,7 +203,7 @@ export default function TransactionsView() {
                   emptyRows={emptyRows(page, rowsPerPage, transactions.length)}
                 />
 
-                {notFound && <TableNoData query={filterName} />}
+                {notFound && <TableNoData query={filterPRN} />}
               </TableBody>
             </Table>
           </TableContainer>

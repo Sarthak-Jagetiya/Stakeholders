@@ -6,9 +6,13 @@ import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
 
 export default function TransactionForm() {
   const location = useLocation();
@@ -26,6 +30,10 @@ export default function TransactionForm() {
     other: '',
     cautionmoney: '',
     signature: '',
+    academicyear: '',
+    yearname: '',
+    remark: '',
+    date: '',
   };
 
   const [formData, setFormData] = useState(initialFormData);
@@ -33,6 +41,13 @@ export default function TransactionForm() {
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+
+  const getCurrentYear = () => new Date().getFullYear();
+  const academicYearOptions = Array.from({ length: 6 }, (_, index) => {
+    const startYear = getCurrentYear() - index;
+    const endYear = startYear + 1;
+    return `${startYear.toString()}-${endYear.toString().slice(-2)}`;
+  });
 
   useEffect(() => {
     // Fetch existing data if PRN is present
@@ -66,7 +81,9 @@ export default function TransactionForm() {
     // Input Validation
     const errors = {};
     Object.keys(formData).forEach((key) => {
-      if (!formData[key] && key !== 'scholarship') {
+      if (key !== 'date' && key !== 'signature' && parseFloat(formData[key]) < 0) {
+        errors[key] = `${key.charAt(0).toUpperCase() + key.slice(1)} cannot be negative`;
+      } else if (!formData[key] && key !== 'scholarship') {
         errors[key] = `${key.charAt(0).toUpperCase() + key.slice(1)} is required`;
       }
     });
@@ -272,6 +289,81 @@ export default function TransactionForm() {
                 onChange={handleChange}
                 error={!!formErrors.cautionmoney}
                 helperText={formErrors.cautionmoney}
+                required
+              />
+            </Grid>
+
+            {/* Remark */}
+            <Grid item xs={6}>
+              <TextField
+                name="remark"
+                label="Remark"
+                variant="outlined"
+                fullWidth
+                value={formData.remark}
+                onChange={handleChange}
+                error={!!formErrors.remark}
+                helperText={formErrors.remark}
+                required
+              />
+            </Grid>
+
+            {/* Academic Year */}
+            <Grid item xs={6}>
+              <FormControl fullWidth variant="outlined">
+                <InputLabel>Academic Year</InputLabel>
+                <Select
+                  name="academicyear"
+                  value={formData.academicyear}
+                  onChange={handleChange}
+                  label="Academic Year"
+                  error={!!formErrors.academicyear}
+                  required
+                >
+                  {academicYearOptions.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+
+            {/* Year Name */}
+            <Grid item xs={6}>
+              <FormControl fullWidth variant="outlined">
+                <InputLabel>Year Name</InputLabel>
+                <Select
+                  name="yearname"
+                  value={formData.yearname}
+                  onChange={handleChange}
+                  label="Year Name"
+                  error={!!formErrors.yearname}
+                  required
+                >
+                  <MenuItem value="1st Year">1st Year</MenuItem>
+                  <MenuItem value="2nd Year">2nd Year</MenuItem>
+                  <MenuItem value="3rd Year">3rd Year</MenuItem>
+                  <MenuItem value="4th Year">4th Year</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+
+            {/* Date */}
+            <Grid item xs={6}>
+              <TextField
+                name="date"
+                label="Date"
+                variant="outlined"
+                fullWidth
+                type="date"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                value={formData.date}
+                onChange={handleChange}
+                error={!!formErrors.date}
+                helperText={formErrors.date}
                 required
               />
             </Grid>

@@ -8,7 +8,7 @@ export default function ProductsPage() {
   return (
     <>
       <Helmet>
-        <title> Employee Enroll Form </title>
+        <title> Employee | LG College </title>
       </Helmet>
 
       <EmployeeView />

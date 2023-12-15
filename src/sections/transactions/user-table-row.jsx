@@ -68,9 +68,14 @@ export default function UserTableRow({
         <TableCell align="center">{library}</TableCell>
         <TableCell align="center">{other}</TableCell>
         <TableCell align="center">{cautionmoney}</TableCell>
-        <TableCell align="center">{signature}</TableCell>
         <TableCell align="center">
           <Label color="success">{total}</Label>
+        </TableCell>
+        <TableCell
+          align="center"
+          style={{ textDecoration: 'underline', textDecorationThickness: 'thick' }}
+        >
+          {signature}
         </TableCell>
 
         <TableCell align="right">

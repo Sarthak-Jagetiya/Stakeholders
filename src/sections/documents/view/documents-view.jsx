@@ -8,18 +8,20 @@ import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputAdornment from '@mui/material/InputAdornment';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
+import { emptyRows } from '../utils';
 import TableNoData from '../table-no-data';
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
 import TableEmptyRows from '../table-empty-rows';
-import UserTableToolbar from '../user-table-toolbar';
-import { emptyRows, applyFilter, getComparator } from '../utils';
+// import UserTableToolbar from '../user-table-toolbar';
 
 export default function DocumentsView() {
   const [page, setPage] = useState(0);
@@ -84,7 +86,6 @@ export default function DocumentsView() {
     const fetchData = async () => {
       try {
         const response = await axios.get('http://localhost:3000/api/document/');
-        console.log(response.data.data);
         setDocuments(response.data.data);
       } catch (error) {
         console.error('Error fetching documents data:', error.message);
@@ -95,12 +96,15 @@ export default function DocumentsView() {
     fetchData();
   }, []);
 
-  const dataFiltered = applyFilter({
-    inputData: documents,
-    comparator: getComparator(order, orderBy),
-    filterPRN,
-  });
+  // Apply filter to data
+  const dataFiltered = documents
+    .filter((row) => row.PRN.toLowerCase().includes(filterPRN.toLowerCase()))
+    .sort((a, b) => {
+      const isAsc = order === 'asc';
+      return (isAsc ? a[orderBy] > b[orderBy] : a[orderBy] < b[orderBy]) ? 1 : -1;
+    });
 
+  // Check if there are no results
   const notFound = dataFiltered.length === 0;
 
   return (
@@ -120,10 +124,20 @@ export default function DocumentsView() {
       </Stack>
 
       <Card>
-        <UserTableToolbar
-          numSelected={selected.length}
-          filterPRN={filterPRN}
-          onFilterName={handleFilterByPRN}
+        {/* UserTableToolbar component */}
+        <OutlinedInput
+          value={filterPRN}
+          onChange={handleFilterByPRN}
+          sx={{ margin: 2.7 }}
+          placeholder="Search PRN..."
+          startAdornment={
+            <InputAdornment position="start">
+              <Iconify
+                icon="eva:search-fill"
+                sx={{ color: 'text.disabled', width: 20, height: 20 }}
+              />
+            </InputAdornment>
+          }
         />
 
         <Scrollbar>

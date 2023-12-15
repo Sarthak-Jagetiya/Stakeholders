@@ -32,31 +32,56 @@ export default function RegisterView() {
     cetmarks: '',
     scholarship: '0',
     feestructure: '',
+    aadhar: '',
+    religion: '',
   };
 
   const [formData, setFormData] = useState(initialFormData);
   const [formErrors, setFormErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [courseOptions, setCourseOptions] = useState([]);
+  const [stateOptions, setStateOptions] = useState([]);
+  const [religionOptions, setReligionOptions] = useState([]);
+  const [casteCategoryOptions, setCasteCategoryOptions] = useState([]);
+  const [categoryOptions, setCategoryOptions] = useState([]);
 
-  const categoryOptions = [
-    'General_OPEN',
-    'EBC_SEBC_EWS',
-    'OBC',
-    'VJNT_NT_SBC_NT1_NT2_NT3',
-    'SC_ST',
-    'Inst_mgmt',
-  ];
+  const getCurrentYear = () => new Date().getFullYear();
+  const academicYearOptions = Array.from({ length: 6 }, (_, index) => {
+    const startYear = getCurrentYear() - index;
+    const endYear = startYear + 1;
+    return `${startYear.toString()}-${endYear.toString().slice(-2)}`;
+  });
+
+  const fetchCategoryOptions = async () => {
+    const currentYear = new Date().getFullYear();
+    const year = currentYear + (currentYear + 1).toString().slice(-2);
+    const pretext = `FS${year}`;
+    try {
+      const response = await axios.get('http://localhost:3000/api/feestructure/unique');
+      if (response.data.status === 'success') {
+        setCategoryOptions(
+          response.data.data.data.map((option) => ({
+            label: option.category,
+            value: `${pretext}${option.code.slice(-1)}`,
+          }))
+        );
+      }
+    } catch (error) {
+      console.error('Failed to fetch category options:', error);
+    }
+  };
 
   const generatePRN = async () => {
     try {
       const response = await axios.get('http://localhost:3000/api/student/lastStudent/');
       if (response.data.status === 'success') {
         const newSN = String(Number(response.data.data.slice(-3)) + 1).padStart(3, '0');
-        const currentYear = new Date().getFullYear();
+        const currYear = new Date().getFullYear();
+
         setFormData((prevFormData) => ({
           ...prevFormData,
-          PRN: `BPT${String(currentYear) + String(newSN)}`,
+          PRN: `BPT${String(currYear) + String(newSN)}`,
         }));
       }
     } catch (error) {
@@ -64,8 +89,41 @@ export default function RegisterView() {
     }
   };
 
+  const fetchLocalData = async () => {
+    try {
+      const courses = await axios.get('./courses.json');
+      const states = await axios.get('./states.json');
+      const religions = await axios.get('./religions.json');
+      const casteCategories = await axios.get('./casteCategories.json');
+
+      setCourseOptions(
+        courses.data.courses.map((course) => ({
+          label: course.courseName,
+          value: course.courseName,
+        }))
+      );
+      setStateOptions(
+        states.data.map((state) => ({
+          label: state.name,
+          value: state.name,
+        }))
+      );
+      setReligionOptions(
+        religions.data.map((religion) => ({
+          label: religion.name,
+          value: religion.name,
+        }))
+      );
+      setCasteCategoryOptions(casteCategories.data.casteCategories);
+    } catch (error) {
+      console.error('Failed to fetch Local data');
+    }
+  };
+
   useEffect(() => {
     generatePRN();
+    fetchLocalData();
+    fetchCategoryOptions();
   }, []);
 
   const validateForm = () => {
@@ -92,6 +150,11 @@ export default function RegisterView() {
       valid = false;
     }
 
+    if (!formData.religion) {
+      errors.religion = 'Religion is required';
+      valid = false;
+    }
+
     if (!formData.phone.match(/^[0-9]+$/) || formData.phone.length !== 10) {
       errors.phone = 'Phone should only contain 10 digits numbers';
       valid = false;
@@ -112,10 +175,10 @@ export default function RegisterView() {
       valid = false;
     }
 
-    if (!formData.admissionyear.match(/^[0-9]+$/)) {
-      errors.admissionyear = 'Admission Year should only contain numbers';
-      valid = false;
-    }
+    // if (!formData.admissionyear.match(/^[0-9]+$/)) {
+    //   errors.admissionyear = 'Admission Year should only contain numbers';
+    //   valid = false;
+    // }
 
     if (!formData.dateofadmission) {
       errors.dateofadmission = 'Date of Admission is required';
@@ -129,6 +192,11 @@ export default function RegisterView() {
 
     if (!formData.studentcategory) {
       errors.studentcategory = 'Student Category is required';
+      valid = false;
+    }
+
+    if (!formData.aadhar.match(/^\d{12}$/)) {
+      errors.aadhar = 'Aadhar should be of 12-digits';
       valid = false;
     }
 
@@ -214,20 +282,21 @@ export default function RegisterView() {
                 value={formData.PRN}
                 onChange={handleChange}
                 error={!!formErrors.PRN}
-                helperText={formErrors.PRN}
+                helpertext={formErrors.PRN}
                 disabled
+                required
               />
             </Grid>
             <Grid item xs={6}>
               <TextField
                 name="name"
-                label="Name"
+                label="Full Name"
                 variant="outlined"
                 fullWidth
                 value={formData.name}
                 onChange={handleChange}
                 error={!!formErrors.name}
-                helperText={formErrors.name}
+                helpertext={formErrors.name}
                 required
               />
             </Grid>
@@ -261,7 +330,7 @@ export default function RegisterView() {
                 value={formData.dob}
                 onChange={handleChange}
                 error={!!formErrors.dob}
-                helperText={formErrors.dob}
+                helpertext={formErrors.dob}
                 required
               />
             </Grid>
@@ -274,7 +343,7 @@ export default function RegisterView() {
                 value={formData.phone}
                 onChange={handleChange}
                 error={!!formErrors.phone}
-                helperText={formErrors.phone}
+                helpertext={formErrors.phone}
                 required
               />
             </Grid>
@@ -287,7 +356,7 @@ export default function RegisterView() {
                 value={formData.parentphone}
                 onChange={handleChange}
                 error={!!formErrors.parentphone}
-                helperText={formErrors.parentphone}
+                helpertext={formErrors.parentphone}
                 required
               />
             </Grid>
@@ -300,35 +369,49 @@ export default function RegisterView() {
                 value={formData.email}
                 onChange={handleChange}
                 error={!!formErrors.email}
-                helperText={formErrors.email}
+                helpertext={formErrors.email}
                 required
               />
             </Grid>
             <Grid item xs={6}>
-              <TextField
-                name="course"
-                label="Course"
-                variant="outlined"
-                fullWidth
-                value={formData.course}
-                onChange={handleChange}
-                error={!!formErrors.course}
-                helperText={formErrors.course}
-                required
-              />
+              <FormControl fullWidth variant="outlined">
+                <InputLabel>Course</InputLabel>
+                <Select
+                  name="course"
+                  value={formData.course}
+                  onChange={handleChange}
+                  label="Course"
+                  error={!!formErrors.course}
+                  helpertext={formErrors.course}
+                  required
+                >
+                  {courseOptions.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Grid>
             <Grid item xs={6}>
-              <TextField
-                name="admissionyear"
-                label="Admission Year"
-                variant="outlined"
-                fullWidth
-                value={formData.admissionyear}
-                onChange={handleChange}
-                error={!!formErrors.admissionyear}
-                helperText={formErrors.admissionyear}
-                required
-              />
+              <FormControl fullWidth variant="outlined">
+                <InputLabel>Academic Year</InputLabel>
+                <Select
+                  name="admissionyear"
+                  value={formData.admissionyear}
+                  onChange={handleChange}
+                  label="Admission Year"
+                  error={!!formErrors.admissionyear}
+                  helpertext={formErrors.admissionyear}
+                  required
+                >
+                  {academicYearOptions.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Grid>
             <Grid item xs={6}>
               <TextField
@@ -343,35 +426,102 @@ export default function RegisterView() {
                 value={formData.dateofadmission}
                 onChange={handleChange}
                 error={!!formErrors.dateofadmission}
-                helperText={formErrors.dateofadmission}
+                helpertext={formErrors.dateofadmission}
                 required
               />
             </Grid>
             <Grid item xs={6}>
+              <FormControl fullWidth variant="outlined">
+                <InputLabel>Domicile State</InputLabel>
+                <Select
+                  name="domicilestate"
+                  value={formData.domicilestate}
+                  onChange={handleChange}
+                  label="Domicile State"
+                  error={!!formErrors.domicilestate}
+                  helpertext={formErrors.domicilestate}
+                  required
+                >
+                  {stateOptions.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={6}>
+              <FormControl fullWidth variant="outlined">
+                <InputLabel>Caste Category</InputLabel>
+                <Select
+                  name="studentcategory"
+                  value={formData.studentcategory}
+                  onChange={handleChange}
+                  label="Student Category"
+                  error={!!formErrors.studentcategory}
+                  helpertext={formErrors.studentcategory}
+                  required
+                >
+                  {casteCategoryOptions.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={6}>
               <TextField
-                name="domicilestate"
-                label="Domicile State"
+                name="aadhar"
+                label="Aadhar"
                 variant="outlined"
                 fullWidth
-                value={formData.domicilestate}
+                value={formData.aadhar}
                 onChange={handleChange}
-                error={!!formErrors.domicilestate}
-                helperText={formErrors.domicilestate}
+                error={!!formErrors.aadhar}
+                helpertext={formErrors.aadhar}
                 required
               />
             </Grid>
             <Grid item xs={6}>
-              <TextField
-                name="studentcategory"
-                label="Student Category"
-                variant="outlined"
-                fullWidth
-                value={formData.studentcategory}
-                onChange={handleChange}
-                error={!!formErrors.studentcategory}
-                helperText={formErrors.studentcategory}
-                required
-              />
+              <FormControl fullWidth variant="outlined">
+                <InputLabel>Religion</InputLabel>
+                <Select
+                  name="religion"
+                  value={formData.religion}
+                  onChange={handleChange}
+                  label="Religion"
+                  error={!!formErrors.religion}
+                  helpertext={formErrors.religion}
+                  required
+                >
+                  {religionOptions.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={6}>
+              <FormControl fullWidth variant="outlined">
+                <InputLabel>Fee Structure</InputLabel>
+                <Select
+                  name="feestructure"
+                  value={formData.feestructure}
+                  onChange={handleChange}
+                  label="Fee Structure"
+                  error={!!formErrors.feestructure}
+                  helpertext={formErrors.feestructure}
+                  required
+                >
+                  {categoryOptions.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Grid>
             <Grid item xs={6}>
               <FormControl fullWidth variant="outlined">
@@ -382,11 +532,12 @@ export default function RegisterView() {
                   onChange={handleChange}
                   label="Admission Category"
                   error={!!formErrors.admissioncategory}
+                  helpertext={formErrors.admissioncategory}
                   required
                 >
                   {categoryOptions.map((option) => (
-                    <MenuItem key={option} value={option}>
-                      {option}
+                    <MenuItem key={option.label} value={option.label}>
+                      {option.label}
                     </MenuItem>
                   ))}
                 </Select>
@@ -402,7 +553,7 @@ export default function RegisterView() {
                 value={formData.cetmarks}
                 onChange={handleChange}
                 error={!!formErrors.cetmarks}
-                helperText={formErrors.cetmarks}
+                helpertext={formErrors.cetmarks}
                 required
               />
             </Grid>
@@ -421,25 +572,6 @@ export default function RegisterView() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={6}>
-              <FormControl fullWidth variant="outlined">
-                <InputLabel>Fee Structure</InputLabel>
-                <Select
-                  name="feestructure"
-                  value={formData.feestructure}
-                  onChange={handleChange}
-                  label="Fee Structure"
-                  error={!!formErrors.feestructure}
-                  required
-                >
-                  {categoryOptions.map((option) => (
-                    <MenuItem key={option} value={option}>
-                      {option}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
             <Grid item xs={12}>
               <TextField
                 name="address"
@@ -451,7 +583,7 @@ export default function RegisterView() {
                 value={formData.address}
                 onChange={handleChange}
                 error={!!formErrors.address}
-                helperText={formErrors.address}
+                helpertext={formErrors.address}
                 required
               />
             </Grid>

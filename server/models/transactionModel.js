@@ -43,6 +43,22 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(10),
         allowNull: false,
       },
+      academicyear: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      yearname: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      remark: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      date: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
     },
     {
       tableName: 'transactions',

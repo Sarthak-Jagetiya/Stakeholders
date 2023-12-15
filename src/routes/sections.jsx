@@ -11,9 +11,16 @@ export const ProductsPage = lazy(() => import('src/pages/products'));
 export const RegisterPage = lazy(() => import('src/pages/register'));
 export const DocumentPage = lazy(() => import('src/pages/document'));
 export const DocumentsPage = lazy(() => import('src/pages/documents'));
+export const ImpDocumentPage = lazy(() => import('src/pages/impdocument'));
+export const ImpDocumentsPage = lazy(() => import('src/pages/impdocuments'));
 export const TransactionPage = lazy(() => import('src/pages/transaction'));
 export const TransactionsPage = lazy(() => import('src/pages/transactions'));
+export const FeePage = lazy(() => import('src/pages/fee'));
+export const FeeStructurePage = lazy(() => import('src/pages/feeStructure'));
+export const FeeStructureTablePage = lazy(() => import('src/pages/feeStructureTable'));
 export const EmployeePage = lazy(() => import('src/pages/employee'));
+export const TaskPage = lazy(() => import('src/pages/task'));
+export const TasksPage = lazy(() => import('src/pages/tasks'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 
 // ----------------------------------------------------------------------
@@ -29,15 +36,22 @@ export default function Router() {
         </DashboardLayout>
       ),
       children: [
-        { element: <IndexPage />, index: true },
+        { element: <FeePage />, index: true },
         { path: 'user', element: <UserPage /> },
         { path: 'products', element: <ProductsPage /> },
         { path: 'register', element: <RegisterPage /> },
+        { path: 'fee', element: <FeePage /> },
+        { path: 'feestructure', element: <FeeStructurePage /> },
+        { path: 'feestructuretable', element: <FeeStructureTablePage /> },
         { path: 'document', element: <DocumentPage /> },
         { path: 'documents', element: <DocumentsPage /> },
-        { path: `transaction`, element: <TransactionPage /> },
+        { path: 'impdocument', element: <ImpDocumentPage /> },
+        { path: 'impdocuments', element: <ImpDocumentsPage /> },
+        { path: 'transaction', element: <TransactionPage /> },
         { path: 'transactions', element: <TransactionsPage /> },
         { path: 'employee', element: <EmployeePage /> },
+        { path: 'task', element: <TaskPage /> },
+        { path: 'tasks', element: <TasksPage /> },
         { path: 'blog', element: <BlogPage /> },
       ],
     },

@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
         allowNull: false,
       },
-      adhar: {
+      aadhar: {
         type: DataTypes.TEXT,
         allowNull: false,
       },

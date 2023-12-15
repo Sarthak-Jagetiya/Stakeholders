@@ -1,0 +1,29 @@
+{
+  "college": "College of Physiotherapy",
+  "courses": [
+    {
+      "courseCode": "PT101",
+      "courseName": "Introduction to Physiotherapy",
+      "duration": "4 years",
+      "degree": "Bachelor of Physiotherapy (BPT)"
+    },
+    {
+      "courseCode": "PT201",
+      "courseName": "Advanced Musculoskeletal Therapy",
+      "duration": "2 years",
+      "degree": "Master of Physiotherapy (MPT) - Musculoskeletal"
+    },
+    {
+      "courseCode": "PT301",
+      "courseName": "Neurological Physiotherapy",
+      "duration": "2 years",
+      "degree": "Master of Physiotherapy (MPT) - Neurology"
+    },
+    {
+      "courseCode": "PT401",
+      "courseName": "Pediatric Physiotherapy",
+      "duration": "2 years",
+      "degree": "Master of Physiotherapy (MPT) - Pediatrics"
+    }
+  ]
+}

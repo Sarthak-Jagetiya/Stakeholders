@@ -8,7 +8,7 @@ export default function DocumentsPage() {
   return (
     <>
       <Helmet>
-        <title> Documents </title>
+        <title> Documents | LG College </title>
       </Helmet>
 
       <DocumentsView />

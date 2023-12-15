@@ -11,9 +11,24 @@ exports.getAllTransaction = catchAsync(async (req, res) => {
 });
 
 exports.getTransaction = catchAsync(async (req, res) => {
+  const prn = req.params.id;
+
   const transaction = await Transaction.findOne({
-    where: { PRN: req.params.id },
+    attributes: [
+      'PRN',
+      [sequelize.literal('SUM(scholarship)'), 'scholarship'],
+      [sequelize.literal('SUM(tuitionfees)'), 'tuitionfees'],
+      [sequelize.literal('SUM(eligibilityregistration)'), 'eligibilityregistration'],
+      [sequelize.literal('SUM(universityfees)'), 'universityfees'],
+      [sequelize.literal('SUM(library)'), 'library'],
+      [sequelize.literal('SUM(collegeexam)'), 'collegeexam'],
+      [sequelize.literal('SUM(other)'), 'other'],
+      [sequelize.literal('SUM(cautionmoney)'), 'cautionmoney'],
+    ],
+    where: { PRN: prn },
+    group: ['PRN'],
   });
+
   res.status(200).json({
     status: 'success',
     data: {

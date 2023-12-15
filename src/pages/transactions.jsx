@@ -8,7 +8,7 @@ export default function TransactionsPage() {
   return (
     <>
       <Helmet>
-        <title> Transactions </title>
+        <title> Transactions | LG College </title>
       </Helmet>
 
       <TransactionsView />

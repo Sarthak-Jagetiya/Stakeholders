@@ -8,7 +8,7 @@ export default function ProductsPage() {
   return (
     <>
       <Helmet>
-        <title> Register </title>
+        <title> Register | LG College </title>
       </Helmet>
 
       <RegisterView />

@@ -8,7 +8,7 @@ export default function ProductsPage() {
   return (
     <>
       <Helmet>
-        <title> Document Form </title>
+        <title> Document Form | LG College </title>
       </Helmet>
 
       <DocumentView />
