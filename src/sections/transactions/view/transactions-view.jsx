@@ -1,9 +1,12 @@
+import Papa from 'papaparse';
 import { useState, useEffect } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
@@ -20,9 +23,6 @@ import TableNoData from '../table-no-data';
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
 import TableEmptyRows from '../table-empty-rows';
-// import UserTableToolbar from '../user-table-toolbar';
-
-// ----------------------------------------------------------------------
 
 export default function TransactionsView() {
   const [page, setPage] = useState(0);
@@ -30,6 +30,7 @@ export default function TransactionsView() {
   const [selected, setSelected] = useState([]);
   const [orderBy, setOrderBy] = useState('PRN');
   const [filterPRN, setFilterPRN] = useState('');
+  const [filterAcademicYear, setFilterAcademicYear] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [transactions, setTransactions] = useState([]);
 
@@ -99,9 +100,24 @@ export default function TransactionsView() {
     fetchData();
   }, []);
 
-  // Apply filter to data
+  const handleFilterByAcademicYear = (event) => {
+    const selectedAcademicYear = event.target.value;
+    setPage(0);
+    setFilterAcademicYear(selectedAcademicYear);
+  };
+
+  // Get unique academic years from transactions
+  const academicYears = Array.from(
+    new Set(transactions.map((transaction) => transaction.academicyear))
+  );
+
+  // Apply filter to data, considering both PRN and Academic Year
   const dataFiltered = transactions
-    .filter((row) => row.PRN.toLowerCase().includes(filterPRN.toLowerCase()))
+    .filter(
+      (row) =>
+        row.PRN.toLowerCase().includes(filterPRN.toLowerCase()) &&
+        (!filterAcademicYear || row.academicyear === filterAcademicYear)
+    )
     .sort((a, b) => {
       const isAsc = order === 'asc';
       return (isAsc ? a[orderBy] > b[orderBy] : a[orderBy] < b[orderBy]) ? 1 : -1;
@@ -110,37 +126,89 @@ export default function TransactionsView() {
   // Check if there are no results
   const notFound = dataFiltered.length === 0;
 
+  const handleExportCSV = () => {
+    const csvData = Papa.unparse(transactions, {
+      header: true,
+      skipEmptyLines: true,
+    });
+
+    const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', 'transactions.csv');
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Transactions</Typography>
 
-        <Button
-          variant="contained"
-          color="inherit"
-          startIcon={<Iconify icon="eva:plus-fill" />}
-          onClick={handleNewUserClick}
-        >
-          New Transaction
-        </Button>
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Iconify icon="eva:download-fill" />}
+            onClick={handleExportCSV}
+            style={{ marginRight: '20px' }}
+          >
+            Export CSV
+          </Button>
+
+          <Button
+            variant="contained"
+            color="inherit"
+            startIcon={<Iconify icon="eva:plus-fill" />}
+            onClick={handleNewUserClick}
+          >
+            New Transaction
+          </Button>
+        </Stack>
       </Stack>
 
       <Card>
-        {/* UserTableToolbar component */}
-        <OutlinedInput
-          value={filterPRN}
-          onChange={handleFilterByPRN}
-          sx={{ margin: 2.7 }}
-          placeholder="Search PRN..."
-          startAdornment={
-            <InputAdornment position="start">
-              <Iconify
-                icon="eva:search-fill"
-                sx={{ color: 'text.disabled', width: 20, height: 20 }}
-              />
-            </InputAdornment>
-          }
-        />
+        <Stack direction="row" alignItems="center">
+          <OutlinedInput
+            value={filterPRN}
+            onChange={handleFilterByPRN}
+            sx={{ margin: 2.7 }}
+            placeholder="Search PRN..."
+            startAdornment={
+              <InputAdornment position="start">
+                <Iconify
+                  icon="eva:search-fill"
+                  sx={{ color: 'text.disabled', width: 20, height: 20 }}
+                />
+              </InputAdornment>
+            }
+          />
+
+          <Select
+            value={filterAcademicYear}
+            onChange={handleFilterByAcademicYear}
+            variant="outlined"
+            sx={{
+              margin: 2.7,
+              minWidth: 150,
+              marginLeft: 'auto', // This will push the Select to the right
+            }}
+            displayEmpty
+          >
+            <MenuItem value="">All Years</MenuItem>
+            {academicYears.map((year) => (
+              <MenuItem key={year} value={year}>
+                {year}
+              </MenuItem>
+            ))}
+          </Select>
+        </Stack>
 
         <Scrollbar>
           <TableContainer sx={{ overflow: 'unset' }}>
@@ -159,13 +227,21 @@ export default function TransactionsView() {
                   { id: 'eligibilityregistration', label: 'Eligibility' },
                   { id: 'universityfees', label: 'UniversityFee' },
                   { id: 'library', label: 'Library' },
+                  { id: 'collegeexam', label: 'CollegeExam' }, // Added field
                   { id: 'other', label: 'Other' },
                   { id: 'cautionmoney', label: 'CautionMoney' },
+                  { id: 'academicyear', label: 'AcademicYear' }, // Added field
+                  { id: 'yearname', label: 'YearName' }, // Added field
+                  { id: 'remark', label: 'Remark' }, // Added field
+                  { id: 'date', label: 'Date' }, // Added field
+                  { id: 'paymenttype', label: 'Type' }, // Added field
+                  { id: 'utr', label: 'UTR' }, // Added field
                   { id: 'total', label: 'Total(₹)' },
                   { id: 'signature', label: 'Signature' },
                   { id: '' },
                 ]}
               />
+
               <TableBody>
                 {dataFiltered
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
@@ -175,14 +251,22 @@ export default function TransactionsView() {
                       avatarUrl={`/assets/images/avatars/avatar_${
                         Math.floor(Math.random() * 25) + 1
                       }.jpg`}
+                      id={row.id}
                       PRN={row.PRN}
                       scholarship={row.scholarship}
                       tuitionfees={row.tuitionfees}
                       eligibilityregistration={row.eligibilityregistration}
                       universityfees={row.universityfees}
                       library={row.library}
+                      collegeexam={row.collegeexam} // Added field
                       other={row.other}
                       cautionmoney={row.cautionmoney}
+                      academicyear={row.academicyear} // Added field
+                      yearname={row.yearname} // Added field
+                      remark={row.remark} // Added field
+                      date={row.date} // Added field
+                      paymenttype={row.paymenttype} // Added field
+                      utr={row.utr ? row.utr : '―'} // Added field
                       total={
                         row.scholarship +
                         row.tuitionfees +

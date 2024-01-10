@@ -40,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       signature: {
-        type: DataTypes.STRING(10),
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       academicyear: {
@@ -58,6 +58,14 @@ module.exports = (sequelize, DataTypes) => {
       date: {
         type: DataTypes.DATE,
         allowNull: false,
+      },
+      paymenttype: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      utr: {
+        type: DataTypes.TEXT,
+        allowNull: true,
       },
     },
     {

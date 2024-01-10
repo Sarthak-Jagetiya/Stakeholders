@@ -11,7 +11,18 @@ exports.getAllTransaction = catchAsync(async (req, res) => {
 });
 
 exports.getTransaction = catchAsync(async (req, res) => {
-  const prn = req.params.id;
+  const transaction = await Transaction.findOne({ where: { id: req.params.id } });
+  res.status(200).json({
+    status: 'success',
+    results: transaction.length,
+    data: {
+      data: transaction,
+    },
+  });
+});
+
+exports.getTransactionSum = catchAsync(async (req, res) => {
+  const PRN = req.params.id;
 
   const transaction = await Transaction.findOne({
     attributes: [
@@ -24,8 +35,15 @@ exports.getTransaction = catchAsync(async (req, res) => {
       [sequelize.literal('SUM(collegeexam)'), 'collegeexam'],
       [sequelize.literal('SUM(other)'), 'other'],
       [sequelize.literal('SUM(cautionmoney)'), 'cautionmoney'],
+      'signature',
+      'academicyear',
+      'yearname',
+      'remark',
+      'date',
+      'paymenttype',
+      'utr',
     ],
-    where: { PRN: prn },
+    where: { PRN: PRN },
     group: ['PRN'],
   });
 
@@ -55,7 +73,7 @@ exports.createTransaction = catchAsync(async (req, res) => {
 
 exports.deleteTransaction = catchAsync(async (req, res) => {
   const transaction = Transaction.destroy({
-    where: { PRN: req.params.id },
+    where: { id: req.params.id },
   });
   res.status(204).json({
     status: 'success',
@@ -65,10 +83,10 @@ exports.deleteTransaction = catchAsync(async (req, res) => {
 
 exports.updateTransaction = catchAsync(async (req, res) => {
   const doc = await Transaction.update(req.body, {
-    where: { PRN: req.params.id },
+    where: { id: req.params.id },
   });
   const transaction = await Transaction.findOne({
-    where: { PRN: req.params.id },
+    where: { id: req.params.id },
   });
   res.status(200).json({
     status: 'success',

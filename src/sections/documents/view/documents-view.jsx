@@ -152,15 +152,30 @@ export default function DocumentsView() {
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
                   { id: 'PRN', label: 'PRN' },
+                  { id: 'cetForm', label: 'CETForm' },
+                  { id: 'neetScoreCard', label: 'NEETScorecard' },
+                  { id: 'sscMarksheet', label: 'SSCMarksheet' },
+                  { id: 'sscCertificate', label: 'SSCCertificate' },
+                  { id: 'hscMarksheet', label: 'HSCMarksheet' },
+                  { id: 'hscCertificate', label: 'HSCCertificate' },
                   { id: 'aadhar', label: 'Aadhar' },
                   { id: 'nationality', label: 'Nationality' },
                   { id: 'domicile', label: 'Domicile' },
-                  { id: 'ssc', label: 'SSC' },
-                  { id: 'hsc', label: 'HSC' },
-                  { id: 'medicalfitness', label: 'MedicalFitness' },
+                  { id: 'medicalFitness', label: 'MedicalFitness' },
                   { id: 'photo', label: 'Photo' },
+                  { id: 'caste', label: 'Caste' },
+                  { id: 'casteValidity', label: 'CasteValidity' },
+                  { id: 'parentIncome', label: 'ParentIncome' },
+                  { id: 'nonCreamyLayer', label: 'NonCreamyLayer' },
+                  { id: 'tc', label: 'TC' },
+                  { id: 'educationGapAffidavit', label: 'EducationGapAffidavit' },
+                  { id: 'ews', label: 'EWS' },
+                  { id: 'minorityDeclaration', label: 'MinorityDeclaration' },
+                  { id: 'disability', label: 'Disability' },
+                  { id: 'migration', label: 'Migration' },
+                  { id: 'other', label: 'Other' },
                   { id: 'verified', label: 'Verified', align: 'center' },
-                  { id: 'verifiedby', label: 'Signature' },
+                  { id: 'verifiedBy', label: 'Signature' },
                   { id: '' },
                 ]}
               />
@@ -174,15 +189,30 @@ export default function DocumentsView() {
                         Math.floor(Math.random() * 25) + 1
                       }.jpg`}
                       PRN={row.PRN}
+                      cetForm={row.cetForm ? '✅' : '❌'}
+                      neetScoreCard={row.neetScoreCard ? '✅' : '❌'}
+                      sscMarksheet={row.sscMarksheet ? '✅' : '❌'}
+                      sscCertificate={row.sscCertificate ? '✅' : '❌'}
+                      hscMarksheet={row.hscMarksheet ? '✅' : '❌'}
+                      hscCertificate={row.hscCertificate ? '✅' : '❌'}
                       aadhar={row.aadhar ? '✅' : '❌'}
                       nationality={row.nationality ? '✅' : '❌'}
                       domicile={row.domicile ? '✅' : '❌'}
-                      ssc={row.ssc ? '✅' : '❌'}
-                      hsc={row.hsc ? '✅' : '❌'}
-                      medicalfitness={row.medicalfitness ? '✅' : '❌'}
+                      medicalFitness={row.medicalFitness ? '✅' : '❌'}
                       photo={row.photo ? '✅' : '❌'}
+                      caste={row.caste ? '✅' : '❌'}
+                      casteValidity={row.casteValidity ? '✅' : '❌'}
+                      parentIncome={row.parentIncome ? '✅' : '❌'}
+                      nonCreamyLayer={row.nonCreamyLayer ? '✅' : '❌'}
+                      tc={row.tc ? '✅' : '❌'}
+                      educationGapAffidavit={row.educationGapAffidavit ? '✅' : '❌'}
+                      ews={row.ews ? '✅' : '❌'}
+                      minorityDeclaration={row.minorityDeclaration ? '✅' : '❌'}
+                      disability={row.disability ? '✅' : '❌'}
+                      migration={row.migration ? '✅' : '❌'}
+                      other={row.other ? '✅' : '❌'}
                       verified={row.verified ? 'Yes' : 'No'}
-                      verifiedby={row.verifiedby ? row.verifiedby : '---:---'}
+                      verifiedBy={row.verifiedBy ? row.verifiedBy : '―'}
                       selected={selected.indexOf(row.PRN) !== -1}
                       handleClick={(event) => handleClick(event, row.PRN)}
                     />

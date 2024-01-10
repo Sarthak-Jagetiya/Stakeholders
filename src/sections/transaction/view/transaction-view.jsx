@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { Icon } from '@iconify/react';
 import { useLocation } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 
@@ -17,7 +18,7 @@ import FormControl from '@mui/material/FormControl';
 export default function TransactionForm() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const prnParam = searchParams.get('prn');
+  const idParam = searchParams.get('id');
 
   const initialFormData = {
     PRN: '',
@@ -34,6 +35,8 @@ export default function TransactionForm() {
     yearname: '',
     remark: '',
     date: '',
+    paymenttype: '',
+    utr: '',
   };
 
   const [formData, setFormData] = useState(initialFormData);
@@ -41,6 +44,7 @@ export default function TransactionForm() {
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const isRTGSorNEFT = ['RTGS', 'NEFT'].includes(formData.paymenttype);
 
   const getCurrentYear = () => new Date().getFullYear();
   const academicYearOptions = Array.from({ length: 6 }, (_, index) => {
@@ -53,19 +57,18 @@ export default function TransactionForm() {
     // Fetch existing data if PRN is present
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/api/transaction/${prnParam}`);
+        const response = await axios.get(`http://localhost:3000/api/transaction/${idParam}`);
         const existingData = response.data.data;
-        console.log(existingData.data);
         setFormData(existingData.data);
       } catch (error) {
         console.error('Error fetching existing data:', error.message);
       }
     };
 
-    if (prnParam) {
+    if (idParam) {
       fetchData();
     }
-  }, [prnParam]);
+  }, [idParam]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -81,11 +84,24 @@ export default function TransactionForm() {
     // Input Validation
     const errors = {};
     Object.keys(formData).forEach((key) => {
-      if (key !== 'date' && key !== 'signature' && parseFloat(formData[key]) < 0) {
+      if (
+        key !== 'date' &&
+        key !== 'signature' &&
+        parseFloat(formData[key]) < 0 &&
+        formData[key] !== 0
+      ) {
         errors[key] = `${key.charAt(0).toUpperCase() + key.slice(1)} cannot be negative`;
-      } else if (!formData[key] && key !== 'scholarship') {
+      } else if (!formData[key] && formData[key] !== 0 && key !== 'scholarship' && key !== 'utr') {
         errors[key] = `${key.charAt(0).toUpperCase() + key.slice(1)} is required`;
       }
+      // else if (key === 'utr' && isRTGSorNEFT) {
+      //   const utrLength = formData.paymenttype === 'RTGS' ? 22 : 16;
+      //   if (formData[key].length !== utrLength) {
+      //     errors[key] = `${
+      //       key.charAt(0).toUpperCase() + key.slice(1)
+      //     } should contain ${utrLength} digits number`;
+      //   }
+      // }
     });
     setFormErrors(errors);
 
@@ -97,25 +113,23 @@ export default function TransactionForm() {
 
     try {
       // Determine whether to use POST or PUT based on the presence of PRN
-      const apiEndpoint = prnParam
-        ? `http://localhost:3000/api/transaction/${prnParam}`
+      const apiEndpoint = idParam
+        ? `http://localhost:3000/api/transaction/${idParam}`
         : 'http://localhost:3000/api/transaction';
 
-      const response = await axios[prnParam ? 'patch' : 'post'](apiEndpoint, formData);
+      const response = await axios[idParam ? 'patch' : 'post'](apiEndpoint, formData);
 
       if (response.data.status === 'success') {
         setErrorMessage('');
-        setSuccessMessage(
-          `Transaction details ${prnParam ? 'updated' : 'submitted'} successfully!`
-        );
+        setSuccessMessage(`Transaction details ${idParam ? 'updated' : 'submitted'} successfully!`);
         setTimeout(() => {
           setSuccessMessage('');
-          if (prnParam) window.location.href = '/transactions';
+          if (idParam) window.location.href = '/transactions';
           else setFormData(initialFormData);
         }, 1000);
       } else {
         setErrorMessage(
-          `Transaction ${prnParam ? 'update' : 'submission'} failed: ${response.data.message}`
+          `Transaction ${idParam ? 'update' : 'submission'} failed: ${response.data.message}`
         );
       }
     } catch (error) {
@@ -125,7 +139,7 @@ export default function TransactionForm() {
       } else {
         console.error(error);
         setErrorMessage(
-          `An error occurred during transaction ${prnParam ? 'update' : 'submission'}.`
+          `An error occurred during transaction ${idParam ? 'update' : 'submission'}.`
         );
       }
     } finally {
@@ -133,8 +147,12 @@ export default function TransactionForm() {
     }
   };
 
+  const handleNewDocumentClick = () => {
+    window.location.href = '/transactions';
+  };
+
   let buttonText = 'Submit Transaction';
-  if (prnParam) {
+  if (idParam) {
     buttonText = 'Update Transaction';
   }
 
@@ -142,6 +160,15 @@ export default function TransactionForm() {
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Transactions</Typography>
+
+        <Button
+          variant="contained"
+          color="inherit"
+          startIcon={<Icon icon="tabler:table-filled" />}
+          onClick={handleNewDocumentClick}
+        >
+          All Transactions
+        </Button>
       </Stack>
       <Paper
         elevation={3}
@@ -160,7 +187,7 @@ export default function TransactionForm() {
                 onChange={handleChange}
                 error={!!formErrors.PRN}
                 helperText={formErrors.PRN}
-                disabled={!!prnParam}
+                disabled={!!idParam}
                 required
               />
             </Grid>
@@ -293,18 +320,58 @@ export default function TransactionForm() {
               />
             </Grid>
 
-            {/* Remark */}
+            {/* Date */}
             <Grid item xs={6}>
               <TextField
-                name="remark"
-                label="Remark"
+                name="date"
+                label="Date"
                 variant="outlined"
                 fullWidth
-                value={formData.remark}
+                type="date"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                value={formData.date}
                 onChange={handleChange}
-                error={!!formErrors.remark}
-                helperText={formErrors.remark}
+                error={!!formErrors.date}
+                helperText={formErrors.date}
                 required
+              />
+            </Grid>
+
+            {/* Type of Payment */}
+            <Grid item xs={6}>
+              <FormControl fullWidth variant="outlined">
+                <InputLabel>Type of Payment</InputLabel>
+                <Select
+                  name="paymenttype"
+                  value={formData.paymenttype}
+                  onChange={handleChange}
+                  label="Type of Payment"
+                  error={!!formErrors.paymenttype}
+                  required
+                >
+                  <MenuItem value="RTGS">RTGS</MenuItem>
+                  <MenuItem value="NEFT">NEFT</MenuItem>
+                  <MenuItem value="CASH">CASH</MenuItem>
+                  <MenuItem value="CHEQUE">CHEQUE</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+
+            {/* utr */}
+            <Grid item xs={6}>
+              <TextField
+                name="utr"
+                label="Unique Transaction Reference (UTR Number)"
+                variant="outlined"
+                fullWidth
+                value={formData.utr}
+                onChange={handleChange}
+                error={!!formErrors.utr}
+                helperText={formErrors.utr}
+                required={isRTGSorNEFT}
+                disabled={!isRTGSorNEFT}
               />
             </Grid>
 
@@ -349,25 +416,6 @@ export default function TransactionForm() {
               </FormControl>
             </Grid>
 
-            {/* Date */}
-            <Grid item xs={6}>
-              <TextField
-                name="date"
-                label="Date"
-                variant="outlined"
-                fullWidth
-                type="date"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                value={formData.date}
-                onChange={handleChange}
-                error={!!formErrors.date}
-                helperText={formErrors.date}
-                required
-              />
-            </Grid>
-
             {/* Signature */}
             <Grid item xs={6}>
               <TextField
@@ -379,6 +427,21 @@ export default function TransactionForm() {
                 onChange={handleChange}
                 error={!!formErrors.signature}
                 helperText={formErrors.signature}
+                required
+              />
+            </Grid>
+
+            {/* Remark */}
+            <Grid item xs={6}>
+              <TextField
+                name="remark"
+                label="Remark"
+                variant="outlined"
+                fullWidth
+                value={formData.remark}
+                onChange={handleChange}
+                error={!!formErrors.remark}
+                helperText={formErrors.remark}
                 required
               />
             </Grid>

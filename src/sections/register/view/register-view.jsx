@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { Icon } from '@iconify/react';
+import { useLocation } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 
 import Grid from '@mui/material/Grid';
@@ -14,6 +16,10 @@ import Typography from '@mui/material/Typography';
 import FormControl from '@mui/material/FormControl';
 
 export default function RegisterView() {
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const prnparam = searchParams.get('prn');
+
   const initialFormData = {
     PRN: '',
     name: '',
@@ -34,6 +40,9 @@ export default function RegisterView() {
     feestructure: '',
     aadhar: '',
     religion: '',
+    typeofadmission: '',
+    bloodgroup: '',
+    subcaste: '',
   };
 
   const [formData, setFormData] = useState(initialFormData);
@@ -45,6 +54,7 @@ export default function RegisterView() {
   const [religionOptions, setReligionOptions] = useState([]);
   const [casteCategoryOptions, setCasteCategoryOptions] = useState([]);
   const [categoryOptions, setCategoryOptions] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const getCurrentYear = () => new Date().getFullYear();
   const academicYearOptions = Array.from({ length: 6 }, (_, index) => {
@@ -124,43 +134,33 @@ export default function RegisterView() {
     generatePRN();
     fetchLocalData();
     fetchCategoryOptions();
-  }, []);
+
+    // If `prnparam` is present, fetch the data for that PRN
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3000/api/student/${prnparam}`);
+        const existingData = response.data.data;
+        setFormData(existingData.data);
+      } catch (error) {
+        console.error('Error fetching existing data:', error.message);
+      }
+    };
+
+    if (prnparam) {
+      fetchData();
+    }
+  }, [prnparam]);
 
   const validateForm = () => {
     let valid = true;
     const errors = { ...formErrors };
 
-    // if (!formData.PRN.length !== 10) {
-    //   errors.PRN = 'PRN should be a 10-digit long';
-    //   valid = false;
-    // }
-
-    if (!formData.name) {
-      errors.name = 'Name is required';
-      valid = false;
-    }
-
-    if (!formData.gender) {
-      errors.gender = 'Gender is required';
-      valid = false;
-    }
-
-    if (!formData.dob) {
-      errors.dob = 'Date of Birth is required';
-      valid = false;
-    }
-
-    if (!formData.religion) {
-      errors.religion = 'Religion is required';
-      valid = false;
-    }
-
-    if (!formData.phone.match(/^[0-9]+$/) || formData.phone.length !== 10) {
+    if (String(formData.phone).length !== 10) {
       errors.phone = 'Phone should only contain 10 digits numbers';
       valid = false;
     }
 
-    if (!formData.parentphone.match(/^[0-9]+$/) || formData.parentphone.length !== 10) {
+    if (String(formData.parentphone).length !== 10) {
       errors.parentphone = "Parent's Phone should only contain 10 numbers";
       valid = false;
     }
@@ -170,51 +170,13 @@ export default function RegisterView() {
       valid = false;
     }
 
-    if (!formData.course) {
-      errors.course = 'Course is required';
-      valid = false;
-    }
-
-    // if (!formData.admissionyear.match(/^[0-9]+$/)) {
-    //   errors.admissionyear = 'Admission Year should only contain numbers';
-    //   valid = false;
-    // }
-
-    if (!formData.dateofadmission) {
-      errors.dateofadmission = 'Date of Admission is required';
-      valid = false;
-    }
-
-    if (!formData.domicilestate) {
-      errors.domicilestate = 'Domicile State is required';
-      valid = false;
-    }
-
-    if (!formData.studentcategory) {
-      errors.studentcategory = 'Student Category is required';
-      valid = false;
-    }
-
     if (!formData.aadhar.match(/^\d{12}$/)) {
       errors.aadhar = 'Aadhar should be of 12-digits';
       valid = false;
     }
 
-    if (!formData.admissioncategory) {
-      errors.admissioncategory = 'Admission Category is required';
-      valid = false;
-    }
-
-    if (!formData.cetmarks.match(/^[0-9]+$/)) {
-      errors.cetmarks = 'CET Marks should only contain numbers';
-      valid = false;
-    } else if (formData.cetmarks < 0 || formData.cetmarks > 100) {
+    if (formData.cetmarks < 0 || formData.cetmarks > 100) {
       errors.cetmarks = 'CET Marks should be between 0 and 100';
-      valid = false;
-    }
-
-    if (!formData.feestructure) {
-      errors.feestructure = 'Fee Structure is required';
       valid = false;
     }
 
@@ -235,45 +197,75 @@ export default function RegisterView() {
       setSuccessMessage('');
       setErrorMessage('');
 
+      setLoading(true);
+
       try {
-        const response = await axios.post('http://localhost:3000/api/student/', formData);
+        const apiEndpoint = prnparam
+          ? `http://localhost:3000/api/student/${prnparam}`
+          : 'http://localhost:3000/api/student/';
+
+        const response = await axios[prnparam ? 'patch' : 'post'](apiEndpoint, formData);
 
         if (response.data.status === 'success') {
-          setSuccessMessage('Successfully Signed Up!');
+          setErrorMessage('');
+          setSuccessMessage(`Successfully ${prnparam ? 'Updated' : 'Registered'}!`);
           generatePRN();
           setTimeout(() => {
             setSuccessMessage('');
-          }, 2000);
+            if (prnparam) window.location.href = '/students';
+            else setFormData(initialFormData);
+          }, 1000);
           setFormData(initialFormData);
         } else {
-          setErrorMessage(`Registration failed: ${response.data.message}`);
+          setErrorMessage(
+            `${prnparam ? 'Update' : 'Registration'} failed: ${response.data.message}`
+          );
         }
       } catch (error) {
         if (error.response) {
           if (error.response.status === 500) {
-            setErrorMessage('An error occurred during registration (PRN may be duplicate).');
+            setErrorMessage('An error occurred (PRN may be duplicate).');
           } else {
-            setErrorMessage('An error occurred during registration');
+            setErrorMessage('An error occurred.');
           }
         } else {
           setErrorMessage('Network error: Unable to connect to the server.');
         }
+      } finally {
+        setLoading(false);
       }
     } else {
       setErrorMessage('Form has errors. Please correct them.');
     }
   };
 
+  const handleNewDocumentClick = () => {
+    window.location.href = '/students';
+  };
+  let buttonText = 'Register';
+  if (prnparam) {
+    buttonText = 'Update';
+  }
+
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Register</Typography>
+
+        <Button
+          variant="contained"
+          color="inherit"
+          startIcon={<Icon icon="tabler:table-filled" />}
+          onClick={handleNewDocumentClick}
+        >
+          All Students
+        </Button>
       </Stack>
 
       <Paper elevation={3} style={{ padding: '60px 40px', borderRadius: '20px' }}>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={3}>
-            <Grid item xs={6}>
+            <Grid item xs={12}>
               <TextField
                 name="PRN"
                 label="PRN"
@@ -282,7 +274,7 @@ export default function RegisterView() {
                 value={formData.PRN}
                 onChange={handleChange}
                 error={!!formErrors.PRN}
-                helpertext={formErrors.PRN}
+                helperText={formErrors.PRN}
                 disabled
                 required
               />
@@ -296,7 +288,7 @@ export default function RegisterView() {
                 value={formData.name}
                 onChange={handleChange}
                 error={!!formErrors.name}
-                helpertext={formErrors.name}
+                helperText={formErrors.name}
                 required
               />
             </Grid>
@@ -330,7 +322,7 @@ export default function RegisterView() {
                 value={formData.dob}
                 onChange={handleChange}
                 error={!!formErrors.dob}
-                helpertext={formErrors.dob}
+                helperText={formErrors.dob}
                 required
               />
             </Grid>
@@ -339,11 +331,12 @@ export default function RegisterView() {
                 name="phone"
                 label="Phone"
                 variant="outlined"
+                type="number"
                 fullWidth
                 value={formData.phone}
                 onChange={handleChange}
                 error={!!formErrors.phone}
-                helpertext={formErrors.phone}
+                helperText={formErrors.phone}
                 required
               />
             </Grid>
@@ -352,11 +345,12 @@ export default function RegisterView() {
                 name="parentphone"
                 label="Parent's Phone"
                 variant="outlined"
+                type="number"
                 fullWidth
                 value={formData.parentphone}
                 onChange={handleChange}
                 error={!!formErrors.parentphone}
-                helpertext={formErrors.parentphone}
+                helperText={formErrors.parentphone}
                 required
               />
             </Grid>
@@ -369,7 +363,7 @@ export default function RegisterView() {
                 value={formData.email}
                 onChange={handleChange}
                 error={!!formErrors.email}
-                helpertext={formErrors.email}
+                helperText={formErrors.email}
                 required
               />
             </Grid>
@@ -382,7 +376,7 @@ export default function RegisterView() {
                   onChange={handleChange}
                   label="Course"
                   error={!!formErrors.course}
-                  helpertext={formErrors.course}
+                  helperText={formErrors.course}
                   required
                 >
                   {courseOptions.map((option) => (
@@ -402,7 +396,7 @@ export default function RegisterView() {
                   onChange={handleChange}
                   label="Admission Year"
                   error={!!formErrors.admissionyear}
-                  helpertext={formErrors.admissionyear}
+                  helperText={formErrors.admissionyear}
                   required
                 >
                   {academicYearOptions.map((option) => (
@@ -426,7 +420,7 @@ export default function RegisterView() {
                 value={formData.dateofadmission}
                 onChange={handleChange}
                 error={!!formErrors.dateofadmission}
-                helpertext={formErrors.dateofadmission}
+                helperText={formErrors.dateofadmission}
                 required
               />
             </Grid>
@@ -439,7 +433,7 @@ export default function RegisterView() {
                   onChange={handleChange}
                   label="Domicile State"
                   error={!!formErrors.domicilestate}
-                  helpertext={formErrors.domicilestate}
+                  helperText={formErrors.domicilestate}
                   required
                 >
                   {stateOptions.map((option) => (
@@ -447,6 +441,41 @@ export default function RegisterView() {
                       {option.label}
                     </MenuItem>
                   ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                name="aadhar"
+                label="Aadhar"
+                variant="outlined"
+                type="number"
+                fullWidth
+                value={formData.aadhar}
+                onChange={handleChange}
+                error={!!formErrors.aadhar}
+                helperText={formErrors.aadhar}
+                required
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <FormControl fullWidth variant="outlined">
+                <InputLabel>Blood Group</InputLabel>
+                <Select
+                  name="bloodgroup"
+                  value={formData.bloodgroup}
+                  onChange={handleChange}
+                  label="Blood Group"
+                  required
+                >
+                  <MenuItem value="A+">A positive (A+)</MenuItem>
+                  <MenuItem value="A-">A negative (A-)</MenuItem>
+                  <MenuItem value="B+">B positive (B+)</MenuItem>
+                  <MenuItem value="B-">B negative (B-)</MenuItem>
+                  <MenuItem value="AB+">AB positive (AB+)</MenuItem>
+                  <MenuItem value="AB-">AB negative (AB-)</MenuItem>
+                  <MenuItem value="O+">O positive (O+)</MenuItem>
+                  <MenuItem value="O-">O negative (O-)</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -459,7 +488,7 @@ export default function RegisterView() {
                   onChange={handleChange}
                   label="Student Category"
                   error={!!formErrors.studentcategory}
-                  helpertext={formErrors.studentcategory}
+                  helperText={formErrors.studentcategory}
                   required
                 >
                   {casteCategoryOptions.map((option) => (
@@ -471,19 +500,6 @@ export default function RegisterView() {
               </FormControl>
             </Grid>
             <Grid item xs={6}>
-              <TextField
-                name="aadhar"
-                label="Aadhar"
-                variant="outlined"
-                fullWidth
-                value={formData.aadhar}
-                onChange={handleChange}
-                error={!!formErrors.aadhar}
-                helpertext={formErrors.aadhar}
-                required
-              />
-            </Grid>
-            <Grid item xs={6}>
               <FormControl fullWidth variant="outlined">
                 <InputLabel>Religion</InputLabel>
                 <Select
@@ -492,7 +508,7 @@ export default function RegisterView() {
                   onChange={handleChange}
                   label="Religion"
                   error={!!formErrors.religion}
-                  helpertext={formErrors.religion}
+                  helperText={formErrors.religion}
                   required
                 >
                   {religionOptions.map((option) => (
@@ -500,6 +516,37 @@ export default function RegisterView() {
                       {option.label}
                     </MenuItem>
                   ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                name="subcaste"
+                label="Sub-caste"
+                variant="outlined"
+                fullWidth
+                value={formData.subcaste}
+                onChange={handleChange}
+                error={!!formErrors.subcaste}
+                helperText={formErrors.subcaste}
+                required
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <FormControl fullWidth variant="outlined">
+                <InputLabel>Type of Admission</InputLabel>
+                <Select
+                  name="typeofadmission"
+                  value={formData.typeofadmission}
+                  onChange={handleChange}
+                  label="Type of Admission"
+                  required
+                >
+                  <MenuItem value="CAP-1">CAP-1</MenuItem>
+                  <MenuItem value="CAP-2">CAP-2</MenuItem>
+                  <MenuItem value="CAP-3">CAP-3</MenuItem>
+                  <MenuItem value="INST">INST</MenuItem>
+                  <MenuItem value="MGMT">MGMT</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -512,7 +559,7 @@ export default function RegisterView() {
                   onChange={handleChange}
                   label="Fee Structure"
                   error={!!formErrors.feestructure}
-                  helpertext={formErrors.feestructure}
+                  helperText={formErrors.feestructure}
                   required
                 >
                   {categoryOptions.map((option) => (
@@ -532,7 +579,7 @@ export default function RegisterView() {
                   onChange={handleChange}
                   label="Admission Category"
                   error={!!formErrors.admissioncategory}
-                  helpertext={formErrors.admissioncategory}
+                  helperText={formErrors.admissioncategory}
                   required
                 >
                   {categoryOptions.map((option) => (
@@ -553,7 +600,7 @@ export default function RegisterView() {
                 value={formData.cetmarks}
                 onChange={handleChange}
                 error={!!formErrors.cetmarks}
-                helpertext={formErrors.cetmarks}
+                helperText={formErrors.cetmarks}
                 required
               />
             </Grid>
@@ -583,13 +630,19 @@ export default function RegisterView() {
                 value={formData.address}
                 onChange={handleChange}
                 error={!!formErrors.address}
-                helpertext={formErrors.address}
+                helperText={formErrors.address}
                 required
               />
             </Grid>
           </Grid>
-          <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>
-            Register
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            style={{ marginTop: '20px' }}
+            disabled={loading}
+          >
+            {loading ? 'Submitting...' : buttonText}
           </Button>
           {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
           {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}

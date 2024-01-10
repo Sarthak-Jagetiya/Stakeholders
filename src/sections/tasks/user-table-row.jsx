@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { format } from 'date-fns'; // Import the format function
 import PropTypes from 'prop-types';
 
 import Stack from '@mui/material/Stack';
@@ -39,6 +40,9 @@ export default function TaskTableRow({
     window.location.href = `/task?tid=${tid}`;
   };
 
+  // Convert due_date from yyyy-mm-dd to dd-mm-yyyy
+  const formattedDueDate = format(new Date(due_date), 'dd-MM-yyyy');
+
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
@@ -59,7 +63,7 @@ export default function TaskTableRow({
           </Stack>
         </TableCell>
 
-        <TableCell colSpan={2}>{due_date}</TableCell>
+        <TableCell colSpan={2}>{formattedDueDate}</TableCell>
 
         <TableCell align="center">{reminder_before} Days</TableCell>
 

@@ -85,7 +85,8 @@ export default function ImpDocumentTableRow({
       console.log(dataURL);
 
       // Open the viewer URL in a new tab
-      const viewerURL = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${dataURL}`;
+      const viewerURL = `${dataURL}`;
+      // const viewerURL = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${dataURL}`;
       window.open(viewerURL, '_blank');
     } catch (error) {
       console.error('Error decoding or opening the document:', error.message);

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Papa from 'papaparse';
 import { useState, useEffect } from 'react';
 
 import Card from '@mui/material/Card';
@@ -109,6 +110,26 @@ export default function FeeStructurePage() {
       return (isAsc ? a[orderBy] > b[orderBy] : a[orderBy] < b[orderBy]) ? 1 : -1;
     });
 
+  const handleExportCSV = () => {
+    const csvData = Papa.unparse(feeStructures, {
+      header: true,
+      skipEmptyLines: true,
+    });
+
+    const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', 'feeStructures.csv');
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
   // Check if there are no results
   const notFound = dataFiltered.length === 0;
 
@@ -116,14 +137,27 @@ export default function FeeStructurePage() {
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Fee Structures</Typography>
-        <Button
-          variant="contained"
-          color="inherit"
-          startIcon={<Iconify icon="eva:plus-fill" />}
-          onClick={handleNewFeeStructureClick}
-        >
-          New Fee Structure
-        </Button>
+
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Iconify icon="eva:download-fill" />}
+            onClick={handleExportCSV}
+            style={{ marginRight: '20px' }}
+          >
+            Export CSV
+          </Button>
+
+          <Button
+            variant="contained"
+            color="inherit"
+            startIcon={<Iconify icon="eva:plus-fill" />}
+            onClick={handleNewFeeStructureClick}
+          >
+            New Fee Structure
+          </Button>
+        </Stack>
       </Stack>
 
       <Card>

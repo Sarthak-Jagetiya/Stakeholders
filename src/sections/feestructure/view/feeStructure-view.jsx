@@ -1,9 +1,11 @@
 import axios from 'axios';
+import { Icon } from '@iconify/react';
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import {
   Grid,
+  Stack,
   Paper,
   Button,
   Select,
@@ -124,6 +126,10 @@ export default function FeeStructureForm() {
     }
   };
 
+  const handleNewDocumentClick = () => {
+    window.location.href = '/feestructuretable';
+  };
+
   let buttonText = 'Submit Fee Structure';
   if (code) {
     buttonText = 'Update Fee Structure';
@@ -131,9 +137,18 @@ export default function FeeStructureForm() {
 
   return (
     <Container>
-      <Typography variant="h4" mt={3} mb={3}>
-        Fee Structure
-      </Typography>
+      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+        <Typography variant="h4">Fee Structure</Typography>
+        <Button
+          variant="contained"
+          color="inherit"
+          startIcon={<Icon icon="tabler:table-filled" />}
+          onClick={handleNewDocumentClick}
+        >
+          All Fee Structures
+        </Button>
+      </Stack>
+
       <Paper
         elevation={3}
         style={{ padding: '60px 40px', borderRadius: '20px', marginTop: '20px' }}

@@ -32,7 +32,7 @@ const NOTIFICATIONS = [
     description: 'waiting for shipping',
     avatar: null,
     type: 'order_placed',
-    createdAt: set(new Date(), { hours: 10, minutes: 30 }),
+    createdAt: set(new Date(), { hours: 15, minutes: 12 }),
     isUnRead: true,
   },
   {

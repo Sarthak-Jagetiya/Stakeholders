@@ -79,6 +79,18 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
         allowNull: false,
       },
+      typeofadmission: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      bloodgroup: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      subcaste: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
     },
     {
       tableName: 'students',

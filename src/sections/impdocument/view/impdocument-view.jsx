@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { Icon } from '@iconify/react';
 import { useLocation } from 'react-router-dom';
 import React, { useRef, useState, useEffect } from 'react';
 
@@ -118,6 +119,10 @@ const ImpDocumentForm = () => {
     }
   };
 
+  const handleNewDocumentClick = () => {
+    window.location.href = '/impdocuments';
+  };
+
   let buttonText = 'Submit Document';
   if (didParam) {
     buttonText = 'Update Document';
@@ -127,6 +132,15 @@ const ImpDocumentForm = () => {
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">ImpDocument Upload Form</Typography>
+
+        <Button
+          variant="contained"
+          color="inherit"
+          startIcon={<Icon icon="tabler:table-filled" />}
+          onClick={handleNewDocumentClick}
+        >
+          All Important Documents
+        </Button>
       </Stack>
       <Paper
         elevation={3}

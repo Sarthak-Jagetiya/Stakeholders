@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import format from 'date-fns/format'; // Import date-fns format function
 
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
@@ -17,6 +18,7 @@ import Iconify from 'src/components/iconify';
 
 export default function UserTableRow({
   selected,
+  id,
   PRN,
   avatarUrl,
   scholarship,
@@ -24,10 +26,17 @@ export default function UserTableRow({
   eligibilityregistration,
   universityfees,
   library,
+  collegeexam,
   other,
   cautionmoney,
   signature,
+  academicyear,
+  yearname,
+  remark,
+  date,
   total,
+  paymenttype,
+  utr,
   handleClick,
 }) {
   const [open, setOpen] = useState(null);
@@ -42,8 +51,11 @@ export default function UserTableRow({
 
   const handleEdit = () => {
     handleCloseMenu();
-    window.location.href = `/transaction?prn=${PRN}`;
+    window.location.href = `/transaction?id=${id}`;
   };
+
+  // Format date to dd-mm-yyyy
+  const formattedDate = format(new Date(date), 'dd-MM-yyyy');
 
   return (
     <>
@@ -51,8 +63,7 @@ export default function UserTableRow({
         <TableCell padding="checkbox">
           {/* <Checkbox disableRipple checked={selected} onChange={handleClick} /> */}
         </TableCell>
-
-        <TableCell component="th" scope="row" padding="none">
+        <TableCell component="th" scope="row" padding="none" style={{ paddingLeft: '45px' }}>
           <Stack direction="row" alignItems="center" spacing={2}>
             <Avatar alt={PRN} src={avatarUrl} />
             <Typography variant="subtitle2" noWrap>
@@ -60,14 +71,22 @@ export default function UserTableRow({
             </Typography>
           </Stack>
         </TableCell>
-
         <TableCell align="center">{scholarship}</TableCell>
         <TableCell align="center">{tuitionfees}</TableCell>
         <TableCell align="center">{eligibilityregistration}</TableCell>
         <TableCell align="center">{universityfees}</TableCell>
         <TableCell align="center">{library}</TableCell>
+        <TableCell align="center">{collegeexam}</TableCell>
         <TableCell align="center">{other}</TableCell>
         <TableCell align="center">{cautionmoney}</TableCell>
+        <TableCell align="center">{academicyear}</TableCell> {/* Added field */}
+        <TableCell align="center">{yearname}</TableCell> {/* Added field */}
+        <TableCell align="center">{remark}</TableCell> {/* Added field */}
+        <TableCell align="center" sx={{ minWidth: 120 }}>
+          {formattedDate}
+        </TableCell>
+        <TableCell align="center">{paymenttype}</TableCell> {/* Added field */}
+        <TableCell align="center">{utr}</TableCell> {/* Added field */}
         <TableCell align="center">
           <Label color="success">{total}</Label>
         </TableCell>
@@ -77,7 +96,6 @@ export default function UserTableRow({
         >
           {signature}
         </TableCell>
-
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
             <Iconify icon="eva:more-vertical-fill" />
@@ -111,6 +129,7 @@ export default function UserTableRow({
 
 UserTableRow.propTypes = {
   // Adjust the prop types based on your transactions data structure
+  id: PropTypes.any,
   PRN: PropTypes.any,
   avatarUrl: PropTypes.any,
   scholarship: PropTypes.any,
@@ -118,9 +137,16 @@ UserTableRow.propTypes = {
   eligibilityregistration: PropTypes.any,
   universityfees: PropTypes.any,
   library: PropTypes.any,
+  collegeexam: PropTypes.any,
   other: PropTypes.any,
   cautionmoney: PropTypes.any,
   signature: PropTypes.any,
+  academicyear: PropTypes.any, // Added field
+  yearname: PropTypes.any, // Added field
+  remark: PropTypes.any, // Added field
+  date: PropTypes.any, // Added field
+  paymenttype: PropTypes.any,
+  utr: PropTypes.any,
   total: PropTypes.any,
   handleClick: PropTypes.func,
   selected: PropTypes.any,

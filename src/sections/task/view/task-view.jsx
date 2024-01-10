@@ -1,9 +1,11 @@
 import axios from 'axios';
+import { Icon } from '@iconify/react';
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import {
   Grid,
+  Stack,
   Paper,
   Button,
   Select,
@@ -107,6 +109,10 @@ export default function TaskForm() {
     }
   };
 
+  const handleNewDocumentClick = () => {
+    window.location.href = '/tasks';
+  };
+
   let buttonText = 'Submit Task';
   if (tid) {
     buttonText = 'Update Task';
@@ -114,9 +120,18 @@ export default function TaskForm() {
 
   return (
     <Container>
-      <Typography variant="h4" mt={3} mb={3}>
-        Task
-      </Typography>
+      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+        <Typography variant="h4">Task</Typography>
+        <Button
+          variant="contained"
+          color="inherit"
+          startIcon={<Icon icon="tabler:table-filled" />}
+          onClick={handleNewDocumentClick}
+        >
+          All Tasks
+        </Button>
+      </Stack>
+
       <Paper
         elevation={3}
         style={{ padding: '60px 40px', borderRadius: '20px', marginTop: '20px' }}

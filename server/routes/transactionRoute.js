@@ -2,6 +2,8 @@ const express = require('express');
 const transactionController = require('./../controllers/transactionController');
 
 const router = express.Router();
+router.route('/sum/:id').get(transactionController.getTransactionSum);
+
 router
   .route('/')
   .get(transactionController.getAllTransaction)

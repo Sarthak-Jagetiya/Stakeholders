@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { Icon } from '@iconify/react';
 import { useLocation } from 'react-router-dom';
 import React, { useRef, useState, useEffect } from 'react';
 
@@ -149,6 +150,10 @@ const DocumentForm = () => {
     }
   };
 
+  const handleNewDocumentClick = () => {
+    window.location.href = '/documents';
+  };
+
   let buttonText = 'Submit Documents';
   if (prnParam) {
     buttonText = 'Update Documents';
@@ -158,6 +163,15 @@ const DocumentForm = () => {
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Document Upload Form</Typography>
+
+        <Button
+          variant="contained"
+          color="inherit"
+          startIcon={<Icon icon="tabler:table-filled" />}
+          onClick={handleNewDocumentClick}
+        >
+          All Documents
+        </Button>
       </Stack>
       <Paper
         elevation={3}
@@ -166,7 +180,7 @@ const DocumentForm = () => {
         <form onSubmit={handleSubmit}>
           <Grid container spacing={3}>
             {/* PRN */}
-            <Grid item xs={6}>
+            <Grid item xs={12}>
               <TextField
                 name="PRN"
                 label="PRN"
@@ -180,6 +194,84 @@ const DocumentForm = () => {
               />
             </Grid>
 
+            {/* CET Online Registration form */}
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                type="file"
+                label="CET Registration form"
+                onChange={(e) => handleFileChange(e, 'cetForm')}
+                error={!!formErrors.cetForm}
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+
+            {/* NEET Scorecard */}
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                type="file"
+                label="NEET Scorecard"
+                onChange={(e) => handleFileChange(e, 'neetScoreCard')}
+                error={!!formErrors.neetScoreCard}
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+
+            {/* SSC Marksheet */}
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                type="file"
+                label="SSC Marksheet"
+                onChange={(e) => handleFileChange(e, 'sscMarksheet')}
+                error={!!formErrors.sscMarksheet}
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+
+            {/* SSC Certificate */}
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                type="file"
+                label="SSC Certificate"
+                onChange={(e) => handleFileChange(e, 'sscCertificate')}
+                error={!!formErrors.sscCertificate}
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+
+            {/* HSC Marksheet */}
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                type="file"
+                label="HSC Marksheet"
+                onChange={(e) => handleFileChange(e, 'hscMarksheet')}
+                error={!!formErrors.hscMarksheet}
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+
+            {/* HSC Certificate */}
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                type="file"
+                label="HSC Certificate"
+                onChange={(e) => handleFileChange(e, 'hscCertificate')}
+                error={!!formErrors.hscCertificate}
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+
             {/* Aadhar */}
             <Grid item xs={6}>
               <TextField
@@ -189,7 +281,7 @@ const DocumentForm = () => {
                 label="Aadhar"
                 onChange={(e) => handleFileChange(e, 'aadhar')}
                 error={!!formErrors.aadhar}
-                required={!prnParam}
+                // required={!prnParam}
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
@@ -220,32 +312,6 @@ const DocumentForm = () => {
               />
             </Grid>
 
-            {/* SSC Certificate */}
-            <Grid item xs={6}>
-              <TextField
-                fullWidth
-                variant="outlined"
-                type="file"
-                label="SSC Certificate"
-                onChange={(e) => handleFileChange(e, 'ssc')}
-                error={!!formErrors.ssc}
-                InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
-
-            {/* HSC Certificate */}
-            <Grid item xs={6}>
-              <TextField
-                fullWidth
-                variant="outlined"
-                type="file"
-                label="HSC Certificate"
-                onChange={(e) => handleFileChange(e, 'hsc')}
-                error={!!formErrors.hsc}
-                InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
-
             {/* Medical Fitness Certificate */}
             <Grid item xs={6}>
               <TextField
@@ -253,8 +319,8 @@ const DocumentForm = () => {
                 variant="outlined"
                 type="file"
                 label="Medical Fitness Certificate"
-                onChange={(e) => handleFileChange(e, 'medicalfitness')}
-                error={!!formErrors.medicalfitness}
+                onChange={(e) => handleFileChange(e, 'medicalFitness')}
+                error={!!formErrors.medicalFitness}
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
@@ -268,6 +334,149 @@ const DocumentForm = () => {
                 label="Photo"
                 onChange={(e) => handleFileChange(e, 'photo')}
                 error={!!formErrors.photo}
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+
+            {/* Caste Certificate */}
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                type="file"
+                label="Caste Certificate"
+                onChange={(e) => handleFileChange(e, 'caste')}
+                error={!!formErrors.caste}
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+
+            {/* Caste Validity Certificate */}
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                type="file"
+                label="Caste Validity Certificate"
+                onChange={(e) => handleFileChange(e, 'casteValidity')}
+                error={!!formErrors.casteValidity}
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+
+            {/* Parent Income Certificate */}
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                type="file"
+                label="Parent Income Certificate"
+                onChange={(e) => handleFileChange(e, 'parentIncome')}
+                error={!!formErrors.parentIncome}
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+
+            {/* Non-Creamy Layer Certificate */}
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                type="file"
+                label="Non-Creamy Layer Certificate"
+                onChange={(e) => handleFileChange(e, 'nonCreamyLayer')}
+                error={!!formErrors.nonCreamyLayer}
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+
+            {/* TC (Transfer Certificate) */}
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                type="file"
+                label="Transfer Certificate"
+                onChange={(e) => handleFileChange(e, 'tc')}
+                error={!!formErrors.tc}
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+
+            {/* Education Gap Affidavit */}
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                type="file"
+                label="Education Gap Affidavit"
+                onChange={(e) => handleFileChange(e, 'educationGapAffidavit')}
+                error={!!formErrors.educationGapAffidavit}
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+
+            {/* EWS (Economically Weaker Section) Certificate */}
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                type="file"
+                label="EWS Certificate"
+                onChange={(e) => handleFileChange(e, 'ews')}
+                error={!!formErrors.ews}
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+
+            {/* Minority Declaration */}
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                type="file"
+                label="Minority Declaration"
+                onChange={(e) => handleFileChange(e, 'minorityDeclaration')}
+                error={!!formErrors.minorityDeclaration}
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+
+            {/* Disability Certificate */}
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                type="file"
+                label="Disability Certificate"
+                onChange={(e) => handleFileChange(e, 'disability')}
+                error={!!formErrors.disability}
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+
+            {/* Migration Certificate */}
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                type="file"
+                label="Migration Certificate"
+                onChange={(e) => handleFileChange(e, 'migration')}
+                error={!!formErrors.migration}
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+
+            {/* Other Document */}
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                type="file"
+                label="Other Document"
+                onChange={(e) => handleFileChange(e, 'other')}
+                error={!!formErrors.other}
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>

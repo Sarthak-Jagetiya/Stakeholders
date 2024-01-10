@@ -11,21 +11,21 @@ const COUNTRIES = [
     label: 'India',
     icon: '/assets/icons/ic_flag_hi.svg',
   },
-  {
-    value: 'en',
-    label: 'US',
-    icon: '/assets/icons/ic_flag_en.svg',
-  },
-  {
-    value: 'de',
-    label: 'Germany',
-    icon: '/assets/icons/ic_flag_de.svg',
-  },
-  {
-    value: 'fr',
-    label: 'France',
-    icon: '/assets/icons/ic_flag_fr.svg',
-  },
+  // {
+  //   value: 'en',
+  //   label: 'US',
+  //   icon: '/assets/icons/ic_flag_en.svg',
+  // },
+  // {
+  //   value: 'de',
+  //   label: 'Germany',
+  //   icon: '/assets/icons/ic_flag_de.svg',
+  // },
+  // {
+  //   value: 'fr',
+  //   label: 'France',
+  //   icon: '/assets/icons/ic_flag_fr.svg',
+  // },
 ];
 
 export default function CountryPopover() {

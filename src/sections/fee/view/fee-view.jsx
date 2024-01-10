@@ -57,7 +57,7 @@ export default function FeeView() {
 
   const fetchPaidData = useCallback(async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/api/transaction/${prn}`);
+      const response = await axios.get(`http://localhost:3000/api/transaction/sum/${prn}`);
       if (response.data.status === 'success') {
         const { data } = response.data.data;
         setPaidData({
