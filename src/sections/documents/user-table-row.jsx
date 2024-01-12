@@ -58,6 +58,42 @@ export default function UserTableRow({
     window.location.href = `/document?prn=${PRN}`;
   };
 
+  const handleViewDocument = (documentData) => () => {
+    try {
+      // Decode base64 data
+      const decodedData = atob(documentData);
+      // Convert the decoded data to Uint8Array
+      const uint8Array = new Uint8Array(decodedData.length);
+      for (let i = 0; i < decodedData.length; i += 1) {
+        uint8Array[i] = decodedData.charCodeAt(i);
+      }
+      // Create a Blob with the decoded data
+      const blob = new Blob([uint8Array], { type: 'application/pdf' });
+      // Create a data URL for the Blob
+      const dataURL = URL.createObjectURL(blob);
+      // Open the viewer URL in a new tab
+      window.open(dataURL, '_blank');
+    } catch (error) {
+      console.error('Error decoding or opening the document:', error.message);
+    }
+  };
+
+  const renderDocumentLink = (documentData, label) => (
+    <TableCell align="center" sx={{ minWidth: '100px' }}>
+      {documentData ? (
+        <a
+          href="#"
+          onClick={handleViewDocument(documentData)}
+          style={{ textDecoration: 'none', color: '#1976D2', fontWeight: 'bold' }}
+        >
+          {label}
+        </a>
+      ) : (
+        '🚫'
+      )}
+    </TableCell>
+  );
+
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
@@ -74,28 +110,29 @@ export default function UserTableRow({
           </Stack>
         </TableCell>
 
-        <TableCell align="center">{cetForm}</TableCell>
-        <TableCell align="center">{neetScoreCard}</TableCell>
-        <TableCell align="center">{sscMarksheet}</TableCell>
-        <TableCell align="center">{sscCertificate}</TableCell>
-        <TableCell align="center">{hscMarksheet}</TableCell>
-        <TableCell align="center">{hscCertificate}</TableCell>
-        <TableCell align="center">{aadhar}</TableCell>
-        <TableCell align="center">{nationality}</TableCell>
-        <TableCell align="center">{domicile}</TableCell>
-        <TableCell align="center">{medicalFitness}</TableCell>
-        <TableCell align="center">{photo}</TableCell>
-        <TableCell align="center">{caste}</TableCell>
-        <TableCell align="center">{casteValidity}</TableCell>
-        <TableCell align="center">{parentIncome}</TableCell>
-        <TableCell align="center">{nonCreamyLayer}</TableCell>
-        <TableCell align="center">{tc}</TableCell>
-        <TableCell align="center">{educationGapAffidavit}</TableCell>
-        <TableCell align="center">{ews}</TableCell>
-        <TableCell align="center">{minorityDeclaration}</TableCell>
-        <TableCell align="center">{disability}</TableCell>
-        <TableCell align="center">{migration}</TableCell>
-        <TableCell align="center">{other}</TableCell>
+        {renderDocumentLink(cetForm, 'View')}
+        {renderDocumentLink(neetScoreCard, 'View')}
+        {renderDocumentLink(sscMarksheet, 'View')}
+        {renderDocumentLink(sscCertificate, 'View')}
+        {renderDocumentLink(hscMarksheet, 'View')}
+        {renderDocumentLink(hscCertificate, 'View')}
+        {renderDocumentLink(aadhar, 'View')}
+        {renderDocumentLink(nationality, 'View')}
+        {renderDocumentLink(domicile, 'View')}
+        {renderDocumentLink(medicalFitness, 'View')}
+        {renderDocumentLink(photo, 'View')}
+        {renderDocumentLink(caste, 'View')}
+        {renderDocumentLink(casteValidity, 'View')}
+        {renderDocumentLink(parentIncome, 'View')}
+        {renderDocumentLink(nonCreamyLayer, 'View')}
+        {renderDocumentLink(tc, 'View')}
+        {renderDocumentLink(educationGapAffidavit, 'View')}
+        {renderDocumentLink(ews, 'View')}
+        {renderDocumentLink(minorityDeclaration, 'View')}
+        {renderDocumentLink(disability, 'View')}
+        {renderDocumentLink(migration, 'View')}
+        {renderDocumentLink(other, 'View')}
+
         <TableCell align="center">
           <Label color={(verified === 'Yes' && 'success') || 'error'}>{verified}</Label>
         </TableCell>

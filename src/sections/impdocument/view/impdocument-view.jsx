@@ -15,6 +15,7 @@ const ImpDocumentForm = () => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const didParam = searchParams.get('did');
+  const [fileTypeError, setFileTypeError] = useState('');
 
   const initialFormData = {
     docData: null,
@@ -51,10 +52,20 @@ const ImpDocumentForm = () => {
     const reader = new FileReader();
 
     reader.onloadend = () => {
-      setFormData((prevData) => ({
-        ...prevData,
-        docData: reader.result,
-      }));
+      // Check if the file type is PDF
+      if (file.type !== 'application/pdf') {
+        setFileTypeError('Only PDF files are allowed.');
+        setFormData((prevData) => ({
+          ...prevData,
+          docData: null,
+        }));
+      } else {
+        setFileTypeError('');
+        setFormData((prevData) => ({
+          ...prevData,
+          docData: reader.result.split(',')[1],
+        }));
+      }
     };
 
     reader.readAsDataURL(file);
@@ -73,11 +84,11 @@ const ImpDocumentForm = () => {
 
     // Input Validation
     const errors = {};
-    Object.keys(formData).forEach((key) => {
-      if (!formData[key] && key === 'docData') {
-        errors[key] = 'Document file is required';
-      }
-    });
+    // Object.keys(formData).forEach((key) => {
+    //   if (!formData[key] && key === 'docData') {
+    //     errors[key] = 'Document(PDF) file is required';
+    //   }
+    // });
     setFormErrors(errors);
 
     if (Object.keys(errors).length > 0) {
@@ -156,10 +167,11 @@ const ImpDocumentForm = () => {
                 type="file"
                 label="Document"
                 onChange={handleFileChange}
-                error={!!formErrors.docData}
+                error={!!(formErrors.docData || fileTypeError)}
                 inputRef={docRef}
                 InputLabelProps={{ shrink: true }}
                 required
+                helperText={formErrors.docData || fileTypeError}
               />
             </Grid>
 

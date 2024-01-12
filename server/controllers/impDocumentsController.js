@@ -45,7 +45,7 @@ exports.getDocument = catchAsync(async (req, res) => {
 exports.createDocument = catchAsync(async (req, res) => {
   // Assuming req.body.docData contains the document data
   // Ensure that the 'docData' property is directly stored as Buffer
-  req.body.doc = req.body.docData;
+  req.body.doc = Buffer.from(req.body.docData, 'base64');
 
   const document = await impDocument.create(req.body);
 

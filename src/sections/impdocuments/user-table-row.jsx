@@ -67,22 +67,18 @@ export default function ImpDocumentTableRow({
     try {
       // Decode base64 data
       const decodedData = atob(doc);
-      console.log(decodedData);
 
       // Convert the decoded data to Uint8Array
       const uint8Array = new Uint8Array(decodedData.length);
       for (let i = 0; i < decodedData.length; i += 1) {
         uint8Array[i] = decodedData.charCodeAt(i);
       }
-      console.log(uint8Array);
 
       // Create a Blob with the decoded data
       const blob = new Blob([uint8Array], { type: 'application/pdf' });
-      console.log(blob);
 
       // Create a data URL for the Blob
       const dataURL = URL.createObjectURL(blob);
-      console.log(dataURL);
 
       // Open the viewer URL in a new tab
       const viewerURL = `${dataURL}`;
@@ -112,7 +108,11 @@ export default function ImpDocumentTableRow({
 
         {/* Assuming doc is the base64-encoded document */}
         <TableCell>
-          <a href="#" onClick={handleViewDocument}>
+          <a
+            href="#"
+            onClick={handleViewDocument}
+            style={{ textDecoration: 'none', color: '#1976D2', fontWeight: 'bold' }}
+          >
             View Document
           </a>
         </TableCell>

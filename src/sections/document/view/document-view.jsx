@@ -20,15 +20,30 @@ const DocumentForm = () => {
 
   const initialFormData = {
     PRN: '',
+    cetForm: null,
+    neetScoreCard: null,
+    sscMarksheet: null,
+    sscCertificate: null,
+    hscMarksheet: null,
+    hscCertificate: null,
     aadhar: null,
     nationality: null,
     domicile: null,
-    ssc: null,
-    hsc: null,
-    medicalfitness: null,
+    medicalFitness: null,
     photo: null,
+    caste: null,
+    casteValidity: null,
+    parentIncome: null,
+    nonCreamyLayer: null,
+    tc: null,
+    educationGapAffidavit: null,
+    ews: null,
+    minorityDeclaration: null,
+    disability: null,
+    migration: null,
+    other: null,
     verified: 0,
-    verifiedby: '',
+    verifiedBy: '',
   };
 
   const [formData, setFormData] = useState(initialFormData);
@@ -37,13 +52,31 @@ const DocumentForm = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [formErrors, setFormErrors] = useState({});
 
-  const aadharRef = useRef();
-  const nationalityRef = useRef();
-  const domicileRef = useRef();
-  const sscRef = useRef();
-  const hscRef = useRef();
-  const medicalFitnessRef = useRef();
-  const photoRef = useRef();
+  // Refs for file inputs
+  const fileInputRefs = {
+    cetForm: useRef(),
+    neetScoreCard: useRef(),
+    sscMarksheet: useRef(),
+    sscCertificate: useRef(),
+    hscMarksheet: useRef(),
+    hscCertificate: useRef(),
+    aadhar: useRef(),
+    nationality: useRef(),
+    domicile: useRef(),
+    medicalFitness: useRef(),
+    photo: useRef(),
+    caste: useRef(),
+    casteValidity: useRef(),
+    parentIncome: useRef(),
+    nonCreamyLayer: useRef(),
+    tc: useRef(),
+    educationGapAffidavit: useRef(),
+    ews: useRef(),
+    minorityDeclaration: useRef(),
+    disability: useRef(),
+    migration: useRef(),
+    other: useRef(),
+  };
 
   useEffect(() => {
     // Fetch existing data if PRN is present
@@ -51,7 +84,6 @@ const DocumentForm = () => {
       try {
         const response = await axios.get(`http://localhost:3000/api/document/${prnParam}`);
         const existingData = response.data.data;
-        // console.log(existingData.data);
         setFormData(existingData.data);
       } catch (error) {
         console.error('Error fetching existing data:', error.message);
@@ -65,10 +97,16 @@ const DocumentForm = () => {
 
   const handleFileChange = (event, fileType) => {
     const file = event.target.files[0];
-    setFormData((prevData) => ({
-      ...prevData,
-      [fileType]: file,
-    }));
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      setFormData((prevData) => ({
+        ...prevData,
+        [fileType]: reader.result.split(',')[1],
+      }));
+    };
+
+    reader.readAsDataURL(file);
   };
 
   const handleInputChange = (event) => {
@@ -83,7 +121,7 @@ const DocumentForm = () => {
     setFormData((prevData) => ({
       ...prevData,
       verified: !prevData.verified,
-      verifiedby: prevData.verified ? '' : prevData.verifiedby,
+      verifiedBy: prevData.verified ? '' : prevData.verifiedBy,
     }));
   };
 
@@ -93,8 +131,8 @@ const DocumentForm = () => {
     // Input Validation
     const errors = {};
     Object.keys(formData).forEach((key) => {
-      if (!formData[key] && key === 'prn') {
-        errors[key] = `${key.charAt(0).toUpperCase() + key.slice(1)} is required`;
+      if (!formData[key] && key === 'PRN') {
+        errors[key] = `${key} is required`;
       }
     });
     setFormErrors(errors);
@@ -111,6 +149,8 @@ const DocumentForm = () => {
         ? `http://localhost:3000/api/document/${prnParam}`
         : 'http://localhost:3000/api/document';
 
+      console.log(formData);
+
       const response = await axios[prnParam ? 'patch' : 'post'](apiEndpoint, formData);
 
       if (response.data.status === 'success') {
@@ -123,13 +163,9 @@ const DocumentForm = () => {
             setFormData(initialFormData);
 
             // Clear file inputs
-            aadharRef.current.value = '';
-            nationalityRef.current.value = '';
-            domicileRef.current.value = '';
-            sscRef.current.value = '';
-            hscRef.current.value = '';
-            medicalFitnessRef.current.value = '';
-            photoRef.current.value = '';
+            Object.values(fileInputRefs).forEach((ref) => {
+              ref.current.value = '';
+            });
           }
         }, 1000);
       } else {
@@ -142,7 +178,10 @@ const DocumentForm = () => {
         setErrorMessage('Student entry with the provided PRN already exists.');
       } else if (error.response && error.response.status === 400) {
         setErrorMessage('Student with the provided PRN does not exist.');
+      } else if (error.response && error.response.status === 404) {
+        setErrorMessage('No changes found to update.');
       } else {
+        console.error(error);
         setErrorMessage(`An error occurred during document ${prnParam ? 'update' : 'submission'}.`);
       }
     } finally {
@@ -492,11 +531,11 @@ const DocumentForm = () => {
             {/* Verified By */}
             <Grid item xs={6}>
               <TextField
-                name="verifiedby"
+                name="verifiedBy"
                 label="Verified By"
                 variant="outlined"
                 fullWidth
-                value={formData.verifiedby}
+                value={formData.verifiedBy}
                 onChange={handleInputChange}
                 required
                 disabled={!formData.verified}
