@@ -68,7 +68,7 @@ export default function RegisterView() {
     const year = currentYear + (currentYear + 1).toString().slice(-2);
     const pretext = `FS${year}`;
     try {
-      const response = await axios.get('http://localhost:3000/api/feestructure/unique');
+      const response = await axios.get('http://10.0.1.38:80/api/feestructure/unique');
       if (response.data.status === 'success') {
         setCategoryOptions(
           response.data.data.data.map((option) => ({
@@ -84,7 +84,7 @@ export default function RegisterView() {
 
   const generatePRN = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/api/student/lastStudent/');
+      const response = await axios.get('http://10.0.1.38:80/api/student/lastStudent/');
       if (response.data.status === 'success') {
         const newSN = String(Number(response.data.data.slice(-3)) + 1).padStart(3, '0');
         const currYear = new Date().getFullYear();
@@ -138,7 +138,7 @@ export default function RegisterView() {
     // If `prnparam` is present, fetch the data for that PRN
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/api/student/${prnparam}`);
+        const response = await axios.get(`http://10.0.1.38:80/api/student/${prnparam}`);
         const existingData = response.data.data;
         setFormData(existingData.data);
       } catch (error) {
@@ -201,8 +201,8 @@ export default function RegisterView() {
 
       try {
         const apiEndpoint = prnparam
-          ? `http://localhost:3000/api/student/${prnparam}`
-          : 'http://localhost:3000/api/student/';
+          ? `http://10.0.1.38:80/api/student/${prnparam}`
+          : 'http://10.0.1.38:80/api/student/';
 
         const response = await axios[prnparam ? 'patch' : 'post'](apiEndpoint, formData);
 

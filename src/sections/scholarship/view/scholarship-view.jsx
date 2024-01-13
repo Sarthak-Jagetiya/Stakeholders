@@ -39,7 +39,7 @@ export default function ScholarshipForm() {
     // Fetch existing data if PRN is present
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/api/scholarship/${idParam}`);
+        const response = await axios.get(`http://10.0.1.38:80/api/scholarship/${idParam}`);
         const existingData = response.data.data;
         setFormData(existingData.data);
       } catch (error) {
@@ -81,8 +81,8 @@ export default function ScholarshipForm() {
     try {
       // Determine whether to use POST or PUT based on the presence of PRN
       const apiEndpoint = idParam
-        ? `http://localhost:3000/api/scholarship/${idParam}`
-        : 'http://localhost:3000/api/scholarship';
+        ? `http://10.0.1.38:80/api/scholarship/${idParam}`
+        : 'http://10.0.1.38:80/api/scholarship';
 
       const response = await axios[idParam ? 'patch' : 'post'](apiEndpoint, formData);
 
