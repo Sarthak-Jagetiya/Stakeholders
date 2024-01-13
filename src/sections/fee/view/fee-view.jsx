@@ -35,7 +35,7 @@ export default function FeeView() {
 
   const fetchStudentData = useCallback(async () => {
     try {
-      const response = await axios.get(`http://10.0.1.38/api/student/${prn}`);
+      const response = await axios.get(`http://10.0.1.38:3000/api/student/${prn}`);
       if (response.data.status === 'success') {
         const studentData = response.data.data.data;
         setStudentName(studentData.name);
@@ -57,7 +57,7 @@ export default function FeeView() {
 
   const fetchPaidData = useCallback(async () => {
     try {
-      const response = await axios.get(`http://10.0.1.38/api/transaction/sum/${prn}`);
+      const response = await axios.get(`http://10.0.1.38:3000/api/transaction/sum/${prn}`);
       if (response.data.status === 'success') {
         const { data } = response.data.data;
         setPaidData({
@@ -82,7 +82,7 @@ export default function FeeView() {
 
   const fetchUnpaidData = useCallback(async () => {
     try {
-      const response = await axios.get(`http://10.0.1.38/api/feestructure/${feeCode}`);
+      const response = await axios.get(`http://10.0.1.38:3000/api/feestructure/${feeCode}`);
       if (response.data.status === 'success') {
         const { data } = response.data.data;
         // Set unpaid amount as total - paidSum
