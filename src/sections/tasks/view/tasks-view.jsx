@@ -90,7 +90,7 @@ export default function FeeStructurePage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://10.0.1.38:80/api/task/');
+        const response = await axios.get('http://10.0.1.38/api/task/');
         setTasks(response.data.data);
       } catch (error) {
         console.error('Error fetching tasks data:', error.message);
