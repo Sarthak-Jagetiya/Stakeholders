@@ -92,7 +92,7 @@ export default function StudentsView() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://10.0.2.128:3000/api/student/');
+        const response = await fetch('http://10.0.2.182:3000/api/student/');
         const data = await response.json();
         setStudents(data.data);
       } catch (error) {

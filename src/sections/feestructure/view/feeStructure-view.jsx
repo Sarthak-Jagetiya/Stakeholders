@@ -52,7 +52,7 @@ export default function FeeStructureForm() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://10.0.2.128:3000/api/feestructure/${code}`);
+        const response = await axios.get(`http://10.0.2.182:3000/api/feestructure/${code}`);
         const existingData = response.data.data;
         setFormData(existingData.data);
       } catch (error) {
@@ -95,8 +95,8 @@ export default function FeeStructureForm() {
 
     try {
       const apiEndpoint = code
-        ? `http://10.0.2.128:3000/api/feestructure/${code}`
-        : 'http://10.0.2.128:3000/api/feestructure';
+        ? `http://10.0.2.182:3000/api/feestructure/${code}`
+        : 'http://10.0.2.182:3000/api/feestructure';
 
       const response = await axios[code ? 'patch' : 'post'](apiEndpoint, formData);
 

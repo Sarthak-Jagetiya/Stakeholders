@@ -43,7 +43,7 @@ export default function ImpDocumentTableRow({
     handleCloseMenu();
 
     try {
-      const response = await axios.delete(`http://10.0.2.128:3000/api/impdocument/${did}`);
+      const response = await axios.delete(`http://10.0.2.182:3000/api/impdocument/${did}`);
 
       if (response.status === 200) {
         // Handle successful deletion, e.g., update the UI or show a success message
