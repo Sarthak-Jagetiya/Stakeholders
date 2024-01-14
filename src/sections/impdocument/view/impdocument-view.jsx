@@ -34,7 +34,7 @@ const ImpDocumentForm = () => {
     // Fetch existing data if did is present
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://10.0.2.54:3000/api/impdocument/${didParam}`);
+        const response = await axios.get(`http://13.126.201.24:3000/api/impdocument/${didParam}`);
         const existingData = response.data.data;
         setFormData(existingData.data);
       } catch (error) {
@@ -100,8 +100,8 @@ const ImpDocumentForm = () => {
     try {
       // Determine whether to use POST or PUT based on the presence of did
       const apiEndpoint = didParam
-        ? `http://10.0.2.54:3000/api/impdocument/${didParam}`
-        : 'http://10.0.2.54:3000/api/impdocument/';
+        ? `http://13.126.201.24:3000/api/impdocument/${didParam}`
+        : 'http://13.126.201.24:3000/api/impdocument/';
 
       const response = await axios[didParam ? 'patch' : 'post'](apiEndpoint, formData);
 
