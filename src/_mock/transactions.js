@@ -4,7 +4,7 @@ const axios = require('axios');
 
 const fetchTransactionsData = async () => {
   try {
-    const response = await axios.get('http://10.0.1.38:3000/api/transaction/');
+    const response = await axios.get('http://15.206.123.134:3000/api/transaction/');
     return response.data;
   } catch (error) {
     console.error('Error fetching transactions data:', error.message);

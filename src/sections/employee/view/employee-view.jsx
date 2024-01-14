@@ -115,7 +115,7 @@ const EmployeeForm = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post('http://10.0.1.38:3000/api/employee/', formData);
+      const response = await axios.post('http://15.206.123.134:3000/api/employee/', formData);
 
       if (response.data.status === 'success') {
         setErrorMessage('');

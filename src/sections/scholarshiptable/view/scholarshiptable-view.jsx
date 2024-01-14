@@ -87,7 +87,7 @@ export default function ScholarshipTable() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://10.0.1.38:3000/api/scholarship/');
+        const response = await fetch('http://15.206.123.134:3000/api/scholarship/');
         const data = await response.json();
         setScholarships(data.data);
       } catch (error) {

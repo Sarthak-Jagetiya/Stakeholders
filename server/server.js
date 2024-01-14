@@ -9,9 +9,10 @@ process.on('uncaughtException', (err) => {
 });
 
 var connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
+  host: '15.206.123.134',
+  port:'3306',
+  user: 'debian-sys-maint',
+  password: 'EDMFk2FS6Xdx8vzR',
   database: 'stakeholders',
 });
 connection.connect((err) => {

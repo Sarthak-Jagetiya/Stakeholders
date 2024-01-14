@@ -85,7 +85,7 @@ export default function DocumentsView() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://10.0.1.38:3000/api/document/');
+        const response = await axios.get('http://15.206.123.134:3000/api/document/');
         setDocuments(response.data.data);
       } catch (error) {
         console.error('Error fetching documents data:', error.message);
