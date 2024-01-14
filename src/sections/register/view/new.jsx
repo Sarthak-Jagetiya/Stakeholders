@@ -153,7 +153,7 @@ export default function RegisterView() {
       setErrorMessage('');
 
       try {
-        const response = await axios.post('http://15.206.123.134:3000/api/student/', formData);
+        const response = await axios.post('http://10.0.1.38:3000/api/student/', formData);
 
         if (response.data.status === 'success') {
           setSuccessMessage('Successfully Signed Up!');
@@ -196,7 +196,7 @@ export default function RegisterView() {
     });
 
     try {
-      const response = await axios.post('http://15.206.123.134:3000/api/document', documentData, {
+      const response = await axios.post('http://10.0.1.38:3000/api/document', documentData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

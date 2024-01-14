@@ -40,7 +40,7 @@ export default function TaskForm() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://15.206.123.134:3000/api/task/${tid}`);
+        const response = await axios.get(`http://10.0.1.38:3000/api/task/${tid}`);
         const existingData = response.data.data;
         setFormData(existingData.data);
       } catch (error) {
@@ -81,8 +81,8 @@ export default function TaskForm() {
 
     try {
       const apiEndpoint = tid
-        ? `http://15.206.123.134:3000/api/task/${tid}`
-        : 'http://15.206.123.134:3000/api/task';
+        ? `http://10.0.1.38:3000/api/task/${tid}`
+        : 'http://10.0.1.38:3000/api/task';
 
       const response = await axios[tid ? 'patch' : 'post'](apiEndpoint, formData);
       console.log(formData);

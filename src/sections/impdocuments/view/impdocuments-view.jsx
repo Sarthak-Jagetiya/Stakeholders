@@ -84,7 +84,7 @@ export default function ImpDocumentsView() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://15.206.123.134:3000/api/impdocument/');
+        const response = await axios.get('http://10.0.1.38:3000/api/impdocument/');
         setImpDocuments(response.data.data);
       } catch (error) {
         console.error('Error fetching impDocuments data:', error.message);

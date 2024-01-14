@@ -82,7 +82,7 @@ const DocumentForm = () => {
     // Fetch existing data if PRN is present
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://15.206.123.134:3000/api/document/${prnParam}`);
+        const response = await axios.get(`http://10.0.1.38:3000/api/document/${prnParam}`);
         const existingData = response.data.data;
         setFormData(existingData.data);
       } catch (error) {
@@ -146,8 +146,8 @@ const DocumentForm = () => {
     try {
       // Determine whether to use POST or PUT based on the presence of PRN
       const apiEndpoint = prnParam
-        ? `http://15.206.123.134:3000/api/document/${prnParam}`
-        : 'http://15.206.123.134:3000/api/document';
+        ? `http://10.0.1.38:3000/api/document/${prnParam}`
+        : 'http://10.0.1.38:3000/api/document';
 
       console.log(formData);
 
