@@ -88,7 +88,7 @@ export default function TransactionsView() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://10.0.2.182:3000/api/transaction/');
+        const response = await fetch('http://10.0.2.54:3000/api/transaction/');
         const data = await response.json();
         setTransactions(data.data);
       } catch (error) {

@@ -91,7 +91,7 @@ export default function FeeStructurePage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://10.0.2.182:3000/api/feestructure/');
+        const response = await axios.get('http://10.0.2.54:3000/api/feestructure/');
         setFeeStructures(response.data.data);
       } catch (error) {
         console.error('Error fetching fee structures data:', error.message);

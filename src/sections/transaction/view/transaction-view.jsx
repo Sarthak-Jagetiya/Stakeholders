@@ -57,7 +57,7 @@ export default function TransactionForm() {
     // Fetch existing data if PRN is present
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://10.0.2.182:3000/api/transaction/${idParam}`);
+        const response = await axios.get(`http://10.0.2.54:3000/api/transaction/${idParam}`);
         const existingData = response.data.data;
         setFormData(existingData.data);
       } catch (error) {
@@ -114,8 +114,8 @@ export default function TransactionForm() {
     try {
       // Determine whether to use POST or PUT based on the presence of PRN
       const apiEndpoint = idParam
-        ? `http://10.0.2.182:3000/api/transaction/${idParam}`
-        : 'http://10.0.2.182:3000/api/transaction';
+        ? `http://10.0.2.54:3000/api/transaction/${idParam}`
+        : 'http://10.0.2.54:3000/api/transaction';
 
       const response = await axios[idParam ? 'patch' : 'post'](apiEndpoint, formData);
 
