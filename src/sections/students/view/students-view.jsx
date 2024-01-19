@@ -144,8 +144,29 @@ export default function StudentsView() {
 
   return (
     <Container>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography variant="h4">Students</Typography>
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="space-between"
+        mb={5}
+        sx={{
+          '@media (max-width: 500px)': {
+            flexDirection: 'column', // Use flexDirection instead of direction
+            marginBottom: '25px',
+          },
+        }}
+      >
+        <Typography
+          variant="h4"
+          sx={{
+            '@media (max-width: 500px)': {
+              paddingBottom: '30px',
+              fontSize: '25px',
+            },
+          }}
+        >
+          Students
+        </Typography>
 
         <Stack direction="row" alignItems="center" justifyContent="space-between">
           <Button
@@ -154,6 +175,11 @@ export default function StudentsView() {
             startIcon={<Iconify icon="eva:download-fill" />}
             onClick={handleExportCSV}
             style={{ marginRight: '20px' }}
+            sx={{
+              '@media (max-width: 500px)': {
+                fontSize: '11px',
+              },
+            }}
           >
             Export CSV
           </Button>
@@ -164,6 +190,11 @@ export default function StudentsView() {
             onClick={() => {
               // Handle the click event to navigate to the registration page
               window.location.href = '/register';
+            }}
+            sx={{
+              '@media (max-width: 500px)': {
+                fontSize: '11px',
+              },
             }}
           >
             New Student
@@ -219,6 +250,7 @@ export default function StudentsView() {
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
                   { id: 'PRN', label: 'PRN' },
+                  { id: 'MUHS_PRN', label: 'MUHS_PRN' },
                   { id: 'name', label: 'Name' },
                   { id: 'gender', label: 'Gender' },
                   { id: 'dob', label: 'DateOfBirth' },
@@ -239,6 +271,8 @@ export default function StudentsView() {
                   { id: 'typeofadmission', label: 'AdmissionType' },
                   { id: 'bloodgroup', label: 'BloodGroup' },
                   { id: 'subcaste', label: 'SubCaste' },
+                  { id: 'remark', label: 'Remark' },
+                  { id: 'admissionstatus', label: 'AdmissionStatus' },
                   { id: 'address', label: 'Address' },
                   { id: '', label: '' },
                 ]}
@@ -255,6 +289,7 @@ export default function StudentsView() {
                       }.jpg`}
                       id={row.id}
                       PRN={row.PRN}
+                      MUHS_PRN={row.MUHS_PRN ? row.MUHS_PRN : '―'}
                       name={row.name}
                       gender={row.gender}
                       dob={row.dob}
@@ -275,9 +310,11 @@ export default function StudentsView() {
                       typeofadmission={row.typeofadmission}
                       bloodgroup={row.bloodgroup}
                       subcaste={row.subcaste}
+                      remark={row.remark}
+                      admissionstatus={row.admissionstatus}
+                      address={row.address}
                       selected={selected.indexOf(row.PRN) !== -1}
                       handleClick={(event) => handleClick(event, row.PRN)}
-                      address={row.address}
                     />
                   ))}
 

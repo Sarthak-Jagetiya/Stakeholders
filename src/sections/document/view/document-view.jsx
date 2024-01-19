@@ -97,12 +97,37 @@ const DocumentForm = () => {
 
   const handleFileChange = (event, fileType) => {
     const file = event.target.files[0];
+
+    // Check if the file type is PDF
+    if (!file.type.includes('pdf')) {
+      setFormErrors((prevErrors) => ({
+        ...prevErrors,
+        [fileType]: `${fileType} should be a PDF file.`,
+      }));
+      return;
+    }
+
+    // Check if the file size is below 1MB
+    const fileSizeInMB = file.size / (1024 * 1024);
+    if (fileSizeInMB > 1) {
+      setFormErrors((prevErrors) => ({
+        ...prevErrors,
+        [fileType]: `${fileType} should be below 1MB.`,
+      }));
+      return;
+    }
+
     const reader = new FileReader();
 
     reader.onloadend = () => {
       setFormData((prevData) => ({
         ...prevData,
         [fileType]: reader.result.split(',')[1],
+      }));
+      // Clear the error if the file is below 1MB and of PDF type
+      setFormErrors((prevErrors) => ({
+        ...prevErrors,
+        [fileType]: undefined,
       }));
     };
 
@@ -228,6 +253,7 @@ const DocumentForm = () => {
                 value={formData.PRN}
                 onChange={handleInputChange}
                 error={!!formErrors.PRN}
+                helperText={formErrors.PRN}
                 required
                 disabled={!!prnParam}
               />
@@ -242,6 +268,7 @@ const DocumentForm = () => {
                 label="CET Registration form"
                 onChange={(e) => handleFileChange(e, 'cetForm')}
                 error={!!formErrors.cetForm}
+                helperText={formErrors.cetForm}
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
@@ -255,6 +282,7 @@ const DocumentForm = () => {
                 label="NEET Scorecard"
                 onChange={(e) => handleFileChange(e, 'neetScoreCard')}
                 error={!!formErrors.neetScoreCard}
+                helperText={formErrors.neetScoreCard}
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
@@ -268,6 +296,7 @@ const DocumentForm = () => {
                 label="SSC Marksheet"
                 onChange={(e) => handleFileChange(e, 'sscMarksheet')}
                 error={!!formErrors.sscMarksheet}
+                helperText={formErrors.sscMarksheet}
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
@@ -281,6 +310,7 @@ const DocumentForm = () => {
                 label="SSC Certificate"
                 onChange={(e) => handleFileChange(e, 'sscCertificate')}
                 error={!!formErrors.sscCertificate}
+                helperText={formErrors.sscCertificate}
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
@@ -294,6 +324,7 @@ const DocumentForm = () => {
                 label="HSC Marksheet"
                 onChange={(e) => handleFileChange(e, 'hscMarksheet')}
                 error={!!formErrors.hscMarksheet}
+                helperText={formErrors.hscMarksheet}
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
@@ -307,6 +338,7 @@ const DocumentForm = () => {
                 label="HSC Certificate"
                 onChange={(e) => handleFileChange(e, 'hscCertificate')}
                 error={!!formErrors.hscCertificate}
+                helperText={formErrors.hscCertificate}
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
@@ -320,6 +352,7 @@ const DocumentForm = () => {
                 label="Aadhar"
                 onChange={(e) => handleFileChange(e, 'aadhar')}
                 error={!!formErrors.aadhar}
+                helperText={formErrors.aadhar}
                 // required={!prnParam}
                 InputLabelProps={{ shrink: true }}
               />
@@ -334,6 +367,7 @@ const DocumentForm = () => {
                 label="Nationality Certificate"
                 onChange={(e) => handleFileChange(e, 'nationality')}
                 error={!!formErrors.nationality}
+                helperText={formErrors.nationality}
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
@@ -347,6 +381,7 @@ const DocumentForm = () => {
                 label="Domicile Certificate"
                 onChange={(e) => handleFileChange(e, 'domicile')}
                 error={!!formErrors.domicile}
+                helperText={formErrors.domicile}
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
@@ -360,6 +395,7 @@ const DocumentForm = () => {
                 label="Medical Fitness Certificate"
                 onChange={(e) => handleFileChange(e, 'medicalFitness')}
                 error={!!formErrors.medicalFitness}
+                helperText={formErrors.medicalFitness}
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
@@ -373,6 +409,7 @@ const DocumentForm = () => {
                 label="Photo"
                 onChange={(e) => handleFileChange(e, 'photo')}
                 error={!!formErrors.photo}
+                helperText={formErrors.photo}
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
@@ -386,6 +423,7 @@ const DocumentForm = () => {
                 label="Caste Certificate"
                 onChange={(e) => handleFileChange(e, 'caste')}
                 error={!!formErrors.caste}
+                helperText={formErrors.caste}
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
@@ -399,6 +437,7 @@ const DocumentForm = () => {
                 label="Caste Validity Certificate"
                 onChange={(e) => handleFileChange(e, 'casteValidity')}
                 error={!!formErrors.casteValidity}
+                helperText={formErrors.casteValidity}
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
@@ -412,6 +451,7 @@ const DocumentForm = () => {
                 label="Parent Income Certificate"
                 onChange={(e) => handleFileChange(e, 'parentIncome')}
                 error={!!formErrors.parentIncome}
+                helperText={formErrors.parentIncome}
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
@@ -425,6 +465,7 @@ const DocumentForm = () => {
                 label="Non-Creamy Layer Certificate"
                 onChange={(e) => handleFileChange(e, 'nonCreamyLayer')}
                 error={!!formErrors.nonCreamyLayer}
+                helperText={formErrors.nonCreamyLayer}
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
@@ -438,6 +479,7 @@ const DocumentForm = () => {
                 label="Transfer Certificate"
                 onChange={(e) => handleFileChange(e, 'tc')}
                 error={!!formErrors.tc}
+                helperText={formErrors.tc}
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
@@ -451,6 +493,7 @@ const DocumentForm = () => {
                 label="Education Gap Affidavit"
                 onChange={(e) => handleFileChange(e, 'educationGapAffidavit')}
                 error={!!formErrors.educationGapAffidavit}
+                helperText={formErrors.educationGapAffidavit}
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
@@ -464,6 +507,7 @@ const DocumentForm = () => {
                 label="EWS Certificate"
                 onChange={(e) => handleFileChange(e, 'ews')}
                 error={!!formErrors.ews}
+                helperText={formErrors.ews}
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
@@ -477,6 +521,7 @@ const DocumentForm = () => {
                 label="Minority Declaration"
                 onChange={(e) => handleFileChange(e, 'minorityDeclaration')}
                 error={!!formErrors.minorityDeclaration}
+                helperText={formErrors.minorityDeclaration}
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
@@ -490,6 +535,7 @@ const DocumentForm = () => {
                 label="Disability Certificate"
                 onChange={(e) => handleFileChange(e, 'disability')}
                 error={!!formErrors.disability}
+                helperText={formErrors.disability}
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
@@ -503,6 +549,7 @@ const DocumentForm = () => {
                 label="Migration Certificate"
                 onChange={(e) => handleFileChange(e, 'migration')}
                 error={!!formErrors.migration}
+                helperText={formErrors.migration}
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
@@ -516,6 +563,7 @@ const DocumentForm = () => {
                 label="Other Document"
                 onChange={(e) => handleFileChange(e, 'other')}
                 error={!!formErrors.other}
+                helperText={formErrors.other}
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>

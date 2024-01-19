@@ -81,11 +81,7 @@ export default function UserTableRow({
   const renderDocumentLink = (documentData, label) => (
     <TableCell align="center" sx={{ minWidth: '100px' }}>
       {documentData ? (
-        <a
-          href="#"
-          onClick={handleViewDocument(documentData)}
-          style={{ textDecoration: 'none', color: '#1976D2', fontWeight: 'bold' }}
-        >
+        <a href="#" onClick={handleViewDocument(documentData)} className="custom-link">
           {label}
         </a>
       ) : (
@@ -96,6 +92,20 @@ export default function UserTableRow({
 
   return (
     <>
+      <style>
+        {`
+          .custom-link {
+            text-decoration: none;
+            color: #1976D2;
+            font-weight: bold;
+          }
+
+          .custom-link:hover {
+            text-decoration: underline;
+          }
+        `}
+      </style>
+
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
         <TableCell padding="checkbox">
           {/* <Checkbox disableRipple checked={selected} onChange={handleClick} /> */}

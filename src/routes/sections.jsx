@@ -20,6 +20,7 @@ export const FeePage = lazy(() => import('src/pages/fee'));
 export const FeeStructurePage = lazy(() => import('src/pages/feeStructure'));
 export const FeeStructureTablePage = lazy(() => import('src/pages/feeStructureTable'));
 export const EmployeePage = lazy(() => import('src/pages/employee'));
+export const EmployeesPage = lazy(() => import('src/pages/employees'));
 export const ScholarshipPage = lazy(() => import('src/pages/scholarship'));
 export const ScholarshipTablePage = lazy(() => import('src/pages/scholarshiptable'));
 export const TaskPage = lazy(() => import('src/pages/task'));
@@ -54,6 +55,7 @@ export default function Router() {
         { path: 'transaction', element: <TransactionPage /> },
         { path: 'transactions', element: <TransactionsPage /> },
         { path: 'employee', element: <EmployeePage /> },
+        { path: 'employees', element: <EmployeesPage /> },
         { path: 'scholarship', element: <ScholarshipPage /> },
         { path: 'scholarshiptable', element: <ScholarshipTablePage /> },
         { path: 'task', element: <TaskPage /> },

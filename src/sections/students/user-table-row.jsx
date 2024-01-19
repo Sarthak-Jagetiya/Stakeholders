@@ -18,6 +18,7 @@ export default function UserTableRow({
   selected,
   id,
   PRN,
+  MUHS_PRN,
   avatarUrl,
   name,
   gender,
@@ -40,6 +41,8 @@ export default function UserTableRow({
   typeofadmission,
   bloodgroup,
   subcaste,
+  remark,
+  admissionstatus,
   handleClick,
 }) {
   const [open, setOpen] = useState(null);
@@ -74,6 +77,7 @@ export default function UserTableRow({
             </Typography>
           </Stack>
         </TableCell>
+        <TableCell align="center">{MUHS_PRN}</TableCell>
         <TableCell align="center" style={{ minWidth: '150px' }}>
           {name}
         </TableCell>
@@ -101,6 +105,12 @@ export default function UserTableRow({
         <TableCell align="center">{typeofadmission}</TableCell>
         <TableCell align="center">{bloodgroup}</TableCell>
         <TableCell align="center">{subcaste}</TableCell>
+        <TableCell align="center">{remark}</TableCell>
+        <TableCell align="center">
+          <Label color={(admissionstatus === 'active' && 'success') || 'error'}>
+            {admissionstatus}
+          </Label>
+        </TableCell>
         <TableCell align="center" style={{ minWidth: '200px' }}>
           {address}
         </TableCell>
@@ -136,6 +146,7 @@ UserTableRow.propTypes = {
   // Adjust the prop types based on your students data structure
   id: PropTypes.any,
   PRN: PropTypes.any,
+  MUHS_PRN: PropTypes.any,
   avatarUrl: PropTypes.any,
   name: PropTypes.any,
   gender: PropTypes.any,
@@ -158,6 +169,8 @@ UserTableRow.propTypes = {
   typeofadmission: PropTypes.any,
   bloodgroup: PropTypes.any,
   subcaste: PropTypes.any,
+  remark: PropTypes.any,
+  admissionstatus: PropTypes.any,
   handleClick: PropTypes.func,
   selected: PropTypes.any,
 };

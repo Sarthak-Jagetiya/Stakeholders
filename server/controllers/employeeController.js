@@ -14,7 +14,7 @@ exports.getAllEmployee = catchAsync(async (req, res) => {
 
 exports.getEmployee = catchAsync(async (req, res) => {
   const employee = await Employee.findOne({
-    where: { PRN: req.params.id },
+    where: { eid: req.params.id },
   });
   res.status(200).json({
     status: 'success',
@@ -34,10 +34,23 @@ exports.createEmployee = catchAsync(async (req, res) => {
 
 exports.deleteEmployee = catchAsync(async (req, res) => {
   const employee = Employee.destroy({
-    where: { PRN: req.params.id },
+    where: { eid: req.params.id },
   });
   res.status(204).json({
     status: 'success',
     data: null,
+  });
+});
+
+exports.updateEmployee = catchAsync(async (req, res) => {
+  const employee = await Employee.update(req.body, {
+    where: { eid: req.params.id },
+  });
+  const newEmployee = await Employee.findOne({
+    where: { eid: req.params.id },
+  });
+  res.status(200).json({
+    status: 'success',
+    data: newEmployee,
   });
 });

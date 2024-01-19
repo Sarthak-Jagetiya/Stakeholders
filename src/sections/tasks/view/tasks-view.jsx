@@ -134,8 +134,29 @@ export default function FeeStructurePage() {
 
   return (
     <Container>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography variant="h4">Tasks</Typography>
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="space-between"
+        mb={5}
+        sx={{
+          '@media (max-width: 500px)': {
+            flexDirection: 'column', // Use flexDirection instead of direction
+            marginBottom: '25px',
+          },
+        }}
+      >
+        <Typography
+          variant="h4"
+          sx={{
+            '@media (max-width: 500px)': {
+              paddingBottom: '30px',
+              fontSize: '25px',
+            },
+          }}
+        >
+          Tasks
+        </Typography>
 
         <Stack direction="row" alignItems="center" justifyContent="space-between">
           <Button
@@ -144,6 +165,11 @@ export default function FeeStructurePage() {
             startIcon={<Iconify icon="eva:download-fill" />}
             onClick={handleExportCSV}
             style={{ marginRight: '20px' }}
+            sx={{
+              '@media (max-width: 500px)': {
+                fontSize: '11px',
+              },
+            }}
           >
             Export CSV
           </Button>
@@ -153,6 +179,11 @@ export default function FeeStructurePage() {
             color="inherit"
             startIcon={<Iconify icon="eva:plus-fill" />}
             onClick={handleNewTaskClick}
+            sx={{
+              '@media (max-width: 500px)': {
+                fontSize: '11px',
+              },
+            }}
           >
             New Task
           </Button>

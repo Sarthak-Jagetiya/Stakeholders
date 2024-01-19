@@ -26,14 +26,14 @@ import TableEmptyRows from '../table-empty-rows';
 
 // ----------------------------------------------------------------------
 
-export default function FeeStructurePage() {
+export default function EmployeesView() {
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
-  const [orderBy, setOrderBy] = useState('code');
-  const [filterCode, setFilterCode] = useState('');
-  const [rowsPerPage, setRowsPerPage] = useState(6);
-  const [feeStructures, setFeeStructures] = useState([]);
+  const [orderBy, setOrderBy] = useState('eid');
+  const [filterEid, setFilterEid] = useState('');
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [employees, setEmployees] = useState([]);
 
   // Sorting handler
   const handleSort = (event, id) => {
@@ -44,21 +44,21 @@ export default function FeeStructurePage() {
 
   // Select all handler
   const handleSelectAllClick = (event) => {
-    const newSelecteds = event.target.checked ? feeStructures.map((n) => n.code) : [];
+    const newSelecteds = event.target.checked ? employees.map((n) => n.eid) : [];
     setSelected(newSelecteds);
   };
 
-  const handleNewFeeStructureClick = () => {
-    window.location.href = '/feestructure';
+  const handleNewEmployeeClick = () => {
+    window.location.href = '/employee';
   };
 
   // Individual row selection handler
-  const handleClick = (event, code) => {
-    const selectedIndex = selected.indexOf(code);
+  const handleClick = (event, eid) => {
+    const selectedIndex = selected.indexOf(eid);
     let newSelected = [];
 
     if (selectedIndex === -1) {
-      newSelected = [...selected, code];
+      newSelected = [...selected, eid];
     } else if (selectedIndex === 0) {
       newSelected = selected.slice(1);
     } else if (selectedIndex === selected.length - 1) {
@@ -81,21 +81,21 @@ export default function FeeStructurePage() {
     setPage(0);
   };
 
-  // Filter by code handler
-  const handleFilterByCode = (event) => {
+  // Filter by employee ID handler
+  const handleFilterByEid = (event) => {
     setPage(0);
-    setFilterCode(event.target.value);
+    setFilterEid(event.target.value);
   };
 
   // Fetch data on component mount
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/feestructure/');
-        setFeeStructures(response.data.data);
+        const response = await axios.get('http://localhost:3000/api/employee/');
+        setEmployees(response.data.data);
       } catch (error) {
-        console.error('Error fetching fee structures data:', error.message);
-        setFeeStructures([]);
+        console.error('Error fetching employees data:', error.message);
+        setEmployees([]);
       }
     };
 
@@ -103,15 +103,15 @@ export default function FeeStructurePage() {
   }, []);
 
   // Apply filter to data
-  const dataFiltered = feeStructures
-    .filter((row) => row.code.toLowerCase().includes(filterCode.toLowerCase()))
+  const dataFiltered = employees
+    .filter((row) => row.eid.toLowerCase().includes(filterEid.toLowerCase()))
     .sort((a, b) => {
       const isAsc = order === 'asc';
       return (isAsc ? a[orderBy] > b[orderBy] : a[orderBy] < b[orderBy]) ? 1 : -1;
     });
 
   const handleExportCSV = () => {
-    const csvData = Papa.unparse(feeStructures, {
+    const csvData = Papa.unparse(employees, {
       header: true,
       skipEmptyLines: true,
     });
@@ -122,7 +122,7 @@ export default function FeeStructurePage() {
     if (link.download !== undefined) {
       const url = URL.createObjectURL(blob);
       link.setAttribute('href', url);
-      link.setAttribute('download', 'feeStructures.csv');
+      link.setAttribute('download', 'employees.csv');
       link.style.visibility = 'hidden';
       document.body.appendChild(link);
       link.click();
@@ -156,7 +156,7 @@ export default function FeeStructurePage() {
             },
           }}
         >
-          Fee Structures
+          Employees
         </Typography>
 
         <Stack direction="row" alignItems="center" justifyContent="space-between">
@@ -179,14 +179,14 @@ export default function FeeStructurePage() {
             variant="contained"
             color="inherit"
             startIcon={<Iconify icon="eva:plus-fill" />}
-            onClick={handleNewFeeStructureClick}
+            onClick={handleNewEmployeeClick}
             sx={{
               '@media (max-width: 500px)': {
                 fontSize: '11px',
               },
             }}
           >
-            New Fee Structure
+            New Employee
           </Button>
         </Stack>
       </Stack>
@@ -194,10 +194,10 @@ export default function FeeStructurePage() {
       <Card>
         {/* UserTableToolbar component */}
         <OutlinedInput
-          value={filterCode}
-          onChange={handleFilterByCode}
+          value={filterEid}
+          onChange={handleFilterByEid}
           sx={{ margin: 2.7 }}
-          placeholder="Search Code..."
+          placeholder="Search Employee ID..."
           startAdornment={
             <InputAdornment position="start">
               <Iconify
@@ -217,21 +217,21 @@ export default function FeeStructurePage() {
               <UserTableHead
                 order={order}
                 orderBy={orderBy}
-                rowCount={feeStructures.length}
+                rowCount={employees.length}
                 numSelected={selected.length}
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'code', label: 'Code' },
-                  { id: 'academicyear', label: 'AcademicYear' },
-                  { id: 'category', label: 'Category' },
-                  { id: 'tuitionfees', label: 'Tuition' },
-                  { id: 'universityfees', label: 'University' },
-                  { id: 'library', label: 'Library' },
-                  { id: 'collegeexam', label: 'Exam' },
-                  { id: 'other', label: 'Other' },
-                  { id: 'cautionmoney', label: 'Caution' },
-                  { id: '' },
+                  { id: 'name', label: 'Name' },
+                  { id: 'eid', label: 'EmployeeID' },
+                  { id: 'gender', label: 'Gender' },
+                  { id: 'phone', label: 'Phone' },
+                  { id: 'email', label: 'Email' },
+                  { id: 'aadhar', label: 'Aadhar' },
+                  { id: 'designation', label: 'Designation' },
+                  { id: 'emergencycontact', label: 'EmergencyContact' },
+                  { id: 'college', label: 'College' },
+                  { id: '', label: '' },
                 ]}
               />
 
@@ -241,29 +241,29 @@ export default function FeeStructurePage() {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => (
                     <UserTableRow
-                      key={row.code}
-                      code={row.code}
-                      academicyear={row.academicyear}
-                      category={row.category}
-                      tuitionfees={row.tuitionfees}
-                      universityfees={row.universityfees}
-                      library={row.library}
-                      collegeexam={row.collegeexam}
-                      other={row.other}
-                      cautionmoney={row.cautionmoney}
-                      selected={selected.indexOf(row.code) !== -1}
-                      handleClick={(event) => handleClick(event, row.code)}
+                      key={row.eid}
+                      eid={row.eid}
+                      name={row.name}
+                      gender={row.gender}
+                      phone={row.phone}
+                      email={row.email}
+                      aadhar={row.aadhar}
+                      designation={row.designation}
+                      emergencycontact={row.emergencycontact}
+                      college={row.college}
+                      selected={selected.indexOf(row.eid) !== -1}
+                      handleClick={(event) => handleClick(event, row.eid)}
                     />
                   ))}
 
                 {/* Empty rows */}
                 <TableEmptyRows
                   height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, feeStructures.length)}
+                  emptyRows={emptyRows(page, rowsPerPage, employees.length)}
                 />
 
                 {/* Show a message if no results found */}
-                {notFound && <TableNoData query={filterCode} />}
+                {notFound && <TableNoData query={filterEid} />}
               </TableBody>
             </Table>
           </TableContainer>
@@ -273,10 +273,10 @@ export default function FeeStructurePage() {
         <TablePagination
           page={page}
           component="div"
-          count={feeStructures.length}
+          count={employees.length}
           rowsPerPage={rowsPerPage}
           onPageChange={handleChangePage}
-          rowsPerPageOptions={[6, 10, 25]}
+          rowsPerPageOptions={[5, 10, 25]}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Card>

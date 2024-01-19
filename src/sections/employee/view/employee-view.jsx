@@ -1,5 +1,7 @@
 import axios from 'axios';
-import React, { useState } from 'react';
+import { Icon } from '@iconify/react';
+import { useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
@@ -31,6 +33,9 @@ const EmployeeForm = () => {
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const eid = searchParams.get('eid');
 
   const handleInputChange = (fieldName, value) => {
     setFormData((prevData) => ({
@@ -60,6 +65,22 @@ const EmployeeForm = () => {
     const emergencyContactRegex = /^\d{10}$/;
     return emergencyContactRegex.test(emergencyContact);
   };
+
+  const fetchDataForEdit = async (employeeID) => {
+    try {
+      const response = await axios.get(`http://localhost:3000/api/employee/${employeeID}`);
+      const existingData = response.data.data;
+      setFormData(existingData.data);
+    } catch (error) {
+      console.error('Error fetching existing data:', error.message);
+    }
+  };
+
+  useEffect(() => {
+    if (eid) {
+      fetchDataForEdit(eid);
+    }
+  }, [eid]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -115,23 +136,33 @@ const EmployeeForm = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:3000/api/employee/', formData);
+      const apiEndpoint = formData.eid
+        ? `http://localhost:3000/api/employee/${formData.eid}`
+        : 'http://localhost:3000/api/employee/';
+
+      const response = await axios[formData.eid ? 'patch' : 'post'](apiEndpoint, formData);
 
       if (response.data.status === 'success') {
         setErrorMessage('');
-        setSuccessMessage('Employee details submitted successfully!');
+        setSuccessMessage(
+          `Employee details ${formData.eid ? 'updated' : 'submitted'} successfully!`
+        );
         setTimeout(() => {
           setSuccessMessage('');
-          setFormData(initialFormData);
-        }, 2000);
+          if (formData.eid) window.location.href = '/employees';
+          else setFormData(initialFormData);
+        }, 1000);
       } else {
-        setErrorMessage(`Employee submission failed: ${response.data.message}`);
+        setErrorMessage(
+          `Employee ${formData.eid ? 'update' : 'submission'} failed: ${response.data.message}`
+        );
       }
     } catch (error) {
       if (error.response) {
         if (error.response.status === 500) {
           setErrorMessage('An error occurred during registration (Eid may be duplicate).');
         } else {
+          console.error(error);
           setErrorMessage('An error occurred during registration');
         }
       } else {
@@ -142,10 +173,27 @@ const EmployeeForm = () => {
     }
   };
 
+  const handleNewDocumentClick = () => {
+    window.location.href = '/employees';
+  };
+
+  let buttonText = 'Submit Fee Structure';
+  if (eid) {
+    buttonText = 'Update Fee Structure';
+  }
+
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Employee Form</Typography>
+        <Button
+          variant="contained"
+          color="inherit"
+          startIcon={<Icon icon="tabler:table-filled" />}
+          onClick={handleNewDocumentClick}
+        >
+          All Employees
+        </Button>
       </Stack>
       <Paper
         elevation={3}
@@ -162,6 +210,7 @@ const EmployeeForm = () => {
                 error={!!formErrors.eid}
                 helperText={formErrors.eid}
                 required
+                disabled={!!formData.eid}
               />
             </Grid>
             <Grid item xs={6}>
@@ -267,7 +316,7 @@ const EmployeeForm = () => {
             style={{ marginTop: '20px' }}
             disabled={loading}
           >
-            {loading ? 'Submitting...' : 'Submit'}
+            {loading ? 'Submitting...' : buttonText}
           </Button>
           {successMessage && (
             <Typography variant="body1" sx={{ color: 'green', mt: 2 }}>

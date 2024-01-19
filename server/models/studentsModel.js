@@ -91,6 +91,18 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
         allowNull: false,
       },
+      MUHS_PRN: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      remark: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      admissionstatus: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
     },
     {
       tableName: 'students',

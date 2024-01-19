@@ -57,6 +57,11 @@ const navConfig = [
   //   path: '/task',
   //   icon: icon('ic_task'),
   // },
+  // {
+  //   title: 'employee',
+  //   path: '/employee',
+  //   icon: icon('ic_employee'),
+  // },
   {
     title: 'students',
     path: '/students',
@@ -96,8 +101,8 @@ const navConfig = [
     icon: icon('ic_task'),
   },
   {
-    title: 'employee',
-    path: '/employee',
+    title: 'employees',
+    path: '/employees',
     icon: icon('ic_employee'),
   },
   // {

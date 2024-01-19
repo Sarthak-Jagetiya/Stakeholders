@@ -51,6 +51,16 @@ const ImpDocumentForm = () => {
     const file = event.target.files[0];
     const reader = new FileReader();
 
+    // Check if the file size is below 1MB
+    if (file.size > 1024 * 1024) {
+      setFileTypeError('File size exceeds 1MB. Please choose a smaller file.');
+      setFormData((prevData) => ({
+        ...prevData,
+        docData: null,
+      }));
+      return;
+    }
+
     reader.onloadend = () => {
       // Check if the file type is PDF
       if (file.type !== 'application/pdf') {

@@ -43,9 +43,6 @@ export default function RegisterView() {
     typeofadmission: '',
     bloodgroup: '',
     subcaste: '',
-    MUHS_PRN: '',
-    remark: '',
-    admissionstatus: '',
   };
 
   const [formData, setFormData] = useState(initialFormData);
@@ -268,7 +265,7 @@ export default function RegisterView() {
       <Paper elevation={3} style={{ padding: '60px 40px', borderRadius: '20px' }}>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={3}>
-            <Grid item xs={6}>
+            <Grid item xs={12}>
               <TextField
                 name="PRN"
                 label="PRN"
@@ -280,19 +277,6 @@ export default function RegisterView() {
                 helperText={formErrors.PRN}
                 disabled
                 required
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                name="MUHS_PRN"
-                label="MUHS PRN"
-                variant="outlined"
-                fullWidth
-                value={formData.MUHS_PRN}
-                onChange={handleChange}
-                error={!!formErrors.MUHS_PRN}
-                helperText={formErrors.MUHS_PRN}
-                // required
               />
             </Grid>
             <Grid item xs={6}>
@@ -609,7 +593,7 @@ export default function RegisterView() {
             <Grid item xs={6}>
               <TextField
                 name="cetmarks"
-                label="NEET Marks"
+                label="CET Marks"
                 type="number"
                 variant="outlined"
                 fullWidth
@@ -634,34 +618,6 @@ export default function RegisterView() {
                   <MenuItem value="0">No</MenuItem>
                 </Select>
               </FormControl>
-            </Grid>
-            <Grid item xs={6}>
-              <FormControl fullWidth variant="outlined">
-                <InputLabel>Admission Status</InputLabel>
-                <Select
-                  name="admissionstatus"
-                  value={formData.admissionstatus}
-                  onChange={handleChange}
-                  label="Admission Status"
-                  required
-                >
-                  <MenuItem value="active">Active</MenuItem>
-                  <MenuItem value="inactive">Inactive</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                name="remark"
-                label="Remark"
-                variant="outlined"
-                fullWidth
-                value={formData.remark}
-                onChange={handleChange}
-                error={!!formErrors.remark}
-                helperText={formErrors.remark}
-                required
-              />
             </Grid>
             <Grid item xs={12}>
               <TextField
