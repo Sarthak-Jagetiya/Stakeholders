@@ -73,7 +73,7 @@ const navConfig = [
     icon: icon('ic_document'),
   },
   {
-    title: 'transactions',
+    title: 'tution fee transactions',
     path: '/transactions',
     icon: icon('ic_transaction'),
   },

@@ -15,6 +15,8 @@ import InputLabel from '@mui/material/InputLabel';
 import Typography from '@mui/material/Typography';
 import FormControl from '@mui/material/FormControl';
 
+const databaseLocalUrl = `${import.meta.env.VITE_DATABASE_LOCAL}`;
+
 export default function RegisterView() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -71,7 +73,7 @@ export default function RegisterView() {
     const year = currentYear + (currentYear + 1).toString().slice(-2);
     const pretext = `FS${year}`;
     try {
-      const response = await axios.get('http://localhost:3000/api/feestructure/unique');
+      const response = await axios.get(`${databaseLocalUrl}feestructure/unique`);
       if (response.data.status === 'success') {
         setCategoryOptions(
           response.data.data.data.map((option) => ({
@@ -87,7 +89,7 @@ export default function RegisterView() {
 
   const generatePRN = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/api/student/lastStudent/');
+      const response = await axios.get(`${databaseLocalUrl}student/lastStudent/`);
       if (response.data.status === 'success') {
         const newSN = String(Number(response.data.data.slice(-3)) + 1).padStart(3, '0');
         const currYear = new Date().getFullYear();
@@ -141,7 +143,7 @@ export default function RegisterView() {
     // If `prnparam` is present, fetch the data for that PRN
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/api/student/${prnparam}`);
+        const response = await axios.get(`${databaseLocalUrl}student/${prnparam}`);
         const existingData = response.data.data;
         setFormData(existingData.data);
       } catch (error) {
@@ -204,8 +206,8 @@ export default function RegisterView() {
 
       try {
         const apiEndpoint = prnparam
-          ? `http://localhost:3000/api/student/${prnparam}`
-          : 'http://localhost:3000/api/student/';
+          ? `${databaseLocalUrl}student/${prnparam}`
+          : `${databaseLocalUrl}student/`;
 
         const response = await axios[prnparam ? 'patch' : 'post'](apiEndpoint, formData);
 
@@ -228,6 +230,8 @@ export default function RegisterView() {
         if (error.response) {
           if (error.response.status === 500) {
             setErrorMessage('An error occurred (PRN may be duplicate).');
+          } else if (error.response.status === 401) {
+            setErrorMessage('LogIn to Access');
           } else {
             setErrorMessage('An error occurred.');
           }

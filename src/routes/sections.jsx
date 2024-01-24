@@ -7,6 +7,7 @@ export const IndexPage = lazy(() => import('src/pages/app'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
 export const UserPage = lazy(() => import('src/pages/user'));
 export const LoginPage = lazy(() => import('src/pages/login'));
+export const SignupPage = lazy(() => import('src/pages/signup'));
 export const ProductsPage = lazy(() => import('src/pages/products'));
 export const RegisterPage = lazy(() => import('src/pages/register'));
 export const StudentsPage = lazy(() => import('src/pages/students'));
@@ -66,6 +67,10 @@ export default function Router() {
     {
       path: 'login',
       element: <LoginPage />,
+    },
+    {
+      path: 'signup',
+      element: <SignupPage />,
     },
     {
       path: '404',
