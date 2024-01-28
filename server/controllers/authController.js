@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const { sequelize, User } = require('./../models');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
+const { request } = require('http');
 
 const signToken = (id) => {
   // return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -65,11 +66,14 @@ exports.login = catchAsync(async (req, res, next) => {
 
 exports.protect = catchAsync(async (req, res, next) => {
   // 1) Getting token and check of it's there
+  console.log('Cookies:', req.cookies.jwt);
   let token;
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];
   }
-
+  else if(req.cookies.jwt){
+    token = req.cookies.jwt
+  }
   if (!token) {
     return next(new AppError('You are not logged in! Please log in to get access.', 401));
   }

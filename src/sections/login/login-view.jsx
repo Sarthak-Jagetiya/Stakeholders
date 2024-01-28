@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useState } from 'react';
 // import { jwt } from 'jsonwebtoken';
 
+import Cookies from 'js-cookie';
+
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
@@ -49,6 +51,9 @@ export default function LoginView() {
       });
 
       if (response.status === 200) {
+        // console.log(response.data.token);
+        // Cookies.set('jwt', response.data.token);
+        Cookies.set('jwt', response.data.token, { sameSite: 'None', secure: true });
         setErrorMessage('');
         setTimeout(() => {
           router.push('/');
