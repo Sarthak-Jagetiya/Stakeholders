@@ -87,11 +87,27 @@ export default function ScholarshipTable() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/scholarship/');
+        const token = document.cookie
+          .split('; ')
+          .find((row) => row.startsWith('jwt'))
+          .split('=')[1];
+
+        const response = await fetch('http://localhost:3000/api/scholarship/', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const data = await response.json();
         setScholarships(data.data);
       } catch (error) {
-        console.error('Error fetching scholarships data:', error.message);
+        if (
+          error instanceof TypeError &&
+          error.message.includes('Cannot read properties of undefined')
+        ) {
+          console.error('Please Login to Access.');
+        } else {
+          console.error('Error fetching scholarships data:', error.message);
+        }
         setScholarships([]);
       }
     };

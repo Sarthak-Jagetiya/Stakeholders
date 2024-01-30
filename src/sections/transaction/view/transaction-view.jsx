@@ -57,7 +57,15 @@ export default function TransactionForm() {
     // Fetch existing data if PRN is present
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/api/transaction/${idParam}`);
+        const token = document.cookie
+          .split('; ')
+          .find((row) => row.startsWith('jwt'))
+          .split('=')[1];
+        const response = await axios.get(`http://localhost:3000/api/transaction/${idParam}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const existingData = response.data.data;
         setFormData(existingData.data);
       } catch (error) {
@@ -112,12 +120,20 @@ export default function TransactionForm() {
     setLoading(true);
 
     try {
+      const token = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('jwt'))
+        .split('=')[1];
       // Determine whether to use POST or PUT based on the presence of PRN
       const apiEndpoint = idParam
         ? `http://localhost:3000/api/transaction/${idParam}`
         : 'http://localhost:3000/api/transaction';
 
-      const response = await axios[idParam ? 'patch' : 'post'](apiEndpoint, formData);
+      const response = await axios[idParam ? 'patch' : 'post'](apiEndpoint, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (response.data.status === 'success') {
         setErrorMessage('');
@@ -135,6 +151,12 @@ export default function TransactionForm() {
     } catch (error) {
       if (error.response && error.response.status === 400) {
         console.error('Student with the provided PRN does not exist.');
+        setErrorMessage('Student with the provided PRN does not exist.');
+      } else if (
+        error instanceof TypeError &&
+        error.message.includes('Cannot read properties of undefined')
+      ) {
+        console.error('Please login to access.');
         setErrorMessage('Student with the provided PRN does not exist.');
       } else {
         console.error(error);

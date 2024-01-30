@@ -36,7 +36,7 @@ const allowedOrigins = ['http://localhost:3000', 'http://127.0.0.1:3030'];
 app.use(cors({ origin: allowedOrigins, credentials: true }));
 
 // Enable pre-flight requests
-app.options('/api/user/login', cors());
+app.options('/api/user/login', cors({ credentials: true }));
 
 app.use(cookieParser());
 
@@ -52,10 +52,10 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use((req, res, next) => {
-  console.log('Cookies:', req.cookies);
-  next();
-});
+// app.use((req, res, next) => {
+//   console.log('Cookies:', req.cookies);
+//   next();
+// });
 
 // app.use((req, res, next) => {
 //   const headers = req.headers;

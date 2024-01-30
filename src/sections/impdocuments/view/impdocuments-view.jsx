@@ -84,10 +84,25 @@ export default function ImpDocumentsView() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/impdocument/');
+        const token = document.cookie
+          .split('; ')
+          .find((row) => row.startsWith('jwt'))
+          .split('=')[1];
+        const response = await axios.get('http://localhost:3000/api/impdocument/', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setImpDocuments(response.data.data);
       } catch (error) {
-        console.error('Error fetching impDocuments data:', error.message);
+        if (
+          error instanceof TypeError &&
+          error.message.includes('Cannot read properties of undefined')
+        ) {
+          console.error('Please Login to Access.');
+        } else {
+          console.error('Error fetching impDocuments data:', error.message);
+        }
         setImpDocuments([]);
       }
     };
@@ -96,7 +111,6 @@ export default function ImpDocumentsView() {
   }, []);
 
   // Apply filter to data
-  console.log(filterRemark);
   const dataFiltered = impDocuments
     .filter((row) => row.remark.toString().toLowerCase().includes(filterRemark.toLowerCase()))
     .sort((a, b) => {

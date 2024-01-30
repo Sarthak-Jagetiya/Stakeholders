@@ -66,17 +66,25 @@ const EmployeeForm = () => {
     return emergencyContactRegex.test(emergencyContact);
   };
 
-  const fetchDataForEdit = async (employeeID) => {
-    try {
-      const response = await axios.get(`http://localhost:3000/api/employee/${employeeID}`);
-      const existingData = response.data.data;
-      setFormData(existingData.data);
-    } catch (error) {
-      console.error('Error fetching existing data:', error.message);
-    }
-  };
-
   useEffect(() => {
+    const fetchDataForEdit = async (employeeID) => {
+      try {
+        const token = document.cookie
+          .split('; ')
+          .find((row) => row.startsWith('jwt'))
+          .split('=')[1];
+        const response = await axios.get(`http://localhost:3000/api/employee/${employeeID}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const existingData = response.data.data;
+        setFormData(existingData.data);
+      } catch (error) {
+        console.error('Error fetching existing data:', error.message);
+      }
+    };
+
     if (eid) {
       fetchDataForEdit(eid);
     }
@@ -136,11 +144,19 @@ const EmployeeForm = () => {
     setLoading(true);
 
     try {
+      const token = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('jwt'))
+        .split('=')[1];
       const apiEndpoint = formData.eid
         ? `http://localhost:3000/api/employee/${formData.eid}`
         : 'http://localhost:3000/api/employee/';
 
-      const response = await axios[formData.eid ? 'patch' : 'post'](apiEndpoint, formData);
+      const response = await axios[formData.eid ? 'patch' : 'post'](apiEndpoint, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (response.data.status === 'success') {
         setErrorMessage('');
@@ -161,6 +177,11 @@ const EmployeeForm = () => {
       if (error.response) {
         if (error.response.status === 500) {
           setErrorMessage('An error occurred during registration (Eid may be duplicate).');
+        } else if (
+          error instanceof TypeError &&
+          error.message.includes('Cannot read properties of undefined')
+        ) {
+          setErrorMessage('Please Login to access.');
         } else {
           console.error(error);
           setErrorMessage('An error occurred during registration');

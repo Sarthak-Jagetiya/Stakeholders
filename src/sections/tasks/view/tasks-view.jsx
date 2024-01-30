@@ -90,10 +90,25 @@ export default function FeeStructurePage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/task/');
+        const token = document.cookie
+          .split('; ')
+          .find((row) => row.startsWith('jwt'))
+          .split('=')[1];
+        const response = await axios.get('http://localhost:3000/api/task/', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setTasks(response.data.data);
       } catch (error) {
-        console.error('Error fetching tasks data:', error.message);
+        if (
+          error instanceof TypeError &&
+          error.message.includes('Cannot read properties of undefined')
+        ) {
+          console.error('Please Login to Access.');
+        } else {
+          console.error('Error fetching tasks data:', error.message);
+        }
         setTasks([]);
       }
     };

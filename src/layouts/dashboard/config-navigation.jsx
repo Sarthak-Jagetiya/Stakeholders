@@ -6,6 +6,10 @@ const icon = (name) => (
   <SvgColor src={`/assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />
 );
 
+const isToken =
+  typeof document !== 'undefined' &&
+  document.cookie.split('; ').find((row) => row.startsWith('jwt'));
+
 const navConfig = [
   // {
   //   title: 'dashboard',
@@ -110,11 +114,15 @@ const navConfig = [
   //   path: '/blog',
   //   icon: icon('ic_blog'),
   // },
-  {
-    title: 'login',
-    path: '/login',
-    icon: icon('ic_lock'),
-  },
+  ...(isToken
+    ? []
+    : [
+        {
+          title: 'login',
+          path: '/login',
+          icon: icon('ic_lock'),
+        },
+      ]),
 ];
 
 export default navConfig;

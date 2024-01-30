@@ -1,5 +1,6 @@
-import { useEffect } from 'react';
+import axios from 'axios';
 import PropTypes from 'prop-types';
+import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -14,8 +15,6 @@ import { RouterLink } from 'src/routes/components';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
-import { account } from 'src/_mock/account';
-
 import Logo from 'src/components/logo';
 import Scrollbar from 'src/components/scrollbar';
 
@@ -25,6 +24,9 @@ import navConfig from './config-navigation';
 // ----------------------------------------------------------------------
 
 export default function Nav({ openNav, onCloseNav }) {
+  const [name, setName] = useState('');
+  const [photoURL, setPhotoURL] = useState('');
+  const [role, setRole] = useState('');
   const pathname = usePathname();
 
   const upLg = useResponsive('up', 'lg');
@@ -35,6 +37,59 @@ export default function Nav({ openNav, onCloseNav }) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      const base64UrlDecode = (str) => {
+        const base64 = str.replace(/-/g, '+').replace(/_/g, '/');
+        return atob(base64);
+      };
+
+      const decodeJwt = (tkn) => {
+        const [header, payload] = tkn.split('.').map(base64UrlDecode);
+        const decodedHeader = JSON.parse(header);
+        const decodedPayload = JSON.parse(payload);
+
+        return {
+          header: decodedHeader,
+          payload: decodedPayload,
+        };
+      };
+
+      const token = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('jwt'))
+        ?.split('=')[1];
+
+      const fetchData = async () => {
+        try {
+          const decodedToken = decodeJwt(token);
+          const { id } = decodedToken.payload;
+          const response = await axios.get(`http://localhost:3000/api/user/${id}`, {
+            withCredentials: true,
+          });
+
+          if (response.status === 200) {
+            const userData = response.data.data;
+            setName(userData.name);
+            setPhotoURL(`/assets/images/avatars/avatar_${userData.id % 25}.jpg`);
+            setRole('Admin');
+          }
+        } catch (error) {
+          if (
+            error instanceof TypeError &&
+            error.message.includes('Cannot read properties of undefined')
+          ) {
+            console.error('Please Login to Access.');
+          } else {
+            console.error('Error fetching user data:', error);
+          }
+        }
+      };
+
+      fetchData();
+    }
+  }, []);
 
   const renderAccount = (
     <Box
@@ -49,13 +104,13 @@ export default function Nav({ openNav, onCloseNav }) {
         bgcolor: (theme) => alpha(theme.palette.grey[500], 0.12),
       }}
     >
-      <Avatar src={account.photoURL} alt="photoURL" />
+      <Avatar src={photoURL} alt="photoURL" />
 
       <Box sx={{ ml: 2 }}>
-        <Typography variant="subtitle2">{account.displayName}</Typography>
+        <Typography variant="subtitle2">{name}</Typography>
 
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          {account.role}
+          {role}
         </Typography>
       </Box>
     </Box>

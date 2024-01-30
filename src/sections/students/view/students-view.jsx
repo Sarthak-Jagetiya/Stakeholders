@@ -1,3 +1,4 @@
+import axios from 'axios';
 import Papa from 'papaparse';
 import { useState, useEffect } from 'react';
 
@@ -92,11 +93,28 @@ export default function StudentsView() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/student/');
-        const data = await response.json();
+        const token = document.cookie
+          .split('; ')
+          .find((row) => row.startsWith('jwt'))
+          .split('=')[1];
+
+        // Make the GET request with the Authorization header
+        const response = await axios.get('http://localhost:3000/api/student', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await response.data;
         setStudents(data.data);
       } catch (error) {
-        console.error('Error fetching students data:', error.message);
+        if (
+          error instanceof TypeError &&
+          error.message.includes('Cannot read properties of undefined')
+        ) {
+          console.error('Please Login to Access.');
+        } else {
+          console.error('Error fetching students data:', error.message);
+        }
         setStudents([]);
       }
     };

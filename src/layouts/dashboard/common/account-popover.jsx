@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import PropTypes from 'prop-types';
+import axios from 'axios';
+import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
@@ -12,12 +12,20 @@ import IconButton from '@mui/material/IconButton';
 
 // ----------------------------------------------------------------------
 
-export default function AccountPopover({
-  name = '',
-  email = '',
-  avatar = '/assets/images/avatars/avatar_1.jpg',
-}) {
+export default function AccountPopover() {
   const [open, setOpen] = useState(null);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [photoURL, setPhotoURL] = useState('');
+
+  // Check if document and document.cookie are defined
+  const isToken =
+    typeof document !== 'undefined' &&
+    document.cookie.split('; ').find((row) => row.startsWith('jwt'));
+
+  const deleteCookie = (cookieName) => {
+    document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+  };
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
@@ -27,35 +35,75 @@ export default function AccountPopover({
     setOpen(null);
   };
 
-  // // Get cookie by name
-  // const getCookie = (nameOfCookie) => {
-  //   const cookieString = document.cookie;
-  //   const cookies = cookieString.split(';');
+  const handleLogin = () => {
+    window.location.href = '/login';
+  };
 
-  //   const foundCookie = cookies.find((cookie) => {
-  //     const [cookieName] = cookie.trim().split('=');
-  //     return cookieName === nameOfCookie;
-  //   });
+  const handleLogout = () => {
+    deleteCookie('jwt');
+    window.location.reload();
+  };
 
-  //   return foundCookie ? decodeURIComponent(foundCookie.trim().split('=')[1]) : null;
-  // };
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      const base64UrlDecode = (str) => {
+        const base64 = str.replace(/-/g, '+').replace(/_/g, '/');
+        return atob(base64);
+      };
 
-  // // Usage
-  // const jwtCookie = getCookie('jwt');
+      const decodeJwt = (tkn) => {
+        const [header, payload] = tkn.split('.').map(base64UrlDecode);
+        const decodedHeader = JSON.parse(header);
+        const decodedPayload = JSON.parse(payload);
 
-  // if (jwtCookie) {
-  //   console.log('JWT Token:', jwtCookie);
-  // } else {
-  //   console.log('JWT Token not found');
-  // }
+        return {
+          header: decodedHeader,
+          payload: decodedPayload,
+        };
+      };
+
+      const token = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('jwt'))
+        ?.split('=')[1];
+
+      const fetchData = async () => {
+        try {
+          const decodedToken = decodeJwt(token);
+          const { id } = decodedToken.payload;
+          const response = await axios.get(`http://localhost:3000/api/user/${id}`, {
+            withCredentials: true,
+          });
+
+          if (response.status === 200) {
+            const userData = response.data.data;
+            setName(userData.name);
+            setEmail(userData.email);
+            setPhotoURL(`/assets/images/avatars/avatar_${userData.id % 25}.jpg`);
+          }
+        } catch (error) {
+          if (
+            error instanceof TypeError &&
+            error.message.includes('Cannot read properties of undefined')
+          ) {
+            console.error('Please Login to Access.');
+          } else {
+            console.error('Error fetching user data:', error);
+          }
+        }
+      };
+
+      fetchData();
+    }
+  }, []);
 
   return (
     <>
       <IconButton
         onClick={handleOpen}
         sx={{
-          width: 44,
-          height: 44,
+          width: 40,
+          height: 40,
           background: (theme) => alpha(theme.palette.grey[500], 0.08),
           ...(open && {
             background: (theme) =>
@@ -64,11 +112,11 @@ export default function AccountPopover({
         }}
       >
         <Avatar
-          src={avatar}
+          src={photoURL}
           alt={name}
           sx={{
-            width: 40,
-            height: 40,
+            width: 36,
+            height: 36,
             border: (theme) => `solid 2px ${theme.palette.background.default}`,
           }}
         >
@@ -100,26 +148,28 @@ export default function AccountPopover({
           </Typography>
         </Box>
 
-        <Divider sx={{ borderStyle: 'dashed' }} />
-
-        <Divider sx={{ borderStyle: 'dashed', m: 0 }} />
+        {isToken ? <Divider sx={{ borderStyle: 'dashed', m: 0 }} /> : ''}
 
         <MenuItem
           disableRipple
           disableTouchRipple
-          onClick={handleClose}
-          sx={{ typography: 'body2', color: 'error.main', py: 1.5 }}
+          onClick={() => {
+            handleClose();
+            if (isToken) {
+              handleLogout();
+            } else {
+              handleLogin();
+            }
+          }}
+          sx={{
+            typography: 'body2',
+            color: isToken ? 'error.main' : 'primary.main',
+            py: 1.5,
+          }}
         >
-          {/* {name === '' ? 'Login' : 'Logout'} */}
-          Logout
+          {isToken ? 'Logout' : 'Login'}
         </MenuItem>
       </Popover>
     </>
   );
 }
-
-AccountPopover.propTypes = {
-  name: PropTypes.string.isRequired,
-  email: PropTypes.string.isRequired,
-  avatar: PropTypes.string.isRequired,
-};

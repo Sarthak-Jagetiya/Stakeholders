@@ -89,7 +89,15 @@ export default function RegisterView() {
 
   const generatePRN = async () => {
     try {
-      const response = await axios.get(`${databaseLocalUrl}student/lastStudent/`);
+      const token = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('jwt'))
+        .split('=')[1];
+      const response = await axios.get(`${databaseLocalUrl}student/lastStudent/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (response.data.status === 'success') {
         const newSN = String(Number(response.data.data.slice(-3)) + 1).padStart(3, '0');
         const currYear = new Date().getFullYear();
@@ -143,7 +151,15 @@ export default function RegisterView() {
     // If `prnparam` is present, fetch the data for that PRN
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${databaseLocalUrl}student/${prnparam}`);
+        const token = document.cookie
+          .split('; ')
+          .find((row) => row.startsWith('jwt'))
+          .split('=')[1];
+        const response = await axios.get(`${databaseLocalUrl}student/${prnparam}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const existingData = response.data.data;
         setFormData(existingData.data);
       } catch (error) {
@@ -209,7 +225,16 @@ export default function RegisterView() {
           ? `${databaseLocalUrl}student/${prnparam}`
           : `${databaseLocalUrl}student/`;
 
-        const response = await axios[prnparam ? 'patch' : 'post'](apiEndpoint, formData);
+        const token = document.cookie
+          .split('; ')
+          .find((row) => row.startsWith('jwt'))
+          .split('=')[1];
+
+        const response = await axios[prnparam ? 'patch' : 'post'](apiEndpoint, formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         if (response.data.status === 'success') {
           setErrorMessage('');
@@ -218,7 +243,6 @@ export default function RegisterView() {
           setTimeout(() => {
             setSuccessMessage('');
             if (prnparam) window.location.href = '/students';
-            else setFormData(initialFormData);
           }, 1000);
           setFormData(initialFormData);
         } else {
@@ -230,8 +254,11 @@ export default function RegisterView() {
         if (error.response) {
           if (error.response.status === 500) {
             setErrorMessage('An error occurred (PRN may be duplicate).');
-          } else if (error.response.status === 401) {
-            setErrorMessage('LogIn to Access');
+          } else if (
+            error instanceof TypeError &&
+            error.message.includes('Cannot read properties of undefined')
+          ) {
+            setErrorMessage('Please Login to Access.');
           } else {
             setErrorMessage('An error occurred.');
           }

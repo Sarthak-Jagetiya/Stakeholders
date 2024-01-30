@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Cookies from 'js-cookie';
 import { useState } from 'react';
 
 import Box from '@mui/material/Box';
@@ -30,6 +31,9 @@ export default function SignupView() {
   });
   // const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const isToken =
+    typeof document !== 'undefined' &&
+    document.cookie.split('; ').find((row) => row.startsWith('jwt'));
 
   const handleChange = (e) => {
     setFormData({
@@ -39,11 +43,41 @@ export default function SignupView() {
   };
 
   const handleClick = async () => {
+    // Validation
+    const errors = {};
+
+    // Name validation
+    if (!formData.name.trim()) {
+      errors.name = 'Name is required';
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.email.trim() || !emailRegex.test(formData.email.trim())) {
+      errors.email = 'Enter a valid email address';
+    }
+
+    // Set errors and return if any validation fails
+    setErrorMessage(Object.values(errors).join(', ')); // Convert object values to a string
+    if (Object.keys(errors).length > 0) {
+      return;
+    }
+
+    formData.name = formData.name.trim();
+    formData.email = formData.email.trim();
+    formData.password = formData.password.trim();
+
     try {
       const response = await axios.post('http://localhost:3000/api/user/signup', formData, {
         withCredentials: true,
       });
+
       if (response.status === 201) {
+        Cookies.set('jwt', response.data.token, {
+          expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+          sameSite: 'None',
+          secure: true,
+        });
         setErrorMessage('');
         setTimeout(() => {
           router.push('/');
@@ -57,6 +91,19 @@ export default function SignupView() {
 
   const handleLogin = () => {
     router.push('/login');
+  };
+
+  const deleteCookie = (cookieName) => {
+    document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+  };
+
+  const handleLogout = () => {
+    deleteCookie('jwt');
+    window.location.reload();
+  };
+
+  const handleHome = () => {
+    router.push('/');
   };
 
   const renderForm = (
@@ -109,7 +156,44 @@ export default function SignupView() {
     </>
   );
 
-  return (
+  return isToken ? (
+    <Stack alignItems="center" justifyContent="center" sx={{ height: 1 }}>
+      <Card
+        sx={{
+          p: 5,
+          width: 1,
+          maxWidth: 360,
+        }}
+      >
+        <LoadingButton
+          fullWidth
+          size="large"
+          type="submit"
+          variant="contained"
+          onClick={handleHome}
+        >
+          Home
+        </LoadingButton>
+
+        <LoadingButton
+          fullWidth
+          size="large"
+          type="submit"
+          variant="contained"
+          sx={{
+            bgcolor: 'error.main', // Change 'error.main' to the desired color
+            '&:hover': {
+              bgcolor: 'error.dark', // Change 'error.dark' to the desired hover color
+            },
+            marginTop: 2,
+          }}
+          onClick={handleLogout}
+        >
+          Logout
+        </LoadingButton>
+      </Card>
+    </Stack>
+  ) : (
     <Box
       sx={{
         ...bgGradient({

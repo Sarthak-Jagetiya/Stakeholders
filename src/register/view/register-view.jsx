@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Icon } from '@iconify/react';
 import { useLocation } from 'react-router-dom';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
@@ -63,6 +63,11 @@ export default function RegisterView() {
     return `${startYear.toString()}-${endYear.toString().slice(-2)}`;
   });
 
+  const token = document.cookie
+    .split('; ')
+    .find((row) => row.startsWith('jwt'))
+    .split('=')[1];
+
   const fetchCategoryOptions = async () => {
     const currentYear = new Date().getFullYear();
     const year = currentYear + (currentYear + 1).toString().slice(-2);
@@ -82,9 +87,14 @@ export default function RegisterView() {
     }
   };
 
-  const generatePRN = async () => {
+  const generatePRN = useCallback(async () => {
     try {
-      const response = await axios.get('http://localhost:3000/api/student/lastStudent/');
+      const response = await axios.get('http://localhost:3000/api/student/lastStudent/', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       if (response.data.status === 'success') {
         const newSN = String(Number(response.data.data.slice(-3)) + 1).padStart(3, '0');
         const currYear = new Date().getFullYear();
@@ -97,7 +107,7 @@ export default function RegisterView() {
     } catch (error) {
       console.error('Something went wrong!!');
     }
-  };
+  }, [setFormData, token]);
 
   const fetchLocalData = async () => {
     try {
@@ -138,7 +148,11 @@ export default function RegisterView() {
     // If `prnparam` is present, fetch the data for that PRN
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/api/student/${prnparam}`);
+        const response = await axios.get(`http://localhost:3000/api/student/${prnparam}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const existingData = response.data.data;
         setFormData(existingData.data);
       } catch (error) {
@@ -149,7 +163,7 @@ export default function RegisterView() {
     if (prnparam) {
       fetchData();
     }
-  }, [prnparam]);
+  }, [prnparam, token, generatePRN]);
 
   const validateForm = () => {
     let valid = true;
@@ -204,7 +218,11 @@ export default function RegisterView() {
           ? `http://localhost:3000/api/student/${prnparam}`
           : 'http://localhost:3000/api/student/';
 
-        const response = await axios[prnparam ? 'patch' : 'post'](apiEndpoint, formData);
+        const response = await axios[prnparam ? 'patch' : 'post'](apiEndpoint, formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         if (response.data.status === 'success') {
           setErrorMessage('');
@@ -225,6 +243,8 @@ export default function RegisterView() {
         if (error.response) {
           if (error.response.status === 500) {
             setErrorMessage('An error occurred (PRN may be duplicate).');
+          } else if (error.response.status === 401) {
+            setErrorMessage('Please Login to access.');
           } else {
             setErrorMessage('An error occurred.');
           }
