@@ -1,9 +1,6 @@
 import axios from 'axios';
-// import jwt from 'jsonwebtoken';
-import { useState } from 'react';
-// import { jwt } from 'jsonwebtoken';
-
 import Cookies from 'js-cookie';
+import { useState } from 'react';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -36,6 +33,9 @@ export default function LoginView() {
   });
   // const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const isToken =
+    typeof document !== 'undefined' &&
+    document.cookie.split('; ').find((row) => row.startsWith('jwt'));
 
   const handleChange = (e) => {
     setFormData({
@@ -53,10 +53,14 @@ export default function LoginView() {
       if (response.status === 200) {
         // console.log(response.data.token);
         // Cookies.set('jwt', response.data.token);
-        Cookies.set('jwt', response.data.token, { sameSite: 'None', secure: true });
+        Cookies.set('jwt', response.data.token, {
+          expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+          sameSite: 'None',
+          secure: true,
+        });
         setErrorMessage('');
         setTimeout(() => {
-          router.push('/');
+          router.back();
         }, 1000);
       }
     } catch (error) {
@@ -67,6 +71,19 @@ export default function LoginView() {
 
   const handleGetStarted = () => {
     router.push('/signup');
+  };
+
+  const deleteCookie = (cookieName) => {
+    document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+  };
+
+  const handleLogout = () => {
+    deleteCookie('jwt');
+    window.location.reload();
+  };
+
+  const handleHome = () => {
+    router.push('/');
   };
 
   const renderForm = (
@@ -118,7 +135,44 @@ export default function LoginView() {
     </>
   );
 
-  return (
+  return isToken ? (
+    <Stack alignItems="center" justifyContent="center" sx={{ height: 1 }}>
+      <Card
+        sx={{
+          p: 5,
+          width: 1,
+          maxWidth: 360,
+        }}
+      >
+        <LoadingButton
+          fullWidth
+          size="large"
+          type="submit"
+          variant="contained"
+          onClick={handleHome}
+        >
+          Home
+        </LoadingButton>
+
+        <LoadingButton
+          fullWidth
+          size="large"
+          type="submit"
+          variant="contained"
+          sx={{
+            bgcolor: 'error.main', // Change 'error.main' to the desired color
+            '&:hover': {
+              bgcolor: 'error.dark', // Change 'error.dark' to the desired hover color
+            },
+            marginTop: 2,
+          }}
+          onClick={handleLogout}
+        >
+          Logout
+        </LoadingButton>
+      </Card>
+    </Stack>
+  ) : (
     <Box
       sx={{
         ...bgGradient({

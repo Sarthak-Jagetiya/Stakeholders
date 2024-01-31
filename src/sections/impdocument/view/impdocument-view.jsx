@@ -34,7 +34,15 @@ const ImpDocumentForm = () => {
     // Fetch existing data if did is present
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/api/impdocument/${didParam}`);
+        const token = document.cookie
+          .split('; ')
+          .find((row) => row.startsWith('jwt'))
+          .split('=')[1];
+        const response = await axios.get(`http://localhost:3000/api/impdocument/${didParam}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const existingData = response.data.data;
         setFormData(existingData.data);
       } catch (error) {
@@ -108,12 +116,20 @@ const ImpDocumentForm = () => {
     setLoading(true);
 
     try {
+      const token = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('jwt'))
+        .split('=')[1];
       // Determine whether to use POST or PUT based on the presence of did
       const apiEndpoint = didParam
         ? `http://localhost:3000/api/impdocument/${didParam}`
         : 'http://localhost:3000/api/impdocument/';
 
-      const response = await axios[didParam ? 'patch' : 'post'](apiEndpoint, formData);
+      const response = await axios[didParam ? 'patch' : 'post'](apiEndpoint, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (response.data.status === 'success') {
         setErrorMessage('');
@@ -134,7 +150,14 @@ const ImpDocumentForm = () => {
         );
       }
     } catch (error) {
-      setErrorMessage(`An error occurred during document ${didParam ? 'update' : 'submission'}.`);
+      if (
+        error instanceof TypeError &&
+        error.message.includes('Cannot read properties of undefined')
+      ) {
+        setErrorMessage('Please Login to access.');
+      } else {
+        setErrorMessage(`An error occurred during document ${didParam ? 'update' : 'submission'}.`);
+      }
     } finally {
       setLoading(false);
     }

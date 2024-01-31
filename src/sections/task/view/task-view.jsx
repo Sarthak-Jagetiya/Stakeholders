@@ -40,7 +40,15 @@ export default function TaskForm() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/api/task/${tid}`);
+        const token = document.cookie
+          .split('; ')
+          .find((row) => row.startsWith('jwt'))
+          .split('=')[1];
+        const response = await axios.get(`http://localhost:3000/api/task/${tid}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const existingData = response.data.data;
         setFormData(existingData.data);
       } catch (error) {
@@ -80,12 +88,19 @@ export default function TaskForm() {
     setLoading(true);
 
     try {
+      const token = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('jwt'))
+        .split('=')[1];
       const apiEndpoint = tid
         ? `http://localhost:3000/api/task/${tid}`
         : 'http://localhost:3000/api/task';
 
-      const response = await axios[tid ? 'patch' : 'post'](apiEndpoint, formData);
-      console.log(formData);
+      const response = await axios[tid ? 'patch' : 'post'](apiEndpoint, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (response.data.status === 'success') {
         setErrorMessage('');
@@ -101,6 +116,11 @@ export default function TaskForm() {
     } catch (error) {
       if (error.response && error.response.status === 399) {
         setErrorMessage('Employee with the provided EID does not exist.');
+      } else if (
+        error instanceof TypeError &&
+        error.message.includes('Cannot read properties of undefined')
+      ) {
+        setErrorMessage('Please Login to access.');
       } else {
         setErrorMessage(`An error occurred during task ${tid ? 'update' : 'submission'}.`);
       }

@@ -8,6 +8,9 @@ import Typography from '@mui/material/Typography';
 // ----------------------------------------------------------------------
 
 export default function TableNoData({ query }) {
+  const isToken =
+    typeof document !== 'undefined' &&
+    document.cookie.split('; ').find((row) => row.startsWith('jwt'));
   return (
     <TableRow>
       <TableCell align="center" colSpan={12} sx={{ py: 5 }}>
@@ -17,13 +20,15 @@ export default function TableNoData({ query }) {
           }}
         >
           <Typography variant="h6" paragraph>
-            Not found
+            {isToken ? 'Not found' : 'Please Login to access.'}
           </Typography>
 
           <Typography variant="body2">
-            No results found for &nbsp;
-            <strong>&quot;{query}&quot;</strong>.
-            <br /> Try checking for typos or using complete words.
+            {isToken ? 'No results found for &nbsp;' : 'You are not authorized to access'}
+            {isToken ? <strong>&quot;{query}&quot;</strong> : ''}
+
+            <br />
+            {isToken ? 'Try checking for typos or using complete words.' : ''}
           </Typography>
         </Paper>
       </TableCell>

@@ -39,7 +39,15 @@ export default function ScholarshipForm() {
     // Fetch existing data if PRN is present
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/api/scholarship/${idParam}`);
+        const token = document.cookie
+          .split('; ')
+          .find((row) => row.startsWith('jwt'))
+          .split('=')[1];
+        const response = await axios.get(`http://localhost:3000/api/scholarship/${idParam}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const existingData = response.data.data;
         setFormData(existingData.data);
       } catch (error) {
@@ -79,12 +87,20 @@ export default function ScholarshipForm() {
     setLoading(true);
 
     try {
+      const token = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('jwt'))
+        .split('=')[1];
       // Determine whether to use POST or PUT based on the presence of PRN
       const apiEndpoint = idParam
         ? `http://localhost:3000/api/scholarship/${idParam}`
         : 'http://localhost:3000/api/scholarship';
 
-      const response = await axios[idParam ? 'patch' : 'post'](apiEndpoint, formData);
+      const response = await axios[idParam ? 'patch' : 'post'](apiEndpoint, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (response.data.status === 'success') {
         setErrorMessage('');
@@ -101,13 +117,15 @@ export default function ScholarshipForm() {
       }
     } catch (error) {
       if (error.response && error.response.status === 399) {
-        console.error('Student with the provided PRN does not exist.');
         setErrorMessage('Student with the provided PRN does not exist.');
       } else if (error.response && error.response.status === 400) {
-        console.error('Transaction with the provided ID does not exist.');
         setErrorMessage('Transaction with the provided ID does not exist.');
+      } else if (
+        error instanceof TypeError &&
+        error.message.includes('Cannot read properties of undefined')
+      ) {
+        setErrorMessage('Please Login to access.');
       } else {
-        console.error('An error occurred during scholarship submission:', error.message);
         setErrorMessage(
           `An error occurred during scholarship ${idParam ? 'update' : 'submission'}.`
         );

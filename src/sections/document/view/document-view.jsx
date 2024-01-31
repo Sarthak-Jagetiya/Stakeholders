@@ -82,7 +82,17 @@ const DocumentForm = () => {
     // Fetch existing data if PRN is present
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/api/document/${prnParam}`);
+        const token = document.cookie
+          .split('; ')
+          .find((row) => row.startsWith('jwt'))
+          .split('=')[1];
+
+        const response = await axios.get(`http://localhost:3000/api/document/${prnParam}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log(response.status);
         const existingData = response.data.data;
         setFormData(existingData.data);
       } catch (error) {
@@ -169,14 +179,20 @@ const DocumentForm = () => {
     setLoading(true);
 
     try {
+      const token = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('jwt'))
+        .split('=')[1];
       // Determine whether to use POST or PUT based on the presence of PRN
       const apiEndpoint = prnParam
         ? `http://localhost:3000/api/document/${prnParam}`
         : 'http://localhost:3000/api/document';
 
-      console.log(formData);
-
-      const response = await axios[prnParam ? 'patch' : 'post'](apiEndpoint, formData);
+      const response = await axios[prnParam ? 'patch' : 'post'](apiEndpoint, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (response.data.status === 'success') {
         setErrorMessage('');
@@ -205,9 +221,15 @@ const DocumentForm = () => {
         setErrorMessage('Student with the provided PRN does not exist.');
       } else if (error.response && error.response.status === 404) {
         setErrorMessage('No changes found to update.');
+      } else if (
+        error instanceof TypeError &&
+        error.message.includes('Cannot read properties of undefined')
+      ) {
+        setErrorMessage('Please Login to access.');
       } else {
-        console.error(error);
-        setErrorMessage(`An error occurred during document ${prnParam ? 'update' : 'submission'}.`);
+        setErrorMessage(
+          `An error occurred during document ${prnParam ? 'update' : 'submission'}. ${error}`
+        );
       }
     } finally {
       setLoading(false);

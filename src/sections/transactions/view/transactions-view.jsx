@@ -88,12 +88,27 @@ export default function TransactionsView() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/transaction/');
+        const token = document.cookie
+          .split('; ')
+          .find((row) => row.startsWith('jwt'))
+          .split('=')[1];
+        const response = await fetch('http://localhost:3000/api/transaction/', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const data = await response.json();
         setTransactions(data.data);
       } catch (error) {
-        console.error('Error fetching transactions data:', error.message);
-        setTransactions([]);
+        if (
+          error instanceof TypeError &&
+          error.message.includes('Cannot read properties of undefined')
+        ) {
+          console.error('Please Login to Access.');
+        } else {
+          console.error('Error fetching transactions data:', error.message);
+          setTransactions([]);
+        }
       }
     };
 

@@ -52,7 +52,15 @@ export default function FeeStructureForm() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/api/feestructure/${code}`);
+        const token = document.cookie
+          .split('; ')
+          .find((row) => row.startsWith('jwt'))
+          .split('=')[1];
+        const response = await axios.get(`http://localhost:3000/api/feestructure/${code}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const existingData = response.data.data;
         setFormData(existingData.data);
       } catch (error) {
@@ -94,11 +102,19 @@ export default function FeeStructureForm() {
     setLoading(true);
 
     try {
+      const token = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('jwt'))
+        .split('=')[1];
       const apiEndpoint = code
         ? `http://localhost:3000/api/feestructure/${code}`
         : 'http://localhost:3000/api/feestructure';
 
-      const response = await axios[code ? 'patch' : 'post'](apiEndpoint, formData);
+      const response = await axios[code ? 'patch' : 'post'](apiEndpoint, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (response.data.status === 'success') {
         setErrorMessage('');
@@ -116,6 +132,11 @@ export default function FeeStructureForm() {
     } catch (error) {
       if (error.response && error.response.status === 500) {
         setErrorMessage('Student entry with the provided PRN already exists.');
+      } else if (
+        error instanceof TypeError &&
+        error.message.includes('Cannot read properties of undefined')
+      ) {
+        setErrorMessage('Please Login to access.');
       } else {
         setErrorMessage(
           `An error occurred during fee structure ${code ? 'update' : 'submission'}.`

@@ -1,18 +1,19 @@
 const express = require('express');
 const transactionController = require('./../controllers/transactionController');
+const authController = require('./../controllers/authController');
 
 const router = express.Router();
-router.route('/sum/:id').get(transactionController.getTransactionSum);
+router.route('/sum/:id').get(authController.protect, transactionController.getTransactionSum);
 
 router
   .route('/')
-  .get(transactionController.getAllTransaction)
-  .post(transactionController.createTransaction);
+  .get(authController.protect, transactionController.getAllTransaction)
+  .post(authController.protect, transactionController.createTransaction);
 
 router
   .route('/:id')
-  .get(transactionController.getTransaction)
-  .delete(transactionController.deleteTransaction)
-  .patch(transactionController.updateTransaction);
+  .get(authController.protect, transactionController.getTransaction)
+  .delete(authController.protect, transactionController.deleteTransaction)
+  .patch(authController.protect, transactionController.updateTransaction);
 
 module.exports = router;

@@ -43,7 +43,15 @@ export default function ImpDocumentTableRow({
     handleCloseMenu();
 
     try {
-      const response = await axios.delete(`http://localhost:3000/api/impdocument/${did}`);
+      const token = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('jwt'))
+        .split('=')[1];
+      const response = await axios.delete(`http://localhost:3000/api/impdocument/${did}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (response.status === 200) {
         // Handle successful deletion, e.g., update the UI or show a success message

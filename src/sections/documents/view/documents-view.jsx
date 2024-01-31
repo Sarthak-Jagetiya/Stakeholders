@@ -85,11 +85,27 @@ export default function DocumentsView() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/document/');
+        const token = document.cookie
+          .split('; ')
+          .find((row) => row.startsWith('jwt'))
+          .split('=')[1];
+
+        const response = await axios.get('http://localhost:3000/api/document/', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setDocuments(response.data.data);
       } catch (error) {
-        console.error('Error fetching documents data:', error.message);
-        setDocuments([]);
+        if (
+          error instanceof TypeError &&
+          error.message.includes('Cannot read properties of undefined')
+        ) {
+          console.error('Please Login to Access.');
+        } else {
+          console.error('Error fetching documents data:', error.message);
+          setDocuments([]);
+        }
       }
     };
 

@@ -35,7 +35,15 @@ export default function FeeView() {
 
   const fetchStudentData = useCallback(async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/api/student/${prn}`);
+      const token = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('jwt'))
+        .split('=')[1];
+      const response = await axios.get(`http://localhost:3000/api/student/${prn}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (response.data.status === 'success') {
         const studentData = response.data.data.data;
         setStudentName(studentData.name);
@@ -50,14 +58,29 @@ export default function FeeView() {
         setUnpaidData(initialFeeData);
       }
     } catch (error) {
-      console.error('Error fetching student data:', error.message);
+      if (
+        error instanceof TypeError &&
+        error.message.includes('Cannot read properties of undefined')
+      ) {
+        console.error('Please Login to Access.');
+      } else {
+        console.error('Error fetching student data:', error.message);
+      }
       setStudentName('');
     }
   }, [prn, initialFeeData]);
 
   const fetchPaidData = useCallback(async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/api/transaction/sum/${prn}`);
+      const token = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('jwt'))
+        .split('=')[1];
+      const response = await axios.get(`http://localhost:3000/api/transaction/sum/${prn}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (response.data.status === 'success') {
         const { data } = response.data.data;
         setPaidData({
@@ -82,7 +105,15 @@ export default function FeeView() {
 
   const fetchUnpaidData = useCallback(async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/api/feestructure/${feeCode}`);
+      const token = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('jwt'))
+        .split('=')[1];
+      const response = await axios.get(`http://localhost:3000/api/feestructure/${feeCode}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (response.data.status === 'success') {
         const { data } = response.data.data;
         // Set unpaid amount as total - paidSum
