@@ -22,7 +22,8 @@
         "map": [["src", "./src"]],
         "extensions": [".js", ".jsx", ".json"]
       }
-    }
+    },
+    "import/core-modules": ["mui-one-time-password-input", "notistack"]
   },
   "rules": {
     "no-alert": 0,
@@ -152,7 +153,7 @@
         "devDependencies": ["**/*.test.js", "**/*.spec.js"],
         "optionalDependencies": false,
         "peerDependencies": false,
-        "packageDir": "./"
+        "packageDir": "./",
       }
     ]
   }

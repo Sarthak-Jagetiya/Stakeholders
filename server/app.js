@@ -6,6 +6,7 @@ const xss = require('xss-clean');
 const expressSanitizer = require('express-sanitizer');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
+const otpRouter = require('./routes/otpRoute');
 
 const app = express();
 
@@ -37,7 +38,6 @@ app.use(cors({ origin: allowedOrigins, credentials: true }));
 
 // Enable pre-flight requests
 app.options('/api/user/login', cors({ credentials: true }));
-
 app.use(cookieParser());
 
 // Your custom CORS headers middleware
@@ -51,6 +51,7 @@ app.use((req, res, next) => {
   );
   next();
 });
+app.use('/api/otp', otpRouter);
 
 // app.use((req, res, next) => {
 //   console.log('Cookies:', req.cookies);
