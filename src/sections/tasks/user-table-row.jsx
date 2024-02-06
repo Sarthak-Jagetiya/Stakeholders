@@ -21,6 +21,7 @@ export default function TaskTableRow({
   due_date,
   reminder_before,
   eid,
+  doc,
   status,
   remarks,
   handleClick,
@@ -38,6 +39,38 @@ export default function TaskTableRow({
   const handleEdit = () => {
     handleCloseMenu();
     window.location.href = `/task?tid=${tid}`;
+  };
+
+  const handleViewDocument = async () => {
+    // Ensure that 'doc' is a valid base64-encoded string
+    if (!doc) {
+      console.error('Error: No document data provided.');
+      return;
+    }
+
+    try {
+      // Decode base64 data
+      const decodedData = atob(doc);
+
+      // Convert the decoded data to Uint8Array
+      const uint8Array = new Uint8Array(decodedData.length);
+      for (let i = 0; i < decodedData.length; i += 1) {
+        uint8Array[i] = decodedData.charCodeAt(i);
+      }
+
+      // Create a Blob with the decoded data
+      const blob = new Blob([uint8Array], { type: 'application/pdf' });
+
+      // Create a data URL for the Blob
+      const dataURL = URL.createObjectURL(blob);
+
+      // Open the viewer URL in a new tab
+      const viewerURL = `${dataURL}`;
+      // const viewerURL = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${dataURL}`;
+      window.open(viewerURL, '_blank');
+    } catch (error) {
+      console.error('Error decoding or opening the document:', error.message);
+    }
   };
 
   // Convert due_date from yyyy-mm-dd to dd-mm-yyyy
@@ -68,6 +101,20 @@ export default function TaskTableRow({
         <TableCell align="center">{reminder_before} Days</TableCell>
 
         <TableCell align="center">{eid}</TableCell>
+
+        <TableCell align="center">
+          {doc ? (
+            <a
+              href="#"
+              onClick={handleViewDocument}
+              style={{ textDecoration: 'none', color: '#1976D2', fontWeight: 'bold' }}
+            >
+              View
+            </a>
+          ) : (
+            '🚫'
+          )}
+        </TableCell>
 
         <TableCell align="center">
           <Label
@@ -120,6 +167,7 @@ TaskTableRow.propTypes = {
   due_date: PropTypes.string,
   reminder_before: PropTypes.number,
   eid: PropTypes.string,
+  doc: PropTypes.string,
   status: PropTypes.string,
   remarks: PropTypes.string,
   handleClick: PropTypes.func,

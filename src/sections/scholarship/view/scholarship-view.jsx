@@ -25,8 +25,11 @@ export default function ScholarshipForm() {
     amount: '',
     date: '',
     transactionID: '',
+    scholarshipID: '',
     installment: '',
     remark: '',
+    academicyear: '',
+    yearname: '',
   };
 
   const [formData, setFormData] = useState(initialFormData);
@@ -34,6 +37,12 @@ export default function ScholarshipForm() {
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const getCurrentYear = () => new Date().getFullYear();
+  const academicYearOptions = Array.from({ length: 6 }, (_, index) => {
+    const startYear = getCurrentYear() - index;
+    const endYear = startYear + 1;
+    return `${startYear.toString()}-${endYear.toString().slice(-2)}`;
+  });
 
   useEffect(() => {
     // Fetch existing data if PRN is present
@@ -74,7 +83,12 @@ export default function ScholarshipForm() {
     // Input Validation
     const errors = {};
     Object.keys(formData).forEach((key) => {
-      if (!formData[key] && formData[key] !== 0 && key !== 'transactionID') {
+      if (
+        !formData[key] &&
+        formData[key] !== 0 &&
+        key !== 'transactionID' &&
+        key !== 'scholarshipID'
+      ) {
         errors[key] = `${key.charAt(0).toUpperCase() + key.slice(1)} is required`;
       }
     });
@@ -222,11 +236,24 @@ export default function ScholarshipForm() {
                 label="Transaction ID"
                 variant="outlined"
                 fullWidth
-                type="number"
                 value={formData.transactionID}
                 onChange={handleChange}
                 error={!!formErrors.transactionID}
                 helperText={formErrors.transactionID}
+              />
+            </Grid>
+
+            {/* Scholarship ID */}
+            <Grid item xs={6}>
+              <TextField
+                name="scholarshipID"
+                label="Scholarship ID"
+                variant="outlined"
+                fullWidth
+                value={formData.scholarshipID}
+                onChange={handleChange}
+                error={!!formErrors.scholarshipID}
+                helperText={formErrors.scholarshipID}
               />
             </Grid>
 
@@ -252,13 +279,58 @@ export default function ScholarshipForm() {
               </FormControl>
             </Grid>
 
-            {/* Remark */}
+            {/* Year Name */}
             <Grid item xs={6}>
+              <FormControl fullWidth variant="outlined">
+                <InputLabel>Year Name</InputLabel>
+                <Select
+                  name="yearname"
+                  value={formData.yearname}
+                  onChange={handleChange}
+                  label="Installment"
+                  error={!!formErrors.yearname}
+                  helperText={formErrors.yearname}
+                  required
+                >
+                  <MenuItem value="1st Year">1st Year</MenuItem>
+                  <MenuItem value="2nd Year">2nd Year</MenuItem>
+                  <MenuItem value="3rd Year">3rd Year</MenuItem>
+                  <MenuItem value="4th Year">4th Year</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+
+            {/* Academic Year */}
+            <Grid item xs={6}>
+              <FormControl fullWidth variant="outlined">
+                <InputLabel>Academic Year</InputLabel>
+                <Select
+                  name="academicyear"
+                  value={formData.academicyear}
+                  onChange={handleChange}
+                  label="Admission Year"
+                  error={!!formErrors.academicyear}
+                  helperText={formErrors.academicyear}
+                  required
+                >
+                  {academicYearOptions.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+
+            {/* Remark */}
+            <Grid item xs={12}>
               <TextField
                 name="remark"
                 label="Remark"
                 variant="outlined"
                 fullWidth
+                multiline
+                rows={2}
                 value={formData.remark}
                 onChange={handleChange}
                 error={!!formErrors.remark}

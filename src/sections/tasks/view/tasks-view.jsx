@@ -242,6 +242,7 @@ export default function FeeStructurePage() {
                   { id: '' },
                   { id: 'reminder_before', label: 'ReminderBefore' },
                   { id: 'eid', label: 'EmployeeID' },
+                  { id: 'doc', label: 'Document' },
                   { id: 'status', label: 'Status' },
                   { id: 'remarks', label: 'Remarks' },
                   { id: '' },
@@ -260,6 +261,7 @@ export default function FeeStructurePage() {
                       due_date={row.due_date}
                       reminder_before={row.reminder_before}
                       eid={row.eid}
+                      doc={row.doc}
                       status={row.status}
                       remarks={row.remarks}
                       selected={selected.indexOf(row.tid) !== -1}

@@ -92,7 +92,6 @@ const DocumentForm = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log(response.status);
         const existingData = response.data.data;
         setFormData(existingData.data);
       } catch (error) {
@@ -165,12 +164,12 @@ const DocumentForm = () => {
 
     // Input Validation
     const errors = {};
-    Object.keys(formData).forEach((key) => {
-      if (!formData[key] && key === 'PRN') {
-        errors[key] = `${key} is required`;
-      }
-    });
-    setFormErrors(errors);
+    // Object.keys(formData).forEach((key) => {
+    //   if (!formData[key] && key === 'PRN') {
+    //     errors[key] = `${key} is required`;
+    //   }
+    // });
+    // setFormErrors(errors);
 
     if (Object.keys(errors).length > 0) {
       return;

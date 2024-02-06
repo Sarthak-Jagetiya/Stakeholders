@@ -15,7 +15,11 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       transactionID: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      scholarshipID: {
+        type: DataTypes.TEXT,
         allowNull: true,
       },
       installment: {
@@ -23,6 +27,14 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       remark: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      academicyear: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      yearname: {
         type: DataTypes.TEXT,
         allowNull: false,
       },

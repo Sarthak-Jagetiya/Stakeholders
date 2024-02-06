@@ -33,6 +33,7 @@ exports.getTransactionSum = catchAsync(async (req, res) => {
       [sequelize.literal('SUM(universityfees)'), 'universityfees'],
       [sequelize.literal('SUM(library)'), 'library'],
       [sequelize.literal('SUM(collegeexam)'), 'collegeexam'],
+      [sequelize.literal('SUM(developmentfee)'), 'developmentfee'],
       [sequelize.literal('SUM(other)'), 'other'],
       [sequelize.literal('SUM(cautionmoney)'), 'cautionmoney'],
       'signature',

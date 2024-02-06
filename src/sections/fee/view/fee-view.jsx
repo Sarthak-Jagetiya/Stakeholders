@@ -25,6 +25,7 @@ export default function FeeView() {
       universityfees: 0,
       library: 0,
       collegeexam: 0,
+      developmentfee: 0,
       other: 0,
       cautionmoney: 0,
     }),
@@ -90,6 +91,7 @@ export default function FeeView() {
           universityfees: parseFloat(data.universityfees),
           library: parseFloat(data.library),
           collegeexam: parseFloat(data.collegeexam),
+          developmentfee: parseFloat(data.developmentfee),
           other: parseFloat(data.other),
           cautionmoney: parseFloat(data.cautionmoney),
         });
@@ -124,6 +126,7 @@ export default function FeeView() {
           universityfees: parseFloat(data.universityfees),
           library: parseFloat(data.library),
           collegeexam: parseFloat(data.collegeexam),
+          developmentfee: parseFloat(data.developmentfee),
           other: parseFloat(data.other),
           cautionmoney: parseFloat(data.cautionmoney),
         });

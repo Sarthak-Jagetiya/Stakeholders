@@ -274,8 +274,9 @@ export default function TransactionsView() {
                   { id: 'universityfees', label: 'UniversityFee' },
                   { id: 'library', label: 'Library' },
                   { id: 'collegeexam', label: 'CollegeExam' }, // Added field
-                  { id: 'other', label: 'Other' },
                   { id: 'cautionmoney', label: 'CautionMoney' },
+                  { id: 'developmentfee', label: 'DevelopmentFee' },
+                  { id: 'other', label: 'Other' },
                   { id: 'academicyear', label: 'AcademicYear' }, // Added field
                   { id: 'yearname', label: 'YearName' }, // Added field
                   { id: 'remark', label: 'Remark' }, // Added field
@@ -305,8 +306,9 @@ export default function TransactionsView() {
                       universityfees={row.universityfees}
                       library={row.library}
                       collegeexam={row.collegeexam} // Added field
-                      other={row.other}
                       cautionmoney={row.cautionmoney}
+                      developmentfee={row.developmentfee}
+                      other={row.other}
                       academicyear={row.academicyear} // Added field
                       yearname={row.yearname} // Added field
                       remark={row.remark} // Added field
@@ -319,6 +321,8 @@ export default function TransactionsView() {
                         row.eligibilityregistration +
                         row.universityfees +
                         row.library +
+                        row.collegeexam +
+                        row.developmentfee +
                         row.other +
                         row.cautionmoney
                       }

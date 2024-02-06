@@ -9,8 +9,8 @@ const signToken = (id) => {
   // return jwt.sign({ id }, process.env.JWT_SECRET, {
   //   expiresIn: process.env.JWT_EXPIRES_IN,
   // });
-  return jwt.sign({ id }, 'my-ultra-secure-and-ultra-long-secret', {
-    expiresIn: '90d',
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN,
   });
 };
 
@@ -37,6 +37,18 @@ const createSendToken = (user, statusCode, res) => {
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
+  const { email } = req.body;
+
+  // Check if email is already in use
+  const existingUser = await User.findOne({ where: { email } });
+  if (existingUser) {
+    return res.status(500).json({
+      status: 'error',
+      message: 'User with the provided Email already exists.',
+    });
+  }
+
+  // Create a new user
   const newUser = await User.create({
     name: req.body.name,
     email: req.body.email,
@@ -85,7 +97,7 @@ exports.protect = catchAsync(async (req, res, next) => {
   }
 
   // 2) Verification token
-  const decoded = await promisify(jwt.verify)(token, 'my-ultra-secure-and-ultra-long-secret');
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
   // 3) Check if user still exists
   const currentUser = await User.findOne({ where: { id: decoded.id } });
@@ -109,10 +121,7 @@ exports.isLoggedIn = async (req, res, next) => {
   if (req.cookies.jwt) {
     try {
       // 1) verify token
-      const decoded = await promisify(jwt.verify)(
-        req.cookies.jwt,
-        'my-ultra-secure-and-ultra-long-secret'
-      );
+      const decoded = await promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET);
 
       // 2) Check if user still exists
       const currentUser = await User.findOne({ where: { id: decoded.id } });

@@ -3,6 +3,10 @@ import { Outlet, Navigate, useRoutes } from 'react-router-dom';
 
 import DashboardLayout from 'src/layouts/dashboard';
 
+const isToken =
+  typeof document !== 'undefined' &&
+  document.cookie.split('; ').find((row) => row.startsWith('jwt'));
+
 export const IndexPage = lazy(() => import('src/pages/app'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
 export const UserPage = lazy(() => import('src/pages/user'));
@@ -15,6 +19,8 @@ export const DocumentPage = lazy(() => import('src/pages/document'));
 export const DocumentsPage = lazy(() => import('src/pages/documents'));
 export const ImpDocumentPage = lazy(() => import('src/pages/impdocument'));
 export const ImpDocumentsPage = lazy(() => import('src/pages/impdocuments'));
+export const ResultPage = lazy(() => import('src/pages/result'));
+export const ResultsPage = lazy(() => import('src/pages/results'));
 export const TransactionPage = lazy(() => import('src/pages/transaction'));
 export const TransactionsPage = lazy(() => import('src/pages/transactions'));
 export const FeePage = lazy(() => import('src/pages/fee'));
@@ -26,6 +32,8 @@ export const ScholarshipPage = lazy(() => import('src/pages/scholarship'));
 export const ScholarshipTablePage = lazy(() => import('src/pages/scholarshiptable'));
 export const TaskPage = lazy(() => import('src/pages/task'));
 export const TasksPage = lazy(() => import('src/pages/tasks'));
+export const PdfDoc = lazy(() => import('src/document'));
+export const LogsPage = lazy(() => import('src/pages/logs'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 
 // ----------------------------------------------------------------------
@@ -33,17 +41,17 @@ export const Page404 = lazy(() => import('src/pages/page-not-found'));
 export default function Router() {
   const routes = useRoutes([
     {
-      element: (
+      element: isToken ? (
         <DashboardLayout>
           <Suspense>
             <Outlet />
           </Suspense>
         </DashboardLayout>
+      ) : (
+        <Navigate to="/login" replace />
       ),
       children: [
         { element: <FeePage />, index: true },
-        { path: 'user', element: <UserPage /> },
-        { path: 'products', element: <ProductsPage /> },
         { path: 'register', element: <RegisterPage /> },
         { path: 'students', element: <StudentsPage /> },
         { path: 'fee', element: <FeePage /> },
@@ -53,6 +61,8 @@ export default function Router() {
         { path: 'documents', element: <DocumentsPage /> },
         { path: 'impdocument', element: <ImpDocumentPage /> },
         { path: 'impdocuments', element: <ImpDocumentsPage /> },
+        { path: 'result', element: <ResultPage /> },
+        { path: 'results', element: <ResultsPage /> },
         { path: 'transaction', element: <TransactionPage /> },
         { path: 'transactions', element: <TransactionsPage /> },
         { path: 'employee', element: <EmployeePage /> },
@@ -61,7 +71,8 @@ export default function Router() {
         { path: 'scholarshiptable', element: <ScholarshipTablePage /> },
         { path: 'task', element: <TaskPage /> },
         { path: 'tasks', element: <TasksPage /> },
-        { path: 'blog', element: <BlogPage /> },
+        { path: 'Logs', element: <LogsPage /> },
+        { path: 'doc', element: <PdfDoc /> },
       ],
     },
     {

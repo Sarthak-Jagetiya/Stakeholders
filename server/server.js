@@ -9,9 +9,9 @@ process.on('uncaughtException', (err) => {
 });
 
 var connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
+  host: process.env.HOST_MYSQL,
+  user: process.env.USER_MYSQL,
+  password: process.env.PASSWORD_MYSQL,
   database: 'stakeholders',
 });
 connection.connect((err) => {
@@ -22,7 +22,7 @@ connection.connect((err) => {
   console.log('DB connected successfull!');
 });
 
-const port = 3000;
+const port = process.env.PORT;
 let server;
 db.sequelize.sync().then(() => {
   server = app.listen(port, () => {

@@ -24,6 +24,7 @@ export default function FeeStructureTableRow({
   universityfees,
   library,
   collegeexam,
+  developmentfee,
   other,
   cautionmoney,
   handleClick,
@@ -50,7 +51,7 @@ export default function FeeStructureTableRow({
           {/* <Checkbox disableRipple checked={selected} onChange={handleClick} /> */}
         </TableCell>
 
-        <TableCell component="th" scope="row" padding="none">
+        <TableCell component="th" scope="row" padding="none" style={{ paddingLeft: '45px' }}>
           <Stack direction="row" alignItems="center" spacing={2}>
             <Avatar
               alt={code}
@@ -64,19 +65,21 @@ export default function FeeStructureTableRow({
 
         <TableCell align="center">{academicyear}</TableCell>
 
-        <TableCell>{category}</TableCell>
+        <TableCell align="center">{category}</TableCell>
 
-        <TableCell>{tuitionfees}</TableCell>
+        <TableCell align="center">{tuitionfees}</TableCell>
 
-        <TableCell>{universityfees}</TableCell>
+        <TableCell align="center">{universityfees}</TableCell>
 
-        <TableCell>{library}</TableCell>
+        <TableCell align="center">{library}</TableCell>
 
-        <TableCell>{collegeexam}</TableCell>
+        <TableCell align="center">{collegeexam}</TableCell>
 
-        <TableCell>{other}</TableCell>
+        <TableCell align="center">{developmentfee}</TableCell>
 
-        <TableCell>{cautionmoney}</TableCell>
+        <TableCell align="center">{other}</TableCell>
+
+        <TableCell align="center">{cautionmoney}</TableCell>
 
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
@@ -117,6 +120,7 @@ FeeStructureTableRow.propTypes = {
   universityfees: PropTypes.number,
   library: PropTypes.number,
   collegeexam: PropTypes.number,
+  developmentfee: PropTypes.number,
   other: PropTypes.number,
   cautionmoney: PropTypes.number,
   handleClick: PropTypes.func,

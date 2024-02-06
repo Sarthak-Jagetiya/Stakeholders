@@ -89,6 +89,14 @@ exports.getDocument = catchAsync(async (req, res) => {
 });
 
 exports.createDocument = catchAsync(async (req, res) => {
+  const doc = await Document.findOne({ where: { PRN: req.body.PRN } });
+  if (doc) {
+    return res.status(399).json({
+      status: 'error',
+      message: 'Document with the provided PRN already exist.',
+    });
+  }
+
   // Convert each document property to Buffer from base64
   const createData = {
     PRN: req.body.PRN,

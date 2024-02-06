@@ -27,8 +27,9 @@ export default function UserTableRow({
   universityfees,
   library,
   collegeexam,
-  other,
   cautionmoney,
+  developmentfee,
+  other,
   signature,
   academicyear,
   yearname,
@@ -77,8 +78,9 @@ export default function UserTableRow({
         <TableCell align="center">{universityfees}</TableCell>
         <TableCell align="center">{library}</TableCell>
         <TableCell align="center">{collegeexam}</TableCell>
-        <TableCell align="center">{other}</TableCell>
         <TableCell align="center">{cautionmoney}</TableCell>
+        <TableCell align="center">{developmentfee}</TableCell>
+        <TableCell align="center">{other}</TableCell>
         <TableCell align="center">{academicyear}</TableCell> {/* Added field */}
         <TableCell align="center">{yearname}</TableCell> {/* Added field */}
         <TableCell align="center">{remark}</TableCell> {/* Added field */}
@@ -138,8 +140,9 @@ UserTableRow.propTypes = {
   universityfees: PropTypes.any,
   library: PropTypes.any,
   collegeexam: PropTypes.any,
-  other: PropTypes.any,
   cautionmoney: PropTypes.any,
+  developmentfee: PropTypes.any,
+  other: PropTypes.any,
   signature: PropTypes.any,
   academicyear: PropTypes.any, // Added field
   yearname: PropTypes.any, // Added field

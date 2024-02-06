@@ -22,14 +22,29 @@ import { NAV } from './config-layout';
 import navConfig from './config-navigation';
 
 // ----------------------------------------------------------------------
+const databaseLocalUrl = `${import.meta.env.VITE_DATABASE_LOCAL}`;
 
 export default function Nav({ openNav, onCloseNav }) {
   const [name, setName] = useState('');
   const [photoURL, setPhotoURL] = useState('');
-  const [role, setRole] = useState('');
+  // const [role, setRole] = useState('');
   const pathname = usePathname();
 
   const upLg = useResponsive('up', 'lg');
+
+  const [currentDateTime, setCurrentDateTime] = useState(new Date());
+  const [formattedDate, setFormattedDate] = useState('');
+  const [formattedTime, setFormattedTime] = useState('');
+
+  useEffect(() => {
+    // Update the current date and time every second
+    const intervalId = setInterval(() => {
+      setCurrentDateTime(new Date());
+    }, 1000);
+
+    // Clear the interval when the component is unmounted
+    return () => clearInterval(intervalId);
+  }, [currentDateTime]);
 
   useEffect(() => {
     if (openNav) {
@@ -37,6 +52,10 @@ export default function Nav({ openNav, onCloseNav }) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
+
+  // const deleteCookie = (cookieName) => {
+  //   document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+  // };
 
   useEffect(() => {
     if (typeof document !== 'undefined') {
@@ -65,7 +84,7 @@ export default function Nav({ openNav, onCloseNav }) {
         try {
           const decodedToken = decodeJwt(token);
           const { id } = decodedToken.payload;
-          const response = await axios.get(`http://localhost:3000/api/user/${id}`, {
+          const response = await axios.get(`${databaseLocalUrl}/user/${id}`, {
             withCredentials: true,
           });
 
@@ -73,7 +92,23 @@ export default function Nav({ openNav, onCloseNav }) {
             const userData = response.data.data;
             setName(userData.name);
             setPhotoURL(`/assets/images/avatars/avatar_${userData.id % 25}.jpg`);
-            setRole('Admin');
+            // setRole('Admin');
+            setFormattedDate(
+              currentDateTime.toLocaleDateString(undefined, {
+                weekday: 'long',
+                // year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })
+            );
+            setFormattedTime(
+              currentDateTime.toLocaleTimeString(undefined, {
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric',
+                hour12: true, // Use 12-hour format
+              })
+            );
           }
         } catch (error) {
           if (
@@ -81,7 +116,14 @@ export default function Nav({ openNav, onCloseNav }) {
             error.message.includes('Cannot read properties of undefined')
           ) {
             console.error('Please Login to Access.');
-          } else {
+          }
+          // else if (error.config.timeout === 0) {
+          //   console.error('Too many requests from this IP. Please try again in an hour!');
+          //   // Delete 'jwt' cookie
+          //   document.cookie = 'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+          //   window.location.reload();
+          // }
+          else {
             console.error('Error fetching user data:', error);
           }
         }
@@ -89,7 +131,7 @@ export default function Nav({ openNav, onCloseNav }) {
 
       fetchData();
     }
-  }, []);
+  }, [setFormattedDate, setFormattedTime, currentDateTime]);
 
   const renderAccount = (
     <Box
@@ -109,8 +151,14 @@ export default function Nav({ openNav, onCloseNav }) {
       <Box sx={{ ml: 2 }}>
         <Typography variant="subtitle2">{name}</Typography>
 
-        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+        {/* <Typography variant="body2" sx={{ color: 'text.secondary' }}>
           {role}
+        </Typography> */}
+        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+          {formattedDate}
+        </Typography>
+        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+          {formattedTime}
         </Typography>
       </Box>
     </Box>

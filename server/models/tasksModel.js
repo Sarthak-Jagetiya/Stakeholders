@@ -31,6 +31,9 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
         allowNull: false,
       },
+      doc: {
+        type: DataTypes.BLOB('medium'),
+      },
     },
     {
       tableName: 'tasks',

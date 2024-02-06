@@ -39,6 +39,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
+      developmentfee: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
       signature: {
         type: DataTypes.TEXT,
         allowNull: false,
@@ -65,7 +69,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       utr: {
         type: DataTypes.TEXT,
-        allowNull: true,
+        allowNull: false,
       },
     },
     {

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Icon } from '@iconify/react';
-import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useRef, useState, useEffect } from 'react';
 
 import {
   Grid,
@@ -21,6 +21,7 @@ export default function TaskForm() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const tid = searchParams.get('tid');
+  const [fileTypeError, setFileTypeError] = useState('');
 
   const statusOptions = ['Pending', 'Completed', 'In Progress'];
   const initialFormData = {
@@ -30,12 +31,15 @@ export default function TaskForm() {
     eid: '',
     status: '',
     remarks: '',
+    doc: '',
   };
   const [formErrors, setFormErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [formData, setFormData] = useState(initialFormData);
+
+  const docRef = useRef();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,6 +65,40 @@ export default function TaskForm() {
     }
   }, [tid]);
 
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+
+    // Check if the file size is below 1MB
+    if (file.size > 1024 * 1024) {
+      setFileTypeError('File size exceeds 1MB. Please choose a smaller file.');
+      setFormData((prevData) => ({
+        ...prevData,
+        doc: null,
+      }));
+      return;
+    }
+
+    reader.onloadend = () => {
+      // Check if the file type is PDF
+      if (file.type !== 'application/pdf') {
+        setFileTypeError('Only PDF files are allowed.');
+        setFormData((prevData) => ({
+          ...prevData,
+          doc: null,
+        }));
+      } else {
+        setFileTypeError('');
+        setFormData((prevData) => ({
+          ...prevData,
+          doc: reader.result.split(',')[1],
+        }));
+      }
+    };
+
+    reader.readAsDataURL(file);
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -75,7 +113,7 @@ export default function TaskForm() {
     // Input Validation
     const errors = {};
     Object.keys(formData).forEach((key) => {
-      if (!formData[key]) {
+      if (!formData[key] && key !== 'doc') {
         errors[key] = `${key.charAt(0).toUpperCase() + key.slice(1)} is required`;
       }
     });
@@ -261,6 +299,21 @@ export default function TaskForm() {
                 error={!!formErrors.remarks}
                 helperText={formErrors.remarks}
                 required
+              />
+            </Grid>
+
+            {/* Document */}
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                type="file"
+                label="Document"
+                onChange={handleFileChange}
+                error={!!(formErrors.doc || fileTypeError)}
+                inputRef={docRef}
+                InputLabelProps={{ shrink: true }}
+                helperText={formErrors.doc || fileTypeError}
               />
             </Grid>
           </Grid>

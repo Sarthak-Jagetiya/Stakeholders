@@ -236,8 +236,11 @@ export default function ScholarshipTable() {
                   { id: 'PRN', label: 'PRN' },
                   { id: 'amount', label: 'Amount' },
                   { id: 'date', label: 'Date' },
-                  { id: 'transactionID', label: 'transactionID' },
+                  { id: 'transactionID', label: 'TransactionID' },
+                  { id: 'scholarshipID', label: 'ScholarshipID' },
                   { id: 'installment', label: 'Installment' },
+                  { id: 'academicyear', label: 'AcademicYear' },
+                  { id: 'yearname', label: 'YearName' },
                   { id: 'remark', label: 'Remark' },
                   { id: '' },
                 ]}
@@ -257,7 +260,10 @@ export default function ScholarshipTable() {
                       amount={row.amount}
                       date={row.date}
                       transactionID={row.transactionID ? row.transactionID : '―'}
+                      scholarshipID={row.scholarshipID ? row.scholarshipID : '―'}
                       installment={row.installment}
+                      academicyear={row.academicyear}
+                      yearname={row.yearname}
                       remark={row.remark}
                       selected={selected.indexOf(row.PRN) !== -1}
                       handleClick={(event) => handleClick(event, row.PRN)}

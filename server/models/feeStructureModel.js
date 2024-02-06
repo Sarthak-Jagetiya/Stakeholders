@@ -40,6 +40,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER(11),
         allowNull: false,
       },
+      developmentfee: {
+        type: DataTypes.INTEGER(11),
+        allowNull: false,
+      },
       other: {
         type: DataTypes.INTEGER(11),
         allowNull: false,

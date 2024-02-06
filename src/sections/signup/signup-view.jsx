@@ -20,6 +20,9 @@ import { bgGradient } from 'src/theme/css';
 import Logo from 'src/components/logo';
 import Iconify from 'src/components/iconify';
 
+const databaseLocalUrl = `${import.meta.env.VITE_DATABASE_LOCAL}`;
+const jwtExpiresIn = `${import.meta.env.VITE_JWT_EXPIRES_IN}`;
+
 export default function SignupView() {
   const theme = useTheme();
   const router = useRouter();
@@ -40,6 +43,49 @@ export default function SignupView() {
       ...formData,
       [e.target.name]: e.target.value,
     });
+  };
+
+  const base64UrlDecode = (str) => {
+    const base64 = str.replace(/-/g, '+').replace(/_/g, '/');
+    return atob(base64);
+  };
+
+  const decodeJwt = (tkn) => {
+    const [header, payload] = tkn.split('.').map(base64UrlDecode);
+    const decodedHeader = JSON.parse(header);
+    const decodedPayload = JSON.parse(payload);
+
+    return {
+      header: decodedHeader,
+      payload: decodedPayload,
+    };
+  };
+
+  const fetchData = async (token) => {
+    try {
+      const decodedToken = decodeJwt(token);
+      const { id } = decodedToken.payload;
+      const response = await axios.get(`http://localhost:3000/api/user/${id}`, {
+        withCredentials: true,
+      });
+      if (response.status === 200) {
+        const userData = response.data.data;
+
+        try {
+          const res = await axios.post('http://localhost:3000/api/log', {
+            userID: id,
+            username: userData.name,
+          });
+          if (res.status === 200) {
+            console.log('Logged In!');
+          }
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+        }
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   const handleClick = async () => {
@@ -68,24 +114,35 @@ export default function SignupView() {
     formData.password = formData.password.trim();
 
     try {
-      const response = await axios.post('http://localhost:3000/api/user/signup', formData, {
+      const response = await axios.post(`${databaseLocalUrl}/user/signup`, formData, {
         withCredentials: true,
       });
 
       if (response.status === 201) {
         Cookies.set('jwt', response.data.token, {
-          expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+          expires: new Date(Date.now() + jwtExpiresIn * 24 * 60 * 60 * 1000),
           sameSite: 'None',
           secure: true,
         });
         setErrorMessage('');
-        setTimeout(() => {
-          router.push('/');
-        }, 1000);
+        const token = document.cookie
+          .split('; ')
+          .find((row) => row.startsWith('jwt'))
+          ?.split('=')[1];
+        fetchData(token);
+        window.location.href = '/';
+        // setTimeout(() => {
+        // }, 1000);
       }
     } catch (error) {
-      setErrorMessage('Signup failed. Please try again.');
-      console.error('Signup error:', error);
+      if (error.response) {
+        if (error.response.status === 500) {
+          setErrorMessage('User with the provided Email already exists.');
+        }
+      } else {
+        setErrorMessage('Signup failed. Please try again.');
+        console.error('Signup error:', error);
+      }
     }
   };
 
@@ -103,7 +160,8 @@ export default function SignupView() {
   };
 
   const handleHome = () => {
-    router.push('/');
+    window.location.href = '/';
+    // router.push('/');
   };
 
   const renderForm = (

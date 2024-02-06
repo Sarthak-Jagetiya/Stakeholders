@@ -73,7 +73,7 @@ export default function RegisterView() {
     const year = currentYear + (currentYear + 1).toString().slice(-2);
     const pretext = `FS${year}`;
     try {
-      const response = await axios.get(`${databaseLocalUrl}feestructure/unique`);
+      const response = await axios.get(`${databaseLocalUrl}/feestructure/unique`);
       if (response.data.status === 'success') {
         setCategoryOptions(
           response.data.data.data.map((option) => ({
@@ -93,7 +93,7 @@ export default function RegisterView() {
         .split('; ')
         .find((row) => row.startsWith('jwt'))
         .split('=')[1];
-      const response = await axios.get(`${databaseLocalUrl}student/lastStudent/`, {
+      const response = await axios.get(`${databaseLocalUrl}/student/lastStudent/`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -155,7 +155,7 @@ export default function RegisterView() {
           .split('; ')
           .find((row) => row.startsWith('jwt'))
           .split('=')[1];
-        const response = await axios.get(`${databaseLocalUrl}student/${prnparam}`, {
+        const response = await axios.get(`${databaseLocalUrl}/student/${prnparam}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -196,8 +196,8 @@ export default function RegisterView() {
       valid = false;
     }
 
-    if (formData.cetmarks < 0 || formData.cetmarks > 100) {
-      errors.cetmarks = 'CET Marks should be between 0 and 100';
+    if (formData.cetmarks < -10 || formData.cetmarks > 720) {
+      errors.cetmarks = 'CET Marks should be between -10 and 720';
       valid = false;
     }
 
@@ -222,8 +222,8 @@ export default function RegisterView() {
 
       try {
         const apiEndpoint = prnparam
-          ? `${databaseLocalUrl}student/${prnparam}`
-          : `${databaseLocalUrl}student/`;
+          ? `${databaseLocalUrl}/student/${prnparam}`
+          : `${databaseLocalUrl}/student/`;
 
         const token = document.cookie
           .split('; ')

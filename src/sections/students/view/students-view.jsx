@@ -26,6 +26,7 @@ import UserTableHead from '../user-table-head';
 import TableEmptyRows from '../table-empty-rows';
 
 // ----------------------------------------------------------------------
+const databaseLocalUrl = `${import.meta.env.VITE_DATABASE_LOCAL}`;
 
 export default function StudentsView() {
   const [page, setPage] = useState(0);
@@ -99,7 +100,7 @@ export default function StudentsView() {
           .split('=')[1];
 
         // Make the GET request with the Authorization header
-        const response = await axios.get('http://localhost:3000/api/student', {
+        const response = await axios.get(`${databaseLocalUrl}/student`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

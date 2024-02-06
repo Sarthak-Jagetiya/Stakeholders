@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { useState } from 'react';
 import { format } from 'date-fns';
 import PropTypes from 'prop-types';
@@ -22,7 +23,10 @@ export default function ScholarshipTableRow({
   amount,
   date,
   transactionID,
+  scholarshipID,
   installment,
+  academicyear,
+  yearname,
   remark,
   handleClick,
 }) {
@@ -39,6 +43,32 @@ export default function ScholarshipTableRow({
   const handleEdit = () => {
     handleCloseMenu();
     window.location.href = `/scholarship?id=${id}`;
+  };
+
+  const handleDelete = async () => {
+    handleCloseMenu();
+
+    try {
+      const token = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('jwt'))
+        .split('=')[1];
+      const response = await axios.delete(`http://localhost:3000/api/scholarship/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 200) {
+        // Handle successful deletion, e.g., update the UI or show a success message
+      } else {
+        // Handle unsuccessful deletion, e.g., show an error message
+        console.error(`Error deleting document ${id}`);
+      }
+    } catch (error) {
+      console.error('Error deleting document:', error.message);
+    }
+    window.location.reload();
   };
 
   const formattedDate = format(new Date(date), 'dd-MM-yyyy');
@@ -64,7 +94,13 @@ export default function ScholarshipTableRow({
 
         <TableCell align="center">{transactionID}</TableCell>
 
+        <TableCell align="center">{scholarshipID}</TableCell>
+
         <TableCell align="center">{installment}</TableCell>
+
+        <TableCell align="center">{academicyear}</TableCell>
+
+        <TableCell align="center">{yearname}</TableCell>
 
         <TableCell align="center">{remark}</TableCell>
 
@@ -89,6 +125,10 @@ export default function ScholarshipTableRow({
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           Edit
         </MenuItem>
+        <MenuItem onClick={handleDelete} sx={{ color: 'error.main' }}>
+          <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
+          Delete
+        </MenuItem>
       </Popover>
     </>
   );
@@ -99,9 +139,12 @@ ScholarshipTableRow.propTypes = {
   PRN: PropTypes.string,
   avatarUrl: PropTypes.any,
   amount: PropTypes.number,
+  scholarshipID: PropTypes.any,
   transactionID: PropTypes.any,
   date: PropTypes.string,
   installment: PropTypes.string,
+  academicyear: PropTypes.string,
+  yearname: PropTypes.string,
   remark: PropTypes.string,
   handleClick: PropTypes.func,
   selected: PropTypes.bool,

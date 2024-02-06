@@ -244,6 +244,7 @@ export default function FeeStructurePage() {
                   { id: 'universityfees', label: 'University' },
                   { id: 'library', label: 'Library' },
                   { id: 'collegeexam', label: 'Exam' },
+                  { id: 'developmentfee', label: 'Development' },
                   { id: 'other', label: 'Other' },
                   { id: 'cautionmoney', label: 'Caution' },
                   { id: '' },
@@ -264,6 +265,7 @@ export default function FeeStructurePage() {
                       universityfees={row.universityfees}
                       library={row.library}
                       collegeexam={row.collegeexam}
+                      developmentfee={row.developmentfee}
                       other={row.other}
                       cautionmoney={row.cautionmoney}
                       selected={selected.indexOf(row.code) !== -1}

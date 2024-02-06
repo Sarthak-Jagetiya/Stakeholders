@@ -33,6 +33,7 @@ export default function FeeStructureForm() {
     universityfees: '',
     library: '',
     collegeexam: '',
+    developmentfee: '',
     other: '',
     cautionmoney: '',
   };
@@ -321,6 +322,22 @@ export default function FeeStructureForm() {
                 onChange={handleChange}
                 error={!!formErrors.collegeexam}
                 helperText={formErrors.collegeexam}
+                required
+              />
+            </Grid>
+
+            {/* Development Fee */}
+            <Grid item xs={6}>
+              <TextField
+                name="developmentfee"
+                label="Development Fee"
+                variant="outlined"
+                fullWidth
+                type="number"
+                value={formData.developmentfee}
+                onChange={handleChange}
+                error={!!formErrors.developmentfee}
+                helperText={formErrors.developmentfee}
                 required
               />
             </Grid>

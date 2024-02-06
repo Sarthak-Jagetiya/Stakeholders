@@ -30,6 +30,7 @@ export default function TransactionForm() {
     collegeexam: '',
     other: '',
     cautionmoney: '',
+    developmentfee: '',
     signature: '',
     academicyear: '',
     yearname: '',
@@ -44,7 +45,7 @@ export default function TransactionForm() {
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const isRTGSorNEFT = ['RTGS', 'NEFT'].includes(formData.paymenttype);
+  // const isRTGSorNEFT = ['RTGS', 'NEFT'].includes(formData.paymenttype);
 
   const getCurrentYear = () => new Date().getFullYear();
   const academicYearOptions = Array.from({ length: 6 }, (_, index) => {
@@ -310,18 +311,18 @@ export default function TransactionForm() {
               />
             </Grid>
 
-            {/* Other */}
+            {/* Development Fee */}
             <Grid item xs={6}>
               <TextField
-                name="other"
-                label="Other"
+                name="developmentfee"
+                label="Development Fee"
                 variant="outlined"
                 fullWidth
                 type="number"
-                value={formData.other}
+                value={formData.developmentfee}
                 onChange={handleChange}
-                error={!!formErrors.other}
-                helperText={formErrors.other}
+                error={!!formErrors.developmentfee}
+                helperText={formErrors.developmentfee}
                 required
               />
             </Grid>
@@ -342,21 +343,18 @@ export default function TransactionForm() {
               />
             </Grid>
 
-            {/* Date */}
+            {/* Other */}
             <Grid item xs={6}>
               <TextField
-                name="date"
-                label="Date"
+                name="other"
+                label="Other"
                 variant="outlined"
                 fullWidth
-                type="date"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                value={formData.date}
+                type="number"
+                value={formData.other}
                 onChange={handleChange}
-                error={!!formErrors.date}
-                helperText={formErrors.date}
+                error={!!formErrors.other}
+                helperText={formErrors.other}
                 required
               />
             </Grid>
@@ -373,6 +371,9 @@ export default function TransactionForm() {
                   error={!!formErrors.paymenttype}
                   required
                 >
+                  <MenuItem value="DD">DD</MenuItem>
+                  <MenuItem value="IMPS">IMPS</MenuItem>
+                  <MenuItem value="UPI">UPI</MenuItem>
                   <MenuItem value="RTGS">RTGS</MenuItem>
                   <MenuItem value="NEFT">NEFT</MenuItem>
                   <MenuItem value="CASH">CASH</MenuItem>
@@ -385,15 +386,33 @@ export default function TransactionForm() {
             <Grid item xs={6}>
               <TextField
                 name="utr"
-                label="Unique Transaction Reference (UTR Number)"
+                label="UTR/Ref. Number"
                 variant="outlined"
                 fullWidth
                 value={formData.utr}
                 onChange={handleChange}
                 error={!!formErrors.utr}
                 helperText={formErrors.utr}
-                required={isRTGSorNEFT}
-                disabled={!isRTGSorNEFT}
+                required
+              />
+            </Grid>
+
+            {/* Date */}
+            <Grid item xs={6}>
+              <TextField
+                name="date"
+                label="Date"
+                variant="outlined"
+                fullWidth
+                type="date"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                value={formData.date}
+                onChange={handleChange}
+                error={!!formErrors.date}
+                helperText={formErrors.date}
+                required
               />
             </Grid>
 
@@ -454,12 +473,14 @@ export default function TransactionForm() {
             </Grid>
 
             {/* Remark */}
-            <Grid item xs={6}>
+            <Grid item xs={12}>
               <TextField
                 name="remark"
                 label="Remark"
                 variant="outlined"
                 fullWidth
+                multiline
+                rows={2}
                 value={formData.remark}
                 onChange={handleChange}
                 error={!!formErrors.remark}
