@@ -3,7 +3,7 @@ const studentsController = require('./../controllers/studentsController');
 const authController = require('./../controllers/authController');
 
 const router = express.Router();
-router.route('/lastStudent').get(studentsController.getLastStudent);
+router.route('/lastStudent').post(studentsController.getLastStudent);
 
 router
   .route('/')

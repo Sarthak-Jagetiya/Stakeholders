@@ -124,7 +124,7 @@ export default function ScholarshipTable() {
     });
 
   const handleExportCSV = () => {
-    const csvData = Papa.unparse(scholarships, {
+    const csvData = Papa.unparse(dataFiltered, {
       header: true,
       skipEmptyLines: true,
     });

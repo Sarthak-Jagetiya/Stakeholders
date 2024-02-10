@@ -32,7 +32,6 @@ export const ScholarshipPage = lazy(() => import('src/pages/scholarship'));
 export const ScholarshipTablePage = lazy(() => import('src/pages/scholarshiptable'));
 export const TaskPage = lazy(() => import('src/pages/task'));
 export const TasksPage = lazy(() => import('src/pages/tasks'));
-export const PdfDoc = lazy(() => import('src/document'));
 export const LogsPage = lazy(() => import('src/pages/logs'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 
@@ -72,7 +71,6 @@ export default function Router() {
         { path: 'task', element: <TaskPage /> },
         { path: 'tasks', element: <TasksPage /> },
         { path: 'Logs', element: <LogsPage /> },
-        { path: 'doc', element: <PdfDoc /> },
       ],
     },
     {

@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const { sequelize, Student } = require('./../models');
 const catchAsync = require('./../utils/catchAsync');
 
@@ -25,12 +26,21 @@ exports.getStudent = catchAsync(async (req, res) => {
 });
 
 exports.getLastStudent = catchAsync(async (req, res) => {
+  // Extract year from req.body.year
+  const year = req.body.year;
+
+  // Assuming the PRN format is 'BPT2023000' where '2023' is the year
   const latestStudent = await Student.findOne({
+    where: {
+      PRN: {
+        [Op.like]: `%${year}%`, // Filter by the year in PRN
+      },
+    },
     order: [['PRN', 'DESC']],
     attributes: ['PRN'], // Only fetch the PRN field
   });
 
-  let latestPRN = 'BPT2023000';
+  let latestPRN = `BPT${year}000`; // Default value
 
   if (latestStudent && latestStudent.PRN) {
     // If a record is found, update latestPRN

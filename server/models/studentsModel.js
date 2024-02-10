@@ -11,6 +11,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
         allowNull: false,
       },
+      fathersname: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
       gender: {
         type: DataTypes.TEXT,
         allowNull: false,

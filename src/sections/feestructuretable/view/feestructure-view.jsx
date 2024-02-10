@@ -126,7 +126,7 @@ export default function FeeStructurePage() {
     });
 
   const handleExportCSV = () => {
-    const csvData = Papa.unparse(feeStructures, {
+    const csvData = Papa.unparse(dataFiltered, {
       header: true,
       skipEmptyLines: true,
     });

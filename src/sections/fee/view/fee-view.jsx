@@ -3,6 +3,8 @@ import React, { useMemo, useState, useEffect, useCallback } from 'react';
 
 import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
@@ -13,6 +15,8 @@ import AppWebsiteVisits from '../app-website-visits';
 import AppCurrentVisits from '../app-current-visits';
 
 export default function FeeView() {
+  const [academicYear, setAcademicYear] = useState('');
+  const [yearName, setYearName] = useState('');
   const [prn, setPrn] = useState('');
   const [feeCode, setFeeCode] = useState('');
   const [studentName, setStudentName] = useState('');
@@ -32,7 +36,7 @@ export default function FeeView() {
     []
   );
   const [paidData, setPaidData] = useState(initialFeeData);
-  const [unpaidData, setUnpaidData] = useState(initialFeeData);
+  const [totalFeeData, setTotalFeeData] = useState(initialFeeData);
 
   const fetchStudentData = useCallback(async () => {
     try {
@@ -56,7 +60,7 @@ export default function FeeView() {
         setFeeCode('');
         setAddYear('20XX-XX');
         setPaidData(initialFeeData);
-        setUnpaidData(initialFeeData);
+        setTotalFeeData(initialFeeData);
       }
     } catch (error) {
       if (
@@ -77,11 +81,19 @@ export default function FeeView() {
         .split('; ')
         .find((row) => row.startsWith('jwt'))
         .split('=')[1];
-      const response = await axios.get(`http://localhost:3000/api/transaction/sum/${prn}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const response = await axios.post(
+        `http://localhost:3000/api/transaction/sum`,
+        {
+          academicyear: academicYear,
+          yearname: yearName,
+          PRN: prn,
         },
-      });
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       if (response.data.status === 'success') {
         const { data } = response.data.data;
         setPaidData({
@@ -103,9 +115,9 @@ export default function FeeView() {
     } catch (error) {
       console.error('Error fetching paid data:', error.message);
     }
-  }, [prn, initialFeeData]);
+  }, [prn, initialFeeData, academicYear, yearName]);
 
-  const fetchUnpaidData = useCallback(async () => {
+  const fetchTotalFeeData = useCallback(async () => {
     try {
       const token = document.cookie
         .split('; ')
@@ -119,7 +131,7 @@ export default function FeeView() {
       if (response.data.status === 'success') {
         const { data } = response.data.data;
         // Set unpaid amount as total - paidSum
-        setUnpaidData({
+        setTotalFeeData({
           scholarship: parseFloat(data.scholarship),
           tuitionfees: parseFloat(data.tuitionfees),
           eligibilityregistration: parseFloat(data.eligibilityregistration),
@@ -131,8 +143,8 @@ export default function FeeView() {
           cautionmoney: parseFloat(data.cautionmoney),
         });
       } else {
-        // Reset unpaidData if request fails
-        setUnpaidData(initialFeeData);
+        // Reset totalFeeData if request fails
+        setTotalFeeData(initialFeeData);
         console.error('Error fetching unpaid data:', response.data.message);
       }
     } catch (error) {
@@ -140,13 +152,51 @@ export default function FeeView() {
     }
   }, [feeCode, initialFeeData]);
 
+  // const fetchData = useCallback(async () => {
+  //   try {
+  //     const token = document.cookie
+  //       .split('; ')
+  //       .find((row) => row.startsWith('jwt'))
+  //       .split('=')[1];
+
+  //     // Make the GET request with the Authorization header
+  //     const response = await axios.get(`http://localhost:3000/api/student`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     const data = await response.data;
+
+  //     // Extract unique academic years and year names
+  //     const uniqueAcademicYears = Array.from(
+  //       new Set(data.data.map((student) => student.admissionyear))
+  //     );
+  //     const uniqueYearNames = Array.from(new Set(data.data.map((student) => student.yearname)));
+
+  //     // Set state for academicYear and yearName
+  //     setAcademicYear(uniqueAcademicYears);
+  //     setYearName(uniqueYearNames);
+  //   } catch (error) {
+  //     if (
+  //       error instanceof TypeError &&
+  //       error.message.includes('Cannot read properties of undefined')
+  //     ) {
+  //       console.error('Please Login to Access.');
+  //     } else {
+  //       console.error('Error fetching students data:', error.message);
+  //     }
+  //     setAcademicYear([]);
+  //     setYearName([]);
+  //   }
+  // });
+
   useEffect(() => {
     if (prn) {
       fetchStudentData();
-      fetchPaidData();
-      fetchUnpaidData();
     }
-  }, [prn, fetchStudentData, fetchPaidData, fetchUnpaidData, initialFeeData]);
+    fetchPaidData();
+    fetchTotalFeeData();
+  }, [prn, fetchStudentData, fetchPaidData, fetchTotalFeeData, initialFeeData]);
 
   const handlePrnChange = (event) => {
     setPrn(event.target.value);
@@ -154,7 +204,7 @@ export default function FeeView() {
     setFeeCode('');
     setAddYear('20XX-XX');
     setPaidData(initialFeeData);
-    setUnpaidData(initialFeeData);
+    setTotalFeeData(initialFeeData);
   };
 
   const handleNameChange = (event) => {
@@ -162,7 +212,7 @@ export default function FeeView() {
   };
 
   const paidSum = Object.values(paidData).reduce((a, b) => a + b, 0);
-  const total = Object.values(unpaidData).reduce((a, b) => a + b, 0);
+  const total = Object.values(totalFeeData).reduce((a, b) => a + b, 0);
   const unpaidSum = total - paidSum;
 
   return (
@@ -172,6 +222,52 @@ export default function FeeView() {
       </Typography>
 
       <Grid container spacing={3}>
+        <Grid item xs={12} sm={6} md={6}>
+          <Card>
+            <CardContent sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+              <Typography sx={{ fontSize: 18, fontWeight: 'bold', mr: 4, ml: 1 }}>
+                Select AcademicYear:
+              </Typography>
+              <Select
+                variant="outlined"
+                fullWidth
+                value={academicYear}
+                onChange={(event) => setAcademicYear(event.target.value)}
+                sx={{ flex: 3 }}
+              >
+                <MenuItem value="">All Year</MenuItem>
+                <MenuItem value="2024-25">2024-25</MenuItem>
+                <MenuItem value="2023-24">2023-24</MenuItem>
+                <MenuItem value="2022-23">2022-23</MenuItem>
+                <MenuItem value="2021-22">2021-22</MenuItem>
+              </Select>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={6}>
+          <Card>
+            <CardContent sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+              <Typography sx={{ fontSize: 18, fontWeight: 'bold', mr: 4, ml: 1 }}>
+                Select YearName:
+              </Typography>
+              <Select
+                variant="outlined"
+                fullWidth
+                value={yearName}
+                onChange={(event) => setYearName(event.target.value)}
+                sx={{ flex: 3 }}
+              >
+                <MenuItem value="">All Year</MenuItem>
+                <MenuItem value="1st Year">1st Year</MenuItem>
+                <MenuItem value="2nd Year">2nd Year</MenuItem>
+                <MenuItem value="3rd Year">3rd Year</MenuItem>
+                <MenuItem value="4th Year">4th Year</MenuItem>
+              </Select>
+            </CardContent>
+          </Card>
+        </Grid>
+
         <Grid item xs={12} sm={6} md={6}>
           <Card>
             <CardContent sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
@@ -236,7 +332,7 @@ export default function FeeView() {
 
         <Grid item xs={12} sm={6} md={3}>
           <AppWidgetSummary
-            title="Session Year"
+            title="Admission Year"
             total={addYear}
             color="warning"
             icon={<img alt="icon" src="/assets/icons/glass/ic_glass_buy.png" />}
@@ -269,7 +365,7 @@ export default function FeeView() {
                   name: 'Unpaid',
                   type: 'column',
                   fill: 'solid',
-                  data: Object.values(unpaidData).map(
+                  data: Object.values(totalFeeData).map(
                     (value, index) => value - paidData[Object.keys(paidData)[index]]
                   ),
                 },
@@ -277,7 +373,7 @@ export default function FeeView() {
                   name: 'Total',
                   type: 'area',
                   fill: 'gradient',
-                  data: Object.values(unpaidData),
+                  data: Object.values(totalFeeData),
                 },
               ],
               colors: ['#1877f2', '#ffab00', '#ff5630'],

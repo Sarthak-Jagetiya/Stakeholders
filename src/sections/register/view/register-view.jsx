@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Icon } from '@iconify/react';
 import { useLocation } from 'react-router-dom';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
@@ -25,6 +25,7 @@ export default function RegisterView() {
   const initialFormData = {
     PRN: '',
     name: '',
+    fathersname: '',
     gender: '',
     dob: '',
     phone: '',
@@ -68,51 +69,63 @@ export default function RegisterView() {
     return `${startYear.toString()}-${endYear.toString().slice(-2)}`;
   });
 
-  const fetchCategoryOptions = async () => {
-    const currentYear = new Date().getFullYear();
-    const year = currentYear + (currentYear + 1).toString().slice(-2);
-    const pretext = `FS${year}`;
+  const fetchCategoryOptions = useCallback(async () => {
     try {
-      const response = await axios.get(`${databaseLocalUrl}/feestructure/unique`);
-      if (response.data.status === 'success') {
-        setCategoryOptions(
-          response.data.data.data.map((option) => ({
-            label: option.category,
-            value: `${pretext}${option.code.slice(-1)}`,
-          }))
-        );
+      if (formData.admissionyear) {
+        const year = formData.admissionyear.replace('-', '');
+        const pretext = `FS${year}`;
+        const response = await axios.get(`${databaseLocalUrl}/feestructure/unique`);
+        if (response.data.status === 'success') {
+          setCategoryOptions(
+            response.data.data.data.map((option) => ({
+              label: option.category,
+              value: `${pretext}${option.code.slice(-1)}`,
+            }))
+          );
+        }
       }
     } catch (error) {
       console.error('Failed to fetch category options:', error);
     }
-  };
+  }, [formData.admissionyear]);
 
-  const generatePRN = async () => {
+  const generatePRN = useCallback(async () => {
     try {
       const token = document.cookie
         .split('; ')
         .find((row) => row.startsWith('jwt'))
         .split('=')[1];
-      const response = await axios.get(`${databaseLocalUrl}/student/lastStudent/`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (response.data.status === 'success') {
-        const newSN = String(Number(response.data.data.slice(-3)) + 1).padStart(3, '0');
-        const currYear = new Date().getFullYear();
 
-        setFormData((prevFormData) => ({
-          ...prevFormData,
-          PRN: `BPT${String(currYear) + String(newSN)}`,
-        }));
+      // Check if formData.admissionyear is selected
+      if (formData.admissionyear) {
+        const response = await axios.post(
+          `${databaseLocalUrl}/student/lastStudent/`,
+          {
+            year: formData.admissionyear.slice(0, 4),
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.data.status === 'success') {
+          const newSN = String(Number(response.data.data.slice(-3)) + 1).padStart(3, '0');
+          const year = formData.admissionyear.slice(0, 4);
+
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            PRN: `BPT${String(year) + String(newSN)}`,
+          }));
+        }
       }
     } catch (error) {
-      console.error('Something went wrong!!');
+      console.error('Something went wrong!!', error);
     }
-  };
+  }, [formData.admissionyear]);
 
-  const fetchLocalData = async () => {
+  const fetchLocalData = useCallback(async () => {
     try {
       const courses = await axios.get('./courses.json');
       const states = await axios.get('./states.json');
@@ -141,7 +154,7 @@ export default function RegisterView() {
     } catch (error) {
       console.error('Failed to fetch Local data');
     }
-  };
+  }, []);
 
   useEffect(() => {
     generatePRN();
@@ -170,7 +183,7 @@ export default function RegisterView() {
     if (prnparam) {
       fetchData();
     }
-  }, [prnparam]);
+  }, [prnparam, fetchLocalData, fetchCategoryOptions, generatePRN]);
 
   const validateForm = () => {
     let valid = true;
@@ -336,6 +349,19 @@ export default function RegisterView() {
                 onChange={handleChange}
                 error={!!formErrors.name}
                 helperText={formErrors.name}
+                required
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                name="fathersname"
+                label="Father's Name"
+                variant="outlined"
+                fullWidth
+                value={formData.fathersname}
+                onChange={handleChange}
+                error={!!formErrors.fathersname}
+                helperText={formErrors.fathersname}
                 required
               />
             </Grid>
@@ -687,6 +713,8 @@ export default function RegisterView() {
                 label="Remark"
                 variant="outlined"
                 fullWidth
+                multiline
+                rows={2}
                 value={formData.remark}
                 onChange={handleChange}
                 error={!!formErrors.remark}
@@ -694,7 +722,7 @@ export default function RegisterView() {
                 required
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={6}>
               <TextField
                 name="address"
                 label="Address"

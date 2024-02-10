@@ -22,6 +22,7 @@ import { emptyRows } from '../utils';
 import TableNoData from '../table-no-data';
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
+import DateRangeFilter from './DateRangeFilter';
 import TableEmptyRows from '../table-empty-rows';
 
 export default function TransactionsView() {
@@ -33,6 +34,14 @@ export default function TransactionsView() {
   const [filterAcademicYear, setFilterAcademicYear] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [transactions, setTransactions] = useState([]);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+
+  const handleDateFilter = (start, end) => {
+    setPage(0);
+    setStartDate(start);
+    setEndDate(end);
+  };
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -131,7 +140,9 @@ export default function TransactionsView() {
     .filter(
       (row) =>
         row.PRN.toLowerCase().includes(filterPRN.toLowerCase()) &&
-        (!filterAcademicYear || row.academicyear === filterAcademicYear)
+        (!filterAcademicYear || row.academicyear === filterAcademicYear) &&
+        (!startDate || new Date(row.date) >= new Date(startDate)) &&
+        (!endDate || new Date(row.date) <= new Date(endDate))
     )
     .sort((a, b) => {
       const isAsc = order === 'asc';
@@ -142,7 +153,7 @@ export default function TransactionsView() {
   const notFound = dataFiltered.length === 0;
 
   const handleExportCSV = () => {
-    const csvData = Papa.unparse(transactions, {
+    const csvData = Papa.unparse(dataFiltered, {
       header: true,
       skipEmptyLines: true,
     });
@@ -220,7 +231,7 @@ export default function TransactionsView() {
       </Stack>
 
       <Card>
-        <Stack direction="row" alignItems="center">
+        <Stack direction="row" alignItems="center" sx={{ marginRight: 2 }}>
           <OutlinedInput
             value={filterPRN}
             onChange={handleFilterByPRN}
@@ -254,6 +265,7 @@ export default function TransactionsView() {
               </MenuItem>
             ))}
           </Select>
+          <DateRangeFilter onDateFilter={handleDateFilter} />
         </Stack>
 
         <Scrollbar>

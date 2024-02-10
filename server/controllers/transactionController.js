@@ -21,12 +21,44 @@ exports.getTransaction = catchAsync(async (req, res) => {
   });
 });
 
-exports.getTransactionSum = catchAsync(async (req, res) => {
-  const PRN = req.params.id;
+// exports.getTransactionSum = catchAsync(async (req, res) => {
+//   const PRN = req.params.id;
 
+//   const transaction = await Transaction.findOne({
+//     attributes: [
+//       'PRN',
+//       [sequelize.literal('SUM(scholarship)'), 'scholarship'],
+//       [sequelize.literal('SUM(tuitionfees)'), 'tuitionfees'],
+//       [sequelize.literal('SUM(eligibilityregistration)'), 'eligibilityregistration'],
+//       [sequelize.literal('SUM(universityfees)'), 'universityfees'],
+//       [sequelize.literal('SUM(library)'), 'library'],
+//       [sequelize.literal('SUM(collegeexam)'), 'collegeexam'],
+//       [sequelize.literal('SUM(developmentfee)'), 'developmentfee'],
+//       [sequelize.literal('SUM(other)'), 'other'],
+//       [sequelize.literal('SUM(cautionmoney)'), 'cautionmoney'],
+//       'signature',
+//       'academicyear',
+//       'yearname',
+//       'remark',
+//       'date',
+//       'paymenttype',
+//       'utr',
+//     ],
+//     where: { PRN: PRN },
+//     group: ['PRN'],
+//   });
+
+//   res.status(200).json({
+//     status: 'success',
+//     data: {
+//       data: transaction,
+//     },
+//   });
+// });
+
+const sumTransactions = async (conditions) => {
   const transaction = await Transaction.findOne({
     attributes: [
-      'PRN',
       [sequelize.literal('SUM(scholarship)'), 'scholarship'],
       [sequelize.literal('SUM(tuitionfees)'), 'tuitionfees'],
       [sequelize.literal('SUM(eligibilityregistration)'), 'eligibilityregistration'],
@@ -36,17 +68,23 @@ exports.getTransactionSum = catchAsync(async (req, res) => {
       [sequelize.literal('SUM(developmentfee)'), 'developmentfee'],
       [sequelize.literal('SUM(other)'), 'other'],
       [sequelize.literal('SUM(cautionmoney)'), 'cautionmoney'],
-      'signature',
-      'academicyear',
-      'yearname',
-      'remark',
-      'date',
-      'paymenttype',
-      'utr',
     ],
-    where: { PRN: PRN },
-    group: ['PRN'],
+    where: conditions,
+    // group: ['PRN'],
   });
+
+  return transaction;
+};
+
+exports.getTransactionSum = catchAsync(async (req, res) => {
+  const conditions = {};
+
+  // Add conditions if academicyear, yearname, and PRN are provided in the request body
+  if (req.body.academicyear) conditions.academicyear = req.body.academicyear;
+  if (req.body.yearname) conditions.yearname = req.body.yearname;
+  if (req.body.PRN) conditions.PRN = req.body.PRN;
+
+  const transaction = await sumTransactions(conditions);
 
   res.status(200).json({
     status: 'success',

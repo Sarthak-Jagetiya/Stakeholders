@@ -139,7 +139,7 @@ export default function Nav({ openNav, onCloseNav }) {
         my: 3,
         mx: 2.5,
         py: 2,
-        px: 2.5,
+        px: 1,
         display: 'flex',
         borderRadius: 1.5,
         alignItems: 'center',

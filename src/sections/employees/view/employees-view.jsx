@@ -126,7 +126,7 @@ export default function EmployeesView() {
     });
 
   const handleExportCSV = () => {
-    const csvData = Papa.unparse(employees, {
+    const csvData = Papa.unparse(dataFiltered, {
       header: true,
       skipEmptyLines: true,
     });

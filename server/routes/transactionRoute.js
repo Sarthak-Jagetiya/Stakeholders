@@ -3,7 +3,7 @@ const transactionController = require('./../controllers/transactionController');
 const authController = require('./../controllers/authController');
 
 const router = express.Router();
-router.route('/sum/:id').get(authController.protect, transactionController.getTransactionSum);
+router.route('/sum').post(authController.protect, transactionController.getTransactionSum);
 
 router
   .route('/')

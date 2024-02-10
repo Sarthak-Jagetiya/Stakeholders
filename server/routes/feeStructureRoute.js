@@ -4,6 +4,9 @@ const authController = require('./../controllers/authController');
 
 const router = express.Router();
 router.route('/unique').get(feeStructureController.getUniqueFeeCategory);
+router.route('/sum').post(authController.protect, feeStructureController.getFeeStructureSum);
+router.route('/summary').post(authController.protect, feeStructureController.calculateFeesSummary);
+
 router
   .route('/')
   .get(authController.protect, feeStructureController.getAllFeeStructure)

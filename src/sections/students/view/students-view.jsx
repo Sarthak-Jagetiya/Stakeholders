@@ -142,7 +142,7 @@ export default function StudentsView() {
   const notFound = dataFiltered.length === 0;
 
   const handleExportCSV = () => {
-    const csvData = Papa.unparse(students, {
+    const csvData = Papa.unparse(dataFiltered, {
       header: true,
       skipEmptyLines: true,
     });
@@ -271,6 +271,7 @@ export default function StudentsView() {
                   { id: 'PRN', label: 'PRN' },
                   { id: 'MUHS_PRN', label: 'MUHS_PRN' },
                   { id: 'name', label: 'Name' },
+                  { id: 'fathersname', label: 'FathersName' },
                   { id: 'gender', label: 'Gender' },
                   { id: 'dob', label: 'DateOfBirth' },
                   { id: 'phone', label: 'Phone' },
@@ -310,6 +311,7 @@ export default function StudentsView() {
                       PRN={row.PRN}
                       MUHS_PRN={row.MUHS_PRN ? row.MUHS_PRN : '―'}
                       name={row.name}
+                      fathersname={row.fathersname}
                       gender={row.gender}
                       dob={row.dob}
                       phone={row.phone}
