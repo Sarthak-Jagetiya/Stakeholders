@@ -105,6 +105,7 @@ export default function StudentsView() {
             Authorization: `Bearer ${token}`,
           },
         });
+        // const databaseLocalUrl = `${import.meta.env.VITE_DATABASE_LOCAL}`;
         const data = await response.data;
         setStudents(data.data);
       } catch (error) {

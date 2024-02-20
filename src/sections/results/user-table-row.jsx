@@ -15,6 +15,7 @@ import IconButton from '@mui/material/IconButton';
 import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
+const databaseLocalUrl = `${import.meta.env.VITE_DATABASE_LOCAL}`;
 
 export default function ImpDocumentTableRow({
   selected,
@@ -48,7 +49,7 @@ export default function ImpDocumentTableRow({
         .split('; ')
         .find((row) => row.startsWith('jwt'))
         .split('=')[1];
-      const response = await axios.delete(`http://localhost:3000/api/result/${rid}`, {
+      const response = await axios.delete(`${databaseLocalUrl}/result/${rid}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

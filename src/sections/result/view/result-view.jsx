@@ -11,6 +11,8 @@ import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
+const databaseLocalUrl = `${import.meta.env.VITE_DATABASE_LOCAL}`;
+
 const ResultForm = () => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -39,7 +41,7 @@ const ResultForm = () => {
           .split('; ')
           .find((row) => row.startsWith('jwt'))
           .split('=')[1];
-        const response = await axios.get(`http://localhost:3000/api/result/${ridParam}`, {
+        const response = await axios.get(`${databaseLocalUrl}/result/${ridParam}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -123,8 +125,8 @@ const ResultForm = () => {
         .split('=')[1];
       // Determine whether to use POST or PUT based on the presence of rid
       const apiEndpoint = ridParam
-        ? `http://localhost:3000/api/result/${ridParam}`
-        : 'http://localhost:3000/api/result/';
+        ? `${databaseLocalUrl}/result/${ridParam}`
+        : `${databaseLocalUrl}/result/`;
 
       const response = await axios[ridParam ? 'patch' : 'post'](apiEndpoint, formData, {
         headers: {

@@ -15,6 +15,8 @@ import Typography from '@mui/material/Typography';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 
+const databaseLocalUrl = `${import.meta.env.VITE_DATABASE_LOCAL}`;
+
 export default function ScholarshipForm() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -52,7 +54,7 @@ export default function ScholarshipForm() {
           .split('; ')
           .find((row) => row.startsWith('jwt'))
           .split('=')[1];
-        const response = await axios.get(`http://localhost:3000/api/scholarship/${idParam}`, {
+        const response = await axios.get(`${databaseLocalUrl}/scholarship/${idParam}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -107,8 +109,8 @@ export default function ScholarshipForm() {
         .split('=')[1];
       // Determine whether to use POST or PUT based on the presence of PRN
       const apiEndpoint = idParam
-        ? `http://localhost:3000/api/scholarship/${idParam}`
-        : 'http://localhost:3000/api/scholarship';
+        ? `${databaseLocalUrl}/scholarship/${idParam}`
+        : `${databaseLocalUrl}/scholarship`;
 
       const response = await axios[idParam ? 'patch' : 'post'](apiEndpoint, formData, {
         headers: {

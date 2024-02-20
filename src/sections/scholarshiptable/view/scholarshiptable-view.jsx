@@ -23,6 +23,7 @@ import UserTableHead from '../user-table-head';
 import TableEmptyRows from '../table-empty-rows';
 
 // ----------------------------------------------------------------------
+const databaseLocalUrl = `${import.meta.env.VITE_DATABASE_LOCAL}`;
 
 export default function ScholarshipTable() {
   const [page, setPage] = useState(0);
@@ -92,7 +93,7 @@ export default function ScholarshipTable() {
           .find((row) => row.startsWith('jwt'))
           .split('=')[1];
 
-        const response = await fetch('http://localhost:3000/api/scholarship/', {
+        const response = await fetch(`${databaseLocalUrl}/scholarship/`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

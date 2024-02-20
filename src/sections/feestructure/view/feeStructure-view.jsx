@@ -17,6 +17,8 @@ import {
   FormControl,
 } from '@mui/material';
 
+const databaseLocalUrl = `${import.meta.env.VITE_DATABASE_LOCAL}`;
+
 // feestructure component
 export default function FeeStructureForm() {
   const location = useLocation();
@@ -57,7 +59,7 @@ export default function FeeStructureForm() {
           .split('; ')
           .find((row) => row.startsWith('jwt'))
           .split('=')[1];
-        const response = await axios.get(`http://localhost:3000/api/feestructure/${code}`, {
+        const response = await axios.get(`${databaseLocalUrl}/feestructure/${code}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -108,8 +110,8 @@ export default function FeeStructureForm() {
         .find((row) => row.startsWith('jwt'))
         .split('=')[1];
       const apiEndpoint = code
-        ? `http://localhost:3000/api/feestructure/${code}`
-        : 'http://localhost:3000/api/feestructure';
+        ? `${databaseLocalUrl}/feestructure/${code}`
+        : `${databaseLocalUrl}/feestructure`;
 
       const response = await axios[code ? 'patch' : 'post'](apiEndpoint, formData, {
         headers: {

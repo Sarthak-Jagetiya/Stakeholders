@@ -68,14 +68,14 @@ export default function LoginView() {
     try {
       const decodedToken = decodeJwt(token);
       const { id } = decodedToken.payload;
-      const response = await axios.get(`http://localhost:3000/api/user/${id}`, {
+      const response = await axios.get(`${databaseLocalUrl}/user/${id}`, {
         withCredentials: true,
       });
       if (response.status === 200) {
         const userData = response.data.data;
 
         try {
-          const res = await axios.post('http://localhost:3000/api/log', {
+          const res = await axios.post(`${databaseLocalUrl}/log`, {
             userID: id,
             username: userData.name,
           });

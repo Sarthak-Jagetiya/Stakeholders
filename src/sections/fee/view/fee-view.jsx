@@ -14,6 +14,8 @@ import AppWidgetSummary from '../app-widget-summary';
 import AppWebsiteVisits from '../app-website-visits';
 import AppCurrentVisits from '../app-current-visits';
 
+const databaseLocalUrl = `${import.meta.env.VITE_DATABASE_LOCAL}`;
+
 export default function FeeView() {
   const [academicYear, setAcademicYear] = useState('');
   const [yearName, setYearName] = useState('');
@@ -44,7 +46,7 @@ export default function FeeView() {
         .split('; ')
         .find((row) => row.startsWith('jwt'))
         .split('=')[1];
-      const response = await axios.get(`http://localhost:3000/api/student/${prn}`, {
+      const response = await axios.get(`${databaseLocalUrl}/student/${prn}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -82,7 +84,7 @@ export default function FeeView() {
         .find((row) => row.startsWith('jwt'))
         .split('=')[1];
       const response = await axios.post(
-        `http://localhost:3000/api/transaction/sum`,
+        `${databaseLocalUrl}/transaction/sum`,
         {
           academicyear: academicYear,
           yearname: yearName,
@@ -124,7 +126,7 @@ export default function FeeView() {
         .find((row) => row.startsWith('jwt'))
         .split('=')[1];
       const response = await axios.post(
-        'http://localhost:3000/api/feestructure/summary/',
+        `${databaseLocalUrl}/feestructure/summary/`,
         {
           admissionyear: academicYear,
           yearname: yearName,
@@ -168,7 +170,7 @@ export default function FeeView() {
   //       .split('=')[1];
 
   //     // Make the GET request with the Authorization header
-  //     const response = await axios.get(`http://localhost:3000/api/student`, {
+  //     const response = await axios.get(`${databaseLocalUrl}/student`, {
   //       headers: {
   //         Authorization: `Bearer ${token}`,
   //       },

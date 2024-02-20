@@ -25,6 +25,7 @@ import TableEmptyRows from '../table-empty-rows';
 // import UserTableToolbar from '../user-table-toolbar';
 
 // ----------------------------------------------------------------------
+const databaseLocalUrl = `${import.meta.env.VITE_DATABASE_LOCAL}`;
 
 export default function EmployeesView() {
   const [page, setPage] = useState(0);
@@ -95,7 +96,7 @@ export default function EmployeesView() {
           .split('; ')
           .find((row) => row.startsWith('jwt'))
           .split('=')[1];
-        const response = await axios.get('http://localhost:3000/api/employee/', {
+        const response = await axios.get(`${databaseLocalUrl}/employee/`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

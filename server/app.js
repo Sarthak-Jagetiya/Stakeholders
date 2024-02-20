@@ -33,7 +33,7 @@ app.use(xss());
 // Prevent parameter pollution
 app.use(hpp());
 
-const allowedOrigins = ['http://localhost:3000', 'http://127.0.0.1:3030'];
+const allowedOrigins = ['http://13.126.201.24:3000', 'http://127.0.0.1:3030'];
 app.use(
   cors({
     origin: function (origin, callback) {

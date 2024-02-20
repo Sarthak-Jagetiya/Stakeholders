@@ -15,6 +15,8 @@ import IconButton from '@mui/material/IconButton';
 // import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 
+const databaseLocalUrl = `${import.meta.env.VITE_DATABASE_LOCAL}`;
+
 export default function ScholarshipTableRow({
   selected,
   id,
@@ -53,7 +55,7 @@ export default function ScholarshipTableRow({
         .split('; ')
         .find((row) => row.startsWith('jwt'))
         .split('=')[1];
-      const response = await axios.delete(`http://localhost:3000/api/scholarship/${id}`, {
+      const response = await axios.delete(`${databaseLocalUrl}/scholarship/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

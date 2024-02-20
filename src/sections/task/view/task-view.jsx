@@ -17,6 +17,8 @@ import {
   FormControl,
 } from '@mui/material';
 
+const databaseLocalUrl = `${import.meta.env.VITE_DATABASE_LOCAL}`;
+
 export default function TaskForm() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -48,7 +50,7 @@ export default function TaskForm() {
           .split('; ')
           .find((row) => row.startsWith('jwt'))
           .split('=')[1];
-        const response = await axios.get(`http://localhost:3000/api/task/${tid}`, {
+        const response = await axios.get(`${databaseLocalUrl}/task/${tid}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -130,9 +132,7 @@ export default function TaskForm() {
         .split('; ')
         .find((row) => row.startsWith('jwt'))
         .split('=')[1];
-      const apiEndpoint = tid
-        ? `http://localhost:3000/api/task/${tid}`
-        : 'http://localhost:3000/api/task';
+      const apiEndpoint = tid ? `${databaseLocalUrl}/task/${tid}` : `${databaseLocalUrl}/task`;
 
       const response = await axios[tid ? 'patch' : 'post'](apiEndpoint, formData, {
         headers: {

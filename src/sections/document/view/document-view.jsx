@@ -13,6 +13,8 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
+const databaseLocalUrl = `${import.meta.env.VITE_DATABASE_LOCAL}`;
+
 const DocumentForm = () => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -87,7 +89,7 @@ const DocumentForm = () => {
           .find((row) => row.startsWith('jwt'))
           .split('=')[1];
 
-        const response = await axios.get(`http://localhost:3000/api/document/${prnParam}`, {
+        const response = await axios.get(`${databaseLocalUrl}/document/${prnParam}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -184,8 +186,8 @@ const DocumentForm = () => {
         .split('=')[1];
       // Determine whether to use POST or PUT based on the presence of PRN
       const apiEndpoint = prnParam
-        ? `http://localhost:3000/api/document/${prnParam}`
-        : 'http://localhost:3000/api/document';
+        ? `${databaseLocalUrl}/document/${prnParam}`
+        : `${databaseLocalUrl}/document`;
 
       const response = await axios[prnParam ? 'patch' : 'post'](apiEndpoint, formData, {
         headers: {

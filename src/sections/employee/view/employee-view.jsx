@@ -15,6 +15,8 @@ import Typography from '@mui/material/Typography';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 
+const databaseLocalUrl = `${import.meta.env.VITE_DATABASE_LOCAL}`;
+
 const EmployeeForm = () => {
   const initialFormData = {
     eid: '',
@@ -73,7 +75,7 @@ const EmployeeForm = () => {
           .split('; ')
           .find((row) => row.startsWith('jwt'))
           .split('=')[1];
-        const response = await axios.get(`http://localhost:3000/api/employee/${employeeID}`, {
+        const response = await axios.get(`${databaseLocalUrl}/employee/${employeeID}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -149,8 +151,8 @@ const EmployeeForm = () => {
         .find((row) => row.startsWith('jwt'))
         .split('=')[1];
       const apiEndpoint = formData.eid
-        ? `http://localhost:3000/api/employee/${formData.eid}`
-        : 'http://localhost:3000/api/employee/';
+        ? `${databaseLocalUrl}/employee/${formData.eid}`
+        : `${databaseLocalUrl}/employee/`;
 
       const response = await axios[formData.eid ? 'patch' : 'post'](apiEndpoint, formData, {
         headers: {

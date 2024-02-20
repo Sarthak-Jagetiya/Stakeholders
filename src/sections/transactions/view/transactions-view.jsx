@@ -25,6 +25,8 @@ import UserTableHead from '../user-table-head';
 import DateRangeFilter from './DateRangeFilter';
 import TableEmptyRows from '../table-empty-rows';
 
+const databaseLocalUrl = `${import.meta.env.VITE_DATABASE_LOCAL}`;
+
 export default function TransactionsView() {
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
@@ -101,7 +103,7 @@ export default function TransactionsView() {
           .split('; ')
           .find((row) => row.startsWith('jwt'))
           .split('=')[1];
-        const response = await fetch('http://localhost:3000/api/transaction/', {
+        const response = await fetch(`${databaseLocalUrl}/transaction/`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

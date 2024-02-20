@@ -24,6 +24,7 @@ import UserTableHead from '../user-table-head';
 import TableEmptyRows from '../table-empty-rows';
 
 // ----------------------------------------------------------------------
+const databaseLocalUrl = `${import.meta.env.VITE_DATABASE_LOCAL}`;
 
 export default function FeeStructurePage() {
   const [page, setPage] = useState(0);
@@ -94,7 +95,7 @@ export default function FeeStructurePage() {
           .split('; ')
           .find((row) => row.startsWith('jwt'))
           .split('=')[1];
-        const response = await axios.get('http://localhost:3000/api/task/', {
+        const response = await axios.get(`${databaseLocalUrl}/task/`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

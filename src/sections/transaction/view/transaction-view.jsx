@@ -15,6 +15,8 @@ import Typography from '@mui/material/Typography';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 
+const databaseLocalUrl = `${import.meta.env.VITE_DATABASE_LOCAL}`;
+
 export default function TransactionForm() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -62,7 +64,7 @@ export default function TransactionForm() {
           .split('; ')
           .find((row) => row.startsWith('jwt'))
           .split('=')[1];
-        const response = await axios.get(`http://localhost:3000/api/transaction/${idParam}`, {
+        const response = await axios.get(`${databaseLocalUrl}/transaction/${idParam}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -127,8 +129,8 @@ export default function TransactionForm() {
         .split('=')[1];
       // Determine whether to use POST or PUT based on the presence of PRN
       const apiEndpoint = idParam
-        ? `http://localhost:3000/api/transaction/${idParam}`
-        : 'http://localhost:3000/api/transaction';
+        ? `${databaseLocalUrl}/transaction/${idParam}`
+        : `${databaseLocalUrl}/transaction`;
 
       const response = await axios[idParam ? 'patch' : 'post'](apiEndpoint, formData, {
         headers: {

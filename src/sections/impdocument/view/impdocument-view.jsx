@@ -11,6 +11,8 @@ import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
+const databaseLocalUrl = `${import.meta.env.VITE_DATABASE_LOCAL}`;
+
 const ImpDocumentForm = () => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -38,7 +40,7 @@ const ImpDocumentForm = () => {
           .split('; ')
           .find((row) => row.startsWith('jwt'))
           .split('=')[1];
-        const response = await axios.get(`http://localhost:3000/api/impdocument/${didParam}`, {
+        const response = await axios.get(`${databaseLocalUrl}/impdocument/${didParam}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -122,8 +124,8 @@ const ImpDocumentForm = () => {
         .split('=')[1];
       // Determine whether to use POST or PUT based on the presence of did
       const apiEndpoint = didParam
-        ? `http://localhost:3000/api/impdocument/${didParam}`
-        : 'http://localhost:3000/api/impdocument/';
+        ? `${databaseLocalUrl}/impdocument/${didParam}`
+        : `${databaseLocalUrl}/impdocument/`;
 
       const response = await axios[didParam ? 'patch' : 'post'](apiEndpoint, formData, {
         headers: {
