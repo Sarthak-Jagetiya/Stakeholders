@@ -279,6 +279,7 @@ export default function StudentsView() {
                   { id: 'email', label: 'Email' },
                   { id: 'course', label: 'Course' },
                   { id: 'admissionyear', label: 'AdmissionYear' },
+                  { id: 'yearname', label: 'YearName' },
                   { id: 'dateofadmission', label: 'AdmissionDate' },
                   { id: 'domicilestate', label: 'DomicileState' },
                   { id: 'studentcategory', label: 'StudentCategory' },
@@ -319,6 +320,7 @@ export default function StudentsView() {
                       email={row.email}
                       course={row.course}
                       admissionyear={row.admissionyear}
+                      yearname={row.yearname}
                       dateofadmission={row.dateofadmission}
                       domicilestate={row.domicilestate}
                       studentcategory={row.studentcategory}

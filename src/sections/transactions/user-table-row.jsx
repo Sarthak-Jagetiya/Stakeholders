@@ -56,7 +56,7 @@ export default function UserTableRow({
   };
 
   // Format date to dd-mm-yyyy
-  const formattedDate = format(new Date(date), 'dd-MM-yyyy');
+  const formattedDate = format(new Date(date), 'dd/MM/yyyy');
 
   return (
     <>

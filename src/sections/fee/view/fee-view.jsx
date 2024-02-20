@@ -18,7 +18,7 @@ export default function FeeView() {
   const [academicYear, setAcademicYear] = useState('');
   const [yearName, setYearName] = useState('');
   const [prn, setPrn] = useState('');
-  const [feeCode, setFeeCode] = useState('');
+  // const [feeCode, setFeeCode] = useState('');
   const [studentName, setStudentName] = useState('');
   const [addYear, setAddYear] = useState('20XX-XX');
   const initialFeeData = useMemo(
@@ -52,12 +52,12 @@ export default function FeeView() {
       if (response.data.status === 'success') {
         const studentData = response.data.data.data;
         setStudentName(studentData.name);
-        setFeeCode(studentData.feestructure);
+        // setFeeCode(studentData.feestructure);
         setAddYear(studentData.admissionyear);
       } else {
         // Reset data if student is not found
         setStudentName('Student not found');
-        setFeeCode('');
+        // setFeeCode('');
         setAddYear('20XX-XX');
         setPaidData(initialFeeData);
         setTotalFeeData(initialFeeData);
@@ -123,34 +123,42 @@ export default function FeeView() {
         .split('; ')
         .find((row) => row.startsWith('jwt'))
         .split('=')[1];
-      const response = await axios.get(`http://localhost:3000/api/feestructure/${feeCode}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const response = await axios.post(
+        'http://localhost:3000/api/feestructure/summary/',
+        {
+          admissionyear: academicYear,
+          yearname: yearName,
+          PRN: prn,
         },
-      });
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       if (response.data.status === 'success') {
-        const { data } = response.data.data;
+        const { data } = response.data;
         // Set unpaid amount as total - paidSum
         setTotalFeeData({
-          scholarship: parseFloat(data.scholarship),
-          tuitionfees: parseFloat(data.tuitionfees),
-          eligibilityregistration: parseFloat(data.eligibilityregistration),
-          universityfees: parseFloat(data.universityfees),
-          library: parseFloat(data.library),
-          collegeexam: parseFloat(data.collegeexam),
-          developmentfee: parseFloat(data.developmentfee),
-          other: parseFloat(data.other),
-          cautionmoney: parseFloat(data.cautionmoney),
+          scholarship: parseFloat(data[0].scholarship),
+          tuitionfees: parseFloat(data[0].tuitionfees),
+          eligibilityregistration: parseFloat(data[0].eligibilityregistration),
+          universityfees: parseFloat(data[0].universityfees),
+          library: parseFloat(data[0].library),
+          collegeexam: parseFloat(data[0].collegeexam),
+          developmentfee: parseFloat(data[0].developmentfee),
+          other: parseFloat(data[0].other),
+          cautionmoney: parseFloat(data[0].cautionmoney),
         });
       } else {
         // Reset totalFeeData if request fails
         setTotalFeeData(initialFeeData);
-        console.error('Error fetching unpaid data:', response.data.message);
+        console.error('Error fetching Total fee data:', response.data.message);
       }
     } catch (error) {
-      console.error('Error fetching unpaid data:', error.message);
+      console.error('Error fetching Total fee data:', error.message);
     }
-  }, [feeCode, initialFeeData]);
+  }, [initialFeeData, academicYear, yearName, prn]);
 
   // const fetchData = useCallback(async () => {
   //   try {
@@ -201,7 +209,7 @@ export default function FeeView() {
   const handlePrnChange = (event) => {
     setPrn(event.target.value);
     setStudentName();
-    setFeeCode('');
+    // setFeeCode('');
     setAddYear('20XX-XX');
     setPaidData(initialFeeData);
     setTotalFeeData(initialFeeData);
@@ -240,6 +248,7 @@ export default function FeeView() {
                 <MenuItem value="2023-24">2023-24</MenuItem>
                 <MenuItem value="2022-23">2022-23</MenuItem>
                 <MenuItem value="2021-22">2021-22</MenuItem>
+                <MenuItem value="2020-21">2020-21</MenuItem>
               </Select>
             </CardContent>
           </Card>
@@ -346,11 +355,11 @@ export default function FeeView() {
             chart={{
               labels: [
                 'Scholarship',
-                'TuitionFees',
+                'Tuition',
                 'Eligibility',
-                'UniversityFees',
+                'University',
                 'Library',
-                'CollegeExam',
+                'Exam',
                 'Other',
                 'CautionMoney',
               ],

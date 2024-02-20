@@ -47,6 +47,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
         allowNull: false,
       },
+      yearname: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
       dateofadmission: {
         type: DataTypes.DATEONLY,
         allowNull: false,

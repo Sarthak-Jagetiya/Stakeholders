@@ -90,7 +90,7 @@ export default function FeeStructureForm() {
     Object.keys(formData).forEach((key) => {
       if (key !== 'code' && parseFloat(formData[key]) < 0) {
         errors[key] = `${key.charAt(0).toUpperCase() + key.slice(1)} cannot be negative`;
-      } else if (!formData[key] && key !== 'scholarship') {
+      } else if (!formData[key] && key !== 'scholarship' && formData[key] !== 0) {
         errors[key] = `${key.charAt(0).toUpperCase() + key.slice(1)} is required`;
       }
     });
@@ -132,7 +132,7 @@ export default function FeeStructureForm() {
       }
     } catch (error) {
       if (error.response && error.response.status === 500) {
-        setErrorMessage('Student entry with the provided PRN already exists.');
+        setErrorMessage('Fee Structure with the provided code already exists.');
       } else if (
         error instanceof TypeError &&
         error.message.includes('Cannot read properties of undefined')
@@ -217,17 +217,23 @@ export default function FeeStructureForm() {
 
             {/* Category */}
             <Grid item xs={6}>
-              <TextField
-                name="category"
-                label="Category"
-                variant="outlined"
-                fullWidth
-                value={formData.category}
-                onChange={handleChange}
-                error={!!formErrors.category}
-                helperText={formErrors.category}
-                required
-              />
+              <FormControl fullWidth variant="outlined">
+                <InputLabel>Category</InputLabel>
+                <Select
+                  name="category"
+                  value={formData.category}
+                  onChange={handleChange}
+                  label="Catogery"
+                  required
+                >
+                  <MenuItem value="General_OPEN">General_OPEN</MenuItem>
+                  <MenuItem value="EBC_SEBC_EWS">EBC_SEBC_EWS</MenuItem>
+                  <MenuItem value="OBC">OBC</MenuItem>
+                  <MenuItem value="VJNT_NT_SBC_NT1_NT2_NT3">VJNT_NT_SBC_NT1_NT2_NT3</MenuItem>
+                  <MenuItem value="SC_ST">SC_ST</MenuItem>
+                  <MenuItem value="Inst_mgmt">Inst_mgmt</MenuItem>
+                </Select>
+              </FormControl>
             </Grid>
 
             {/* Scholarship */}

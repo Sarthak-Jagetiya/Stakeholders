@@ -34,6 +34,7 @@ export default function RegisterView() {
     address: '',
     course: '',
     admissionyear: '',
+    yearname: '',
     dateofadmission: '',
     domicilestate: '',
     studentcategory: '',
@@ -471,12 +472,31 @@ export default function RegisterView() {
                   error={!!formErrors.admissionyear}
                   helperText={formErrors.admissionyear}
                   required
+                  disabled={prnparam}
                 >
                   {academicYearOptions.map((option) => (
                     <MenuItem key={option} value={option}>
                       {option}
                     </MenuItem>
                   ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={6}>
+              <FormControl fullWidth variant="outlined">
+                <InputLabel>Year Name</InputLabel>
+                <Select
+                  name="yearname"
+                  value={formData.yearname}
+                  onChange={handleChange}
+                  label="Year Name"
+                  error={!!formErrors.yearname}
+                  required
+                >
+                  <MenuItem value="1st Year">1st Year</MenuItem>
+                  <MenuItem value="2nd Year">2nd Year</MenuItem>
+                  <MenuItem value="3rd Year">3rd Year</MenuItem>
+                  <MenuItem value="4th Year">4th Year</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -713,8 +733,6 @@ export default function RegisterView() {
                 label="Remark"
                 variant="outlined"
                 fullWidth
-                multiline
-                rows={2}
                 value={formData.remark}
                 onChange={handleChange}
                 error={!!formErrors.remark}
@@ -722,7 +740,7 @@ export default function RegisterView() {
                 required
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12}>
               <TextField
                 name="address"
                 label="Address"

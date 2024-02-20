@@ -20,7 +20,9 @@ export default function FeeStructureTableRow({
   code,
   academicyear,
   category,
+  scholarship,
   tuitionfees,
+  eligibilityregistration,
   universityfees,
   library,
   collegeexam,
@@ -67,7 +69,11 @@ export default function FeeStructureTableRow({
 
         <TableCell align="center">{category}</TableCell>
 
+        <TableCell align="center">{scholarship}</TableCell>
+
         <TableCell align="center">{tuitionfees}</TableCell>
+
+        <TableCell align="center">{eligibilityregistration}</TableCell>
 
         <TableCell align="center">{universityfees}</TableCell>
 
@@ -116,7 +122,9 @@ FeeStructureTableRow.propTypes = {
   code: PropTypes.string,
   academicyear: PropTypes.string,
   category: PropTypes.string,
+  scholarship: PropTypes.number,
   tuitionfees: PropTypes.number,
+  eligibilityregistration: PropTypes.number,
   universityfees: PropTypes.number,
   library: PropTypes.number,
   collegeexam: PropTypes.number,

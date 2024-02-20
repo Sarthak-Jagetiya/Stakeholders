@@ -31,6 +31,7 @@ export default function UserTableRow({
   address,
   course,
   admissionyear,
+  yearname,
   dateofadmission,
   domicilestate,
   studentcategory,
@@ -113,7 +114,7 @@ export default function UserTableRow({
 
             // const name = 'Mr. Ankit Radhesham Rathod';
             // const fatherName = 'Mr.Radhesham Ramdas Rathod';
-            const description = `This is to Certify that ${name} S/o ${fathersname} is a Bonafide Student of this institution Studying in 1st  Year BPTh , for the academic year ${admissionyear}. His date of birth is  ${formattedDate(
+            const description = `This is to Certify that ${name} S/o ${fathersname} is a Bonafide Student of this institution Studying in ${yearname} BPTh , for the academic year ${admissionyear}. His date of birth is  ${formattedDate(
               dob
             )}. This bonafide is issued for the purpose of Scholarship form.`;
 
@@ -206,6 +207,7 @@ export default function UserTableRow({
           {course}
         </TableCell>
         <TableCell align="center">{admissionyear}</TableCell>
+        <TableCell align="center">{yearname}</TableCell>
         <TableCell align="center">{formattedDate(dateofadmission)}</TableCell>
         <TableCell align="center">{domicilestate}</TableCell>
         <TableCell align="center">{studentcategory}</TableCell>
@@ -277,6 +279,7 @@ UserTableRow.propTypes = {
   address: PropTypes.any,
   course: PropTypes.any,
   admissionyear: PropTypes.any,
+  yearname: PropTypes.any,
   dateofadmission: PropTypes.any,
   domicilestate: PropTypes.any,
   studentcategory: PropTypes.any,

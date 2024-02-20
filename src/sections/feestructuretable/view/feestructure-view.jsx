@@ -240,7 +240,9 @@ export default function FeeStructurePage() {
                   { id: 'code', label: 'Code' },
                   { id: 'academicyear', label: 'AcademicYear' },
                   { id: 'category', label: 'Category' },
+                  { id: 'scholarship', label: 'Scholarship' },
                   { id: 'tuitionfees', label: 'Tuition' },
+                  { id: 'eligibilityregistration', label: 'Eligibility' },
                   { id: 'universityfees', label: 'University' },
                   { id: 'library', label: 'Library' },
                   { id: 'collegeexam', label: 'Exam' },
@@ -261,7 +263,9 @@ export default function FeeStructurePage() {
                       code={row.code}
                       academicyear={row.academicyear}
                       category={row.category}
+                      scholarship={row.scholarship}
                       tuitionfees={row.tuitionfees}
+                      eligibilityregistration={row.eligibilityregistration}
                       universityfees={row.universityfees}
                       library={row.library}
                       collegeexam={row.collegeexam}
