@@ -63,6 +63,15 @@ export default function RegisterView() {
   const [categoryOptions, setCategoryOptions] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  let token;
+  const cookieValue = document.cookie.split('; ').find((row) => row.startsWith('jwt'));
+  const localStorageValue = localStorage.getItem('jwt');
+  if (cookieValue) {
+    token = cookieValue.split('=')[1];
+  } else if (localStorageValue) {
+    token = localStorageValue;
+  }
+
   const getCurrentYear = () => new Date().getFullYear();
   const academicYearOptions = Array.from({ length: 6 }, (_, index) => {
     const startYear = getCurrentYear() - index;
@@ -92,11 +101,6 @@ export default function RegisterView() {
 
   const generatePRN = useCallback(async () => {
     try {
-      const token = document.cookie
-        .split('; ')
-        .find((row) => row.startsWith('jwt'))
-        .split('=')[1];
-
       // Check if formData.admissionyear is selected
       if (formData.admissionyear) {
         const response = await axios.post(
@@ -124,7 +128,7 @@ export default function RegisterView() {
     } catch (error) {
       console.error('Something went wrong!!', error);
     }
-  }, [formData.admissionyear]);
+  }, [formData.admissionyear, token]);
 
   const fetchLocalData = useCallback(async () => {
     try {
@@ -165,10 +169,6 @@ export default function RegisterView() {
     // If `prnparam` is present, fetch the data for that PRN
     const fetchData = async () => {
       try {
-        const token = document.cookie
-          .split('; ')
-          .find((row) => row.startsWith('jwt'))
-          .split('=')[1];
         const response = await axios.get(`${databaseLocalUrl}/student/${prnparam}`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -184,7 +184,7 @@ export default function RegisterView() {
     if (prnparam) {
       fetchData();
     }
-  }, [prnparam, fetchLocalData, fetchCategoryOptions, generatePRN]);
+  }, [prnparam, fetchLocalData, fetchCategoryOptions, generatePRN, token]);
 
   const validateForm = () => {
     let valid = true;
@@ -238,11 +238,6 @@ export default function RegisterView() {
         const apiEndpoint = prnparam
           ? `${databaseLocalUrl}/student/${prnparam}`
           : `${databaseLocalUrl}/student/`;
-
-        const token = document.cookie
-          .split('; ')
-          .find((row) => row.startsWith('jwt'))
-          .split('=')[1];
 
         const response = await axios[prnparam ? 'patch' : 'post'](apiEndpoint, formData, {
           headers: {

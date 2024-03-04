@@ -6,9 +6,10 @@ const icon = (name) => (
   <SvgColor src={`/assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />
 );
 
-const isToken =
-  typeof document !== 'undefined' &&
-  document.cookie.split('; ').find((row) => row.startsWith('jwt'));
+// const isToken =
+//   typeof document !== 'undefined' &&
+//   document.cookie.split('; ').find((row) => row.startsWith('jwt'));
+const isToken = typeof localStorage.getItem('jwt') !== 'undefined';
 
 const navConfig = [
   ...(isToken

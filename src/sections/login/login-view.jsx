@@ -100,19 +100,24 @@ export default function LoginView() {
       if (response.status === 200) {
         // console.log(response.data.token);
         // Cookies.set('jwt', response.data.token);
+        localStorage.setItem('jwt', response.data.token);
         Cookies.set('jwt', response.data.token, {
           expires: new Date(Date.now() + jwtExpiresIn * 24 * 60 * 60 * 1000),
-          sameSite: 'None',
-          secure: true,
+          httpOnly: true,
+          // sameSite: 'None',
+          // secure: true,
+          // domain: '.192.168.141.77',
+          // path: '/',
         });
 
         setErrorMessage('');
 
-        const token = document.cookie
-          .split('; ')
-          .find((row) => row.startsWith('jwt'))
-          ?.split('=')[1];
-        fetchData(token);
+        // const token = document.cookie
+        //   .split('; ')
+        //   .find((row) => row.startsWith('jwt'))
+        //   ?.split('=')[1];
+
+        fetchData(response.data.token);
         window.location.href = '/';
         // setTimeout(() => {
         // }, 1000);

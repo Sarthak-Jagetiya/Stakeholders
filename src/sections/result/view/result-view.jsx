@@ -19,6 +19,15 @@ const ResultForm = () => {
   const ridParam = searchParams.get('rid');
   const [fileTypeError, setFileTypeError] = useState('');
 
+  let token;
+  const cookieValue = document.cookie.split('; ').find((row) => row.startsWith('jwt'));
+  const localStorageValue = localStorage.getItem('jwt');
+  if (cookieValue) {
+    token = cookieValue.split('=')[1];
+  } else if (localStorageValue) {
+    token = localStorageValue;
+  }
+
   const initialFormData = {
     PRN: '',
     docData: null,
@@ -37,10 +46,6 @@ const ResultForm = () => {
     // Fetch existing data if rid is present
     const fetchData = async () => {
       try {
-        const token = document.cookie
-          .split('; ')
-          .find((row) => row.startsWith('jwt'))
-          .split('=')[1];
         const response = await axios.get(`${databaseLocalUrl}/result/${ridParam}`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -56,7 +61,7 @@ const ResultForm = () => {
     if (ridParam) {
       fetchData();
     }
-  }, [ridParam]);
+  }, [ridParam, token]);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -119,10 +124,6 @@ const ResultForm = () => {
     setLoading(true);
 
     try {
-      const token = document.cookie
-        .split('; ')
-        .find((row) => row.startsWith('jwt'))
-        .split('=')[1];
       // Determine whether to use POST or PUT based on the presence of rid
       const apiEndpoint = ridParam
         ? `${databaseLocalUrl}/result/${ridParam}`

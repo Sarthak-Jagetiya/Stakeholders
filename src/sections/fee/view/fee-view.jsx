@@ -40,12 +40,17 @@ export default function FeeView() {
   const [paidData, setPaidData] = useState(initialFeeData);
   const [totalFeeData, setTotalFeeData] = useState(initialFeeData);
 
+  let token;
+  const cookieValue = document.cookie.split('; ').find((row) => row.startsWith('jwt'));
+  const localStorageValue = localStorage.getItem('jwt');
+  if (cookieValue) {
+    token = cookieValue.split('=')[1];
+  } else if (localStorageValue) {
+    token = localStorageValue;
+  }
+
   const fetchStudentData = useCallback(async () => {
     try {
-      const token = document.cookie
-        .split('; ')
-        .find((row) => row.startsWith('jwt'))
-        .split('=')[1];
       const response = await axios.get(`${databaseLocalUrl}/student/${prn}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -75,14 +80,10 @@ export default function FeeView() {
       }
       setStudentName('');
     }
-  }, [prn, initialFeeData]);
+  }, [prn, initialFeeData, token]);
 
   const fetchPaidData = useCallback(async () => {
     try {
-      const token = document.cookie
-        .split('; ')
-        .find((row) => row.startsWith('jwt'))
-        .split('=')[1];
       const response = await axios.post(
         `${databaseLocalUrl}/transaction/sum`,
         {
@@ -117,14 +118,10 @@ export default function FeeView() {
     } catch (error) {
       console.error('Error fetching paid data:', error.message);
     }
-  }, [prn, initialFeeData, academicYear, yearName]);
+  }, [prn, initialFeeData, academicYear, yearName, token]);
 
   const fetchTotalFeeData = useCallback(async () => {
     try {
-      const token = document.cookie
-        .split('; ')
-        .find((row) => row.startsWith('jwt'))
-        .split('=')[1];
       const response = await axios.post(
         `${databaseLocalUrl}/feestructure/summary/`,
         {
@@ -160,14 +157,15 @@ export default function FeeView() {
     } catch (error) {
       console.error('Error fetching Total fee data:', error.message);
     }
-  }, [initialFeeData, academicYear, yearName, prn]);
+  }, [initialFeeData, academicYear, yearName, prn, token]);
 
   // const fetchData = useCallback(async () => {
   //   try {
-  //     const token = document.cookie
-  //       .split('; ')
-  //       .find((row) => row.startsWith('jwt'))
-  //       .split('=')[1];
+  // const token =
+  //   document.cookie
+  //     .split('; ')
+  //     .find((row) => row.startsWith('jwt'))
+  //     .split('=')[1] || localStorage.getItem('jwt');
 
   //     // Make the GET request with the Authorization header
   //     const response = await axios.get(`${databaseLocalUrl}/student`, {

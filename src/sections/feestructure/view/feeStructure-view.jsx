@@ -25,6 +25,15 @@ export default function FeeStructureForm() {
   const searchParams = new URLSearchParams(location.search);
   const code = searchParams.get('code');
 
+  let token;
+  const cookieValue = document.cookie.split('; ').find((row) => row.startsWith('jwt'));
+  const localStorageValue = localStorage.getItem('jwt');
+  if (cookieValue) {
+    token = cookieValue.split('=')[1];
+  } else if (localStorageValue) {
+    token = localStorageValue;
+  }
+
   const initialFormData = {
     code: '',
     academicyear: '',
@@ -55,10 +64,6 @@ export default function FeeStructureForm() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = document.cookie
-          .split('; ')
-          .find((row) => row.startsWith('jwt'))
-          .split('=')[1];
         const response = await axios.get(`${databaseLocalUrl}/feestructure/${code}`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -74,7 +79,7 @@ export default function FeeStructureForm() {
     if (code) {
       fetchData();
     }
-  }, [code]);
+  }, [code, token]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -105,10 +110,6 @@ export default function FeeStructureForm() {
     setLoading(true);
 
     try {
-      const token = document.cookie
-        .split('; ')
-        .find((row) => row.startsWith('jwt'))
-        .split('=')[1];
       const apiEndpoint = code
         ? `${databaseLocalUrl}/feestructure/${code}`
         : `${databaseLocalUrl}/feestructure`;

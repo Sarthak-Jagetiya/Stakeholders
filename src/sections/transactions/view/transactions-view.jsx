@@ -39,6 +39,15 @@ export default function TransactionsView() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
+  let token;
+  const cookieValue = document.cookie.split('; ').find((row) => row.startsWith('jwt'));
+  const localStorageValue = localStorage.getItem('jwt');
+  if (cookieValue) {
+    token = cookieValue.split('=')[1];
+  } else if (localStorageValue) {
+    token = localStorageValue;
+  }
+
   const handleDateFilter = (start, end) => {
     setPage(0);
     setStartDate(start);
@@ -99,10 +108,6 @@ export default function TransactionsView() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = document.cookie
-          .split('; ')
-          .find((row) => row.startsWith('jwt'))
-          .split('=')[1];
         const response = await fetch(`${databaseLocalUrl}/transaction/`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -124,7 +129,7 @@ export default function TransactionsView() {
     };
 
     fetchData();
-  }, []);
+  }, [token]);
 
   const handleFilterByAcademicYear = (event) => {
     const selectedAcademicYear = event.target.value;

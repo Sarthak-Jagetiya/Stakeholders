@@ -28,6 +28,15 @@ export default function ImpDocumentTableRow({
 }) {
   const [open, setOpen] = useState(null);
 
+  let token;
+  const cookieValue = document.cookie.split('; ').find((row) => row.startsWith('jwt'));
+  const localStorageValue = localStorage.getItem('jwt');
+  if (cookieValue) {
+    token = cookieValue.split('=')[1];
+  } else if (localStorageValue) {
+    token = localStorageValue;
+  }
+
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
   };
@@ -45,10 +54,6 @@ export default function ImpDocumentTableRow({
     handleCloseMenu();
 
     try {
-      const token = document.cookie
-        .split('; ')
-        .find((row) => row.startsWith('jwt'))
-        .split('=')[1];
       const response = await axios.delete(`${databaseLocalUrl}/result/${rid}`, {
         headers: {
           Authorization: `Bearer ${token}`,

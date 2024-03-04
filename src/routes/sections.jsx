@@ -1,11 +1,13 @@
+// import Cookies from 'js-cookie';
 import { lazy, Suspense } from 'react';
 import { Outlet, Navigate, useRoutes } from 'react-router-dom';
 
 import DashboardLayout from 'src/layouts/dashboard';
 
 const isToken =
-  typeof document !== 'undefined' &&
-  document.cookie.split('; ').find((row) => row.startsWith('jwt'));
+  (typeof document !== 'undefined' &&
+    document.cookie.split('; ').find((row) => row.startsWith('jwt'))) ||
+  localStorage.getItem('jwt');
 
 export const IndexPage = lazy(() => import('src/pages/app'));
 export const BlogPage = lazy(() => import('src/pages/blog'));

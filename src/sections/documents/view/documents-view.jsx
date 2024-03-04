@@ -34,6 +34,15 @@ export default function DocumentsView() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [documents, setDocuments] = useState([]);
 
+  let token;
+  const cookieValue = document.cookie.split('; ').find((row) => row.startsWith('jwt'));
+  const localStorageValue = localStorage.getItem('jwt');
+  if (cookieValue) {
+    token = cookieValue.split('=')[1];
+  } else if (localStorageValue) {
+    token = localStorageValue;
+  }
+
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -87,11 +96,6 @@ export default function DocumentsView() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = document.cookie
-          .split('; ')
-          .find((row) => row.startsWith('jwt'))
-          .split('=')[1];
-
         const response = await axios.get(`${databaseLocalUrl}/document/`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -112,7 +116,7 @@ export default function DocumentsView() {
     };
 
     fetchData();
-  }, []);
+  }, [token]);
 
   // Apply filter to data
   const dataFiltered = documents

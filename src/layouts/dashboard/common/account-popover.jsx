@@ -20,11 +20,13 @@ export default function AccountPopover() {
 
   // Check if document and document.cookie are defined
   const isToken =
-    typeof document !== 'undefined' &&
-    document.cookie.split('; ').find((row) => row.startsWith('jwt'));
+    (typeof document !== 'undefined' &&
+      document.cookie.split('; ').find((row) => row.startsWith('jwt'))) ||
+    localStorage.getItem('jwt');
 
   const deleteCookie = (cookieName) => {
     document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+    localStorage.removeItem(cookieName);
   };
 
   const handleOpen = (event) => {
@@ -62,10 +64,11 @@ export default function AccountPopover() {
         };
       };
 
-      const token = document.cookie
-        .split('; ')
-        .find((row) => row.startsWith('jwt'))
-        ?.split('=')[1];
+      // const token = document.cookie
+      //   .split('; ')
+      //   .find((row) => row.startsWith('jwt'))
+      //   ?.split('=')[1];
+      const token = localStorage.getItem('jwt');
 
       const fetchData = async () => {
         try {

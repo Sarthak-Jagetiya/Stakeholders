@@ -22,6 +22,15 @@ export default function ScholarshipForm() {
   const searchParams = new URLSearchParams(location.search);
   const idParam = searchParams.get('id');
 
+  let token;
+  const cookieValue = document.cookie.split('; ').find((row) => row.startsWith('jwt'));
+  const localStorageValue = localStorage.getItem('jwt');
+  if (cookieValue) {
+    token = cookieValue.split('=')[1];
+  } else if (localStorageValue) {
+    token = localStorageValue;
+  }
+
   const initialFormData = {
     PRN: '',
     amount: '',
@@ -50,10 +59,6 @@ export default function ScholarshipForm() {
     // Fetch existing data if PRN is present
     const fetchData = async () => {
       try {
-        const token = document.cookie
-          .split('; ')
-          .find((row) => row.startsWith('jwt'))
-          .split('=')[1];
         const response = await axios.get(`${databaseLocalUrl}/scholarship/${idParam}`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -69,7 +74,7 @@ export default function ScholarshipForm() {
     if (idParam) {
       fetchData();
     }
-  }, [idParam]);
+  }, [idParam, token]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -103,10 +108,6 @@ export default function ScholarshipForm() {
     setLoading(true);
 
     try {
-      const token = document.cookie
-        .split('; ')
-        .find((row) => row.startsWith('jwt'))
-        .split('=')[1];
       // Determine whether to use POST or PUT based on the presence of PRN
       const apiEndpoint = idParam
         ? `${databaseLocalUrl}/scholarship/${idParam}`

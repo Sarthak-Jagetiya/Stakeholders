@@ -38,6 +38,15 @@ export default function StudentsView() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [students, setStudents] = useState([]);
 
+  let token;
+  const cookieValue = document.cookie.split('; ').find((row) => row.startsWith('jwt'));
+  const localStorageValue = localStorage.getItem('jwt');
+  if (cookieValue) {
+    token = cookieValue.split('=')[1];
+  } else if (localStorageValue) {
+    token = localStorageValue;
+  }
+
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -94,11 +103,6 @@ export default function StudentsView() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = document.cookie
-          .split('; ')
-          .find((row) => row.startsWith('jwt'))
-          .split('=')[1];
-
         // Make the GET request with the Authorization header
         const response = await axios.get(`${databaseLocalUrl}/student`, {
           headers: {
@@ -122,7 +126,7 @@ export default function StudentsView() {
     };
 
     fetchData();
-  }, []);
+  }, [token]);
 
   // Get unique academic years from students
   const academicYears = Array.from(new Set(students.map((student) => student.admissionyear)));

@@ -35,6 +35,15 @@ export default function FeeStructurePage() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [tasks, setTasks] = useState([]);
 
+  let token;
+  const cookieValue = document.cookie.split('; ').find((row) => row.startsWith('jwt'));
+  const localStorageValue = localStorage.getItem('jwt');
+  if (cookieValue) {
+    token = cookieValue.split('=')[1];
+  } else if (localStorageValue) {
+    token = localStorageValue;
+  }
+
   // Sorting handler
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -91,10 +100,6 @@ export default function FeeStructurePage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = document.cookie
-          .split('; ')
-          .find((row) => row.startsWith('jwt'))
-          .split('=')[1];
         const response = await axios.get(`${databaseLocalUrl}/task/`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -115,7 +120,7 @@ export default function FeeStructurePage() {
     };
 
     fetchData();
-  }, []);
+  }, [token]);
 
   // Apply filter to data
   const dataFiltered = tasks

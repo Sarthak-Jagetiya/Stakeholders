@@ -36,6 +36,15 @@ export default function EmployeesView() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [logs, setLogs] = useState([]);
 
+  let token;
+  const cookieValue = document.cookie.split('; ').find((row) => row.startsWith('jwt'));
+  const localStorageValue = localStorage.getItem('jwt');
+  if (cookieValue) {
+    token = cookieValue.split('=')[1];
+  } else if (localStorageValue) {
+    token = localStorageValue;
+  }
+
   // Sorting handler
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -88,10 +97,6 @@ export default function EmployeesView() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = document.cookie
-          .split('; ')
-          .find((row) => row.startsWith('jwt'))
-          .split('=')[1];
         const response = await axios.get(`${databaseLocalUrl}/log/`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -112,7 +117,7 @@ export default function EmployeesView() {
     };
 
     fetchData();
-  }, []);
+  }, [token]);
 
   // Apply filter to data
   const dataFiltered = logs

@@ -19,9 +19,11 @@ const createSendToken = (user, statusCode, res) => {
 
   res.cookie('jwt', token, {
     expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
-    // secure: true,  // Only send cookie over HTTPS
     httpOnly: true,
-    // sameSite: 'None',
+    // secure: true,  // Only send cookie over HTTPS (enable this if using HTTPS)
+    // sameSite: 'None',  // Enable this for cross-site requests over HTTPS
+    // domain: '.192.168.141.77', // Set the specific domain
+    path: '/', // Set the path to root ('/') to make it accessible across different routes
   });
 
   //  Removes password from the output

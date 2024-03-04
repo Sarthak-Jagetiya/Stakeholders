@@ -25,6 +25,15 @@ export default function TaskForm() {
   const tid = searchParams.get('tid');
   const [fileTypeError, setFileTypeError] = useState('');
 
+  let token;
+  const cookieValue = document.cookie.split('; ').find((row) => row.startsWith('jwt'));
+  const localStorageValue = localStorage.getItem('jwt');
+  if (cookieValue) {
+    token = cookieValue.split('=')[1];
+  } else if (localStorageValue) {
+    token = localStorageValue;
+  }
+
   const statusOptions = ['Pending', 'Completed', 'In Progress'];
   const initialFormData = {
     task_name: '',
@@ -46,10 +55,6 @@ export default function TaskForm() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = document.cookie
-          .split('; ')
-          .find((row) => row.startsWith('jwt'))
-          .split('=')[1];
         const response = await axios.get(`${databaseLocalUrl}/task/${tid}`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -65,7 +70,7 @@ export default function TaskForm() {
     if (tid) {
       fetchData();
     }
-  }, [tid]);
+  }, [tid, token]);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -128,10 +133,6 @@ export default function TaskForm() {
     setLoading(true);
 
     try {
-      const token = document.cookie
-        .split('; ')
-        .find((row) => row.startsWith('jwt'))
-        .split('=')[1];
       const apiEndpoint = tid ? `${databaseLocalUrl}/task/${tid}` : `${databaseLocalUrl}/task`;
 
       const response = await axios[tid ? 'patch' : 'post'](apiEndpoint, formData, {

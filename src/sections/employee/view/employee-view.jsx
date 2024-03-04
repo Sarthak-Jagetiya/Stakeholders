@@ -18,6 +18,15 @@ import FormControl from '@mui/material/FormControl';
 const databaseLocalUrl = `${import.meta.env.VITE_DATABASE_LOCAL}`;
 
 const EmployeeForm = () => {
+  let token;
+  const cookieValue = document.cookie.split('; ').find((row) => row.startsWith('jwt'));
+  const localStorageValue = localStorage.getItem('jwt');
+  if (cookieValue) {
+    token = cookieValue.split('=')[1];
+  } else if (localStorageValue) {
+    token = localStorageValue;
+  }
+
   const initialFormData = {
     eid: '',
     name: '',
@@ -71,10 +80,6 @@ const EmployeeForm = () => {
   useEffect(() => {
     const fetchDataForEdit = async (employeeID) => {
       try {
-        const token = document.cookie
-          .split('; ')
-          .find((row) => row.startsWith('jwt'))
-          .split('=')[1];
         const response = await axios.get(`${databaseLocalUrl}/employee/${employeeID}`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -90,7 +95,7 @@ const EmployeeForm = () => {
     if (eid) {
       fetchDataForEdit(eid);
     }
-  }, [eid]);
+  }, [eid, token]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -146,10 +151,6 @@ const EmployeeForm = () => {
     setLoading(true);
 
     try {
-      const token = document.cookie
-        .split('; ')
-        .find((row) => row.startsWith('jwt'))
-        .split('=')[1];
       const apiEndpoint = formData.eid
         ? `${databaseLocalUrl}/employee/${formData.eid}`
         : `${databaseLocalUrl}/employee/`;

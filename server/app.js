@@ -33,7 +33,13 @@ app.use(xss());
 // Prevent parameter pollution
 app.use(hpp());
 
-const allowedOrigins = ['http://13.126.201.24:3000', 'http://127.0.0.1:3030'];
+const allowedOrigins = [
+  'http://13.126.201.24:3000',
+  'http://127.0.0.1:3030',
+  'http://192.168.141.77:3030',
+  'http://192.168.137.1:3030',
+  'http://192.168.139.78:3030',
+];
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -55,7 +61,11 @@ app.use(cookieParser());
 
 // Your custom CORS headers middleware
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'http://127.0.0.1:3030');
+  res.header(
+    'Access-Control-Allow-Origin',
+    'http://192.168.139.78:3030',
+    'http://192.168.137.1:3030/'
+  );
   res.header('Access-Control-Allow-Credentials', true);
   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
   res.header(

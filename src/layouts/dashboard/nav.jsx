@@ -75,11 +75,11 @@ export default function Nav({ openNav, onCloseNav }) {
         };
       };
 
-      const token = document.cookie
-        .split('; ')
-        .find((row) => row.startsWith('jwt'))
-        ?.split('=')[1];
-
+      // const token = document.cookie
+      //   .split('; ')
+      //   .find((row) => row.startsWith('jwt'))
+      //   ?.split('=')[1];
+      const token = localStorage.getItem('jwt');
       const fetchData = async () => {
         try {
           const decodedToken = decodeJwt(token);

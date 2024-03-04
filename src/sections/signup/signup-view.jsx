@@ -125,11 +125,11 @@ export default function SignupView() {
           secure: true,
         });
         setErrorMessage('');
-        const token = document.cookie
-          .split('; ')
-          .find((row) => row.startsWith('jwt'))
-          ?.split('=')[1];
-        fetchData(token);
+        // const token = document.cookie
+        //   .split('; ')
+        //   .find((row) => row.startsWith('jwt'))
+        //   ?.split('=')[1];
+        fetchData(response.data.token);
         window.location.href = '/';
         // setTimeout(() => {
         // }, 1000);
