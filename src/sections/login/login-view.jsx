@@ -1,5 +1,5 @@
 import axios from 'axios';
-import Cookies from 'js-cookie';
+// import Cookies from 'js-cookie';
 import { useState } from 'react';
 // import { useSnackbar } from 'notistack';
 // import { MuiOtpInput } from 'mui-one-time-password-input';
@@ -25,7 +25,7 @@ import Logo from 'src/components/logo';
 import Iconify from 'src/components/iconify';
 // ----------------------------------------------------------------------
 const databaseLocalUrl = `${import.meta.env.VITE_DATABASE_LOCAL}`;
-const jwtExpiresIn = `${import.meta.env.VITE_JWT_EXPIRES_IN}`;
+// const jwtExpiresIn = `${import.meta.env.VITE_JWT_EXPIRES_IN}`;
 
 export default function LoginView() {
   const theme = useTheme();
@@ -98,24 +98,18 @@ export default function LoginView() {
       });
 
       if (response.status === 200) {
-        // console.log(response.data.token);
         // Cookies.set('jwt', response.data.token);
         localStorage.setItem('jwt', response.data.token);
-        Cookies.set('jwt', response.data.token, {
-          expires: new Date(Date.now() + jwtExpiresIn * 24 * 60 * 60 * 1000),
-          httpOnly: true,
-          // sameSite: 'None',
-          // secure: true,
-          // domain: '.192.168.141.77',
-          // path: '/',
-        });
+        // Cookies.set('jwt', response.data.token, {
+        //   expires: new Date(Date.now() + jwtExpiresIn * 24 * 60 * 60 * 1000),
+        //   httpOnly: true,
+        //   // sameSite: 'None',
+        //   // secure: true,
+        //   // domain: '.192.168.141.77',
+        //   // path: '/',
+        // });
 
         setErrorMessage('');
-
-        // const token = document.cookie
-        //   .split('; ')
-        //   .find((row) => row.startsWith('jwt'))
-        //   ?.split('=')[1];
 
         fetchData(response.data.token);
         window.location.href = '/';
@@ -134,6 +128,7 @@ export default function LoginView() {
 
   const deleteCookie = (cookieName) => {
     document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+    localStorage.removeItem('jwt');
   };
 
   const handleLogout = () => {

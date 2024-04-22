@@ -1,5 +1,5 @@
 import axios from 'axios';
-import Cookies from 'js-cookie';
+// import Cookies from 'js-cookie';
 import { useState } from 'react';
 
 import Box from '@mui/material/Box';
@@ -21,7 +21,7 @@ import Logo from 'src/components/logo';
 import Iconify from 'src/components/iconify';
 
 const databaseLocalUrl = `${import.meta.env.VITE_DATABASE_LOCAL}`;
-const jwtExpiresIn = `${import.meta.env.VITE_JWT_EXPIRES_IN}`;
+// const jwtExpiresIn = `${import.meta.env.VITE_JWT_EXPIRES_IN}`;
 
 export default function SignupView() {
   const theme = useTheme();
@@ -119,11 +119,12 @@ export default function SignupView() {
       });
 
       if (response.status === 201) {
-        Cookies.set('jwt', response.data.token, {
-          expires: new Date(Date.now() + jwtExpiresIn * 24 * 60 * 60 * 1000),
-          sameSite: 'None',
-          secure: true,
-        });
+        localStorage.setItem('jwt', response.data.token);
+        // Cookies.set('jwt', response.data.token, {
+        //   expires: new Date(Date.now() + jwtExpiresIn * 24 * 60 * 60 * 1000),
+        //   sameSite: 'None',
+        //   secure: true,
+        // });
         setErrorMessage('');
         // const token = document.cookie
         //   .split('; ')
@@ -152,6 +153,7 @@ export default function SignupView() {
 
   const deleteCookie = (cookieName) => {
     document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+    localStorage.removeItem('jwt');
   };
 
   const handleLogout = () => {

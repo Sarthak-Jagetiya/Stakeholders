@@ -6,9 +6,6 @@ const AppError = require('./../utils/appError');
 const { request } = require('http');
 
 const signToken = (id) => {
-  // return jwt.sign({ id }, process.env.JWT_SECRET, {
-  //   expiresIn: process.env.JWT_EXPIRES_IN,
-  // });
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
@@ -18,11 +15,11 @@ const createSendToken = (user, statusCode, res) => {
   const token = signToken(user.id);
 
   res.cookie('jwt', token, {
-    expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+    expires: new Date(Date.now() + process.env.JWT_EXPIRES_IN_NUMBER * 24 * 60 * 60 * 1000),
     httpOnly: true,
     // secure: true,  // Only send cookie over HTTPS (enable this if using HTTPS)
-    // sameSite: 'None',  // Enable this for cross-site requests over HTTPS
-    // domain: '.192.168.141.77', // Set the specific domain
+    sameSite: 'strict', // Enable this for cross-site requests over HTTPS
+    // domain: '.192.168.139.78', // Set the specific domain
     path: '/', // Set the path to root ('/') to make it accessible across different routes
   });
 
